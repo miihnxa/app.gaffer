@@ -40,21 +40,21 @@ LAUNCH
 chmod +x "$APP/Contents/MacOS/gaffer"
 
 # Icon: the same brand mark the app draws in its own chrome
-# (src/fpl/webapp/static/mark.svg), rendered at every size macOS asks for.
+# (src/fpl/webapp/static/mark-icon.svg) — glyph only, transparent ground.
 ICONSET="$(mktemp -d)/gaffer.iconset"; mkdir -p "$ICONSET"
-"$HERE/.venv/bin/python" - "$ICONSET" "$HERE/src/fpl/webapp/static/mark.svg" <<'PYICON'
+"$HERE/.venv/bin/python" - "$ICONSET" "$HERE/src/fpl/webapp/static/mark-icon.svg" <<'PYICON'
 import sys, subprocess, pathlib, shutil
 out = pathlib.Path(sys.argv[1])
 src = pathlib.Path(sys.argv[2])
 work = out.parent
-svg = work / "mark.svg"
+svg = work / "mark-icon.svg"
 shutil.copyfile(src, svg)
-png = work / "mark.png"
+png = work / "mark-icon.png"
 
 # No SVG rasteriser ships with macOS, but Quick Look renders one.
 subprocess.run(["qlmanage", "-t", "-s", "1024", "-o", str(work), str(svg)],
                capture_output=True)
-produced = work / "mark.svg.png"
+produced = work / "mark-icon.svg.png"
 if produced.exists():
     produced.rename(png)
 
