@@ -6,73 +6,69 @@
 <title>Gaffer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
-<div id="titlebar"></div>
 
-<div id="shell">
-  <aside id="rail">
-    <div class="brand">
-      <div class="mark">G</div>
-      <div><div class="bn">Gaffer</div><div class="bs">FPL assistant</div></div>
+<!-- ============ entry ============ -->
+<div id="entry">
+  <div class="ent-l">
+    <div class="lock"><span class="tile">G</span><b>Gaffer</b></div>
+    <div>
+      <div class="lbl">Matchday assistant</div>
+      <h1>Know your best move before the deadline.</h1>
+      <p>Gaffer reads your Fantasy Premier League squad from public data and tells you what
+         to fix — flagged players, blank gameweeks, and the transfers that actually improve
+         your team rather than just changing it.</p>
     </div>
+    <div class="ent-foot"><span>Local · no account</span><span>Public FPL data</span><span>v2.0</span></div>
+  </div>
+  <div class="ent-r">
+    <div class="lbl">Load a team</div>
+    <label class="lbl" for="tid" style="display:block;margin:22px 0 8px;letter-spacing:.13em">Entry ID</label>
+    <input id="tid" class="field mono" type="text" inputmode="numeric" placeholder="1234567" autocomplete="off">
+    <p class="helper">fantasy.premierleague.com/entry/<b id="hid" style="color:var(--accent)">1234567</b>/history</p>
+    <button class="btn" id="go"><span>Load squad</span><span class="mono">→</span></button>
+    <div id="enterr" class="err" hidden style="margin-top:14px"></div>
+    <div class="notes">
+      <div class="note"><span class="mono">01</span><span>Public endpoints only. Gaffer never asks for your FPL password and cannot change your team.</span></div>
+      <div class="note"><span class="mono">02</span><span>Squads for an upcoming gameweek aren't public — before a deadline you'll see the last played XI, labelled as such.</span></div>
+      <div class="note"><span class="mono">03</span><span>Everything is cached on this machine. Nothing is sent anywhere else.</span></div>
+    </div>
+  </div>
+</div>
 
-    <nav id="nav">
-      <button class="nv" data-view="squad"   aria-pressed="true"><span>Squad</span></button>
-      <button class="nv" data-view="rebuild"><span>Rebuild</span></button>
-      <button class="nv" data-view="league"><span>Leagues</span></button>
-      <button class="nv" data-view="players"><span>Players</span></button>
-    </nav>
-
-    <div class="railfoot">
-      <div class="gwbox">
-        <div class="k">Next deadline</div>
-        <div class="v" id="railgw">—</div>
-        <div class="cd" id="railcd">—</div>
-      </div>
-      <p class="disclaim">Advises only. Never signs in, never changes a team.</p>
+<!-- ============ app ============ -->
+<div id="shell" hidden>
+  <aside id="rail">
+    <div class="lock"><span class="tile">G</span><b>Gaffer</b></div>
+    <nav id="nav"></nav>
+    <div class="deadline">
+      <div class="lbl" style="font-size:10px" id="dl-gw">Gameweek</div>
+      <div class="cd" id="dl-cd">—</div>
+      <div class="when" id="dl-when">—</div>
+      <div class="bar"><i id="dl-bar" style="width:0%"></i></div>
     </div>
   </aside>
 
   <main id="main">
-    <header id="topbar">
-      <div class="teambox">
-        <button id="teambtn" class="teambtn">
-          <span id="teamname">Load a team</span>
-          <span id="teammeta" class="meta"></span>
-          <span class="chev">⌄</span>
-        </button>
-        <div id="teammenu" class="menu" hidden>
-          <label class="mlabel" for="tid">FPL team ID</label>
-          <div class="mrow">
-            <input id="tid" type="number" inputmode="numeric" placeholder="e.g. 1234567" autocomplete="off">
-            <button id="tgo" class="btn primary">Load</button>
-          </div>
-          <p class="mhint">Find it in the URL of your Points page:<br>
-            <code>premierleague.com/entry/<b>ID</b>/history</code></p>
-          <div id="recents"></div>
-        </div>
+    <header id="head">
+      <div>
+        <div class="kick" id="h-kick"></div>
+        <h1 id="h-title"></h1>
+        <div class="sub" id="h-sub"></div>
       </div>
-      <div class="tstats" id="tstats"></div>
+      <div class="kpis" id="h-kpis"></div>
     </header>
-
     <div id="err" class="err" hidden></div>
     <div id="loading" class="loading" hidden><span class="spin"></span><span id="loadmsg">Loading…</span></div>
-
-    <section id="v-squad" class="view"></section>
-    <section id="v-rebuild" class="view" hidden></section>
-    <section id="v-league" class="view" hidden></section>
-    <section id="v-players" class="view" hidden></section>
+    <section id="view"></section>
   </main>
 </div>
 
-<div id="drawer" class="drawer" role="dialog" aria-label="Player detail">
-  <button class="x" id="dx">Close</button>
-  <div id="dbody"></div>
-</div>
 <div id="scrim" class="scrim" hidden></div>
+<aside id="drawer" class="drawer" role="dialog" aria-label="Player detail"><div id="dbody"></div></aside>
 
 <script src="app.js"></script>
 </body>

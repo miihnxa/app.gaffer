@@ -107,6 +107,10 @@ def create_app(service: Service | None = None) -> Flask:
     def ticker():
         return jsonify(svc.ticker(request.args.get("n", 5, type=int)))
 
+    @app.get("/api/player/<int:player_id>")
+    def player(player_id: int):
+        return jsonify(svc.player(player_id))
+
     @app.get("/api/search")
     def search():
         return jsonify(svc.search(request.args.get("q", "")))

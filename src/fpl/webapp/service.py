@@ -271,6 +271,20 @@ class Service:
                           if v["short_name"] == c), gw, n)]}
                 for c, s in self.fb.ticker(gw, n)]
 
+    def player(self, player_id: int) -> dict:
+        """Per-gameweek history for the drawer's form bars."""
+        data = self.client.element_summary(int(player_id))
+        p = self.bs.player(int(player_id))
+        return {
+            "id": int(player_id),
+            "name": p.name if p else str(player_id),
+            "history": [
+                {"event": h.get("round"), "points": h.get("total_points", 0),
+                 "minutes": h.get("minutes", 0), "opponent": h.get("opponent_team")}
+                for h in data.get("history", [])
+            ],
+        }
+
     def search(self, q: str, limit: int = 20) -> list[dict]:
         q = (q or "").strip().lower()
         if len(q) < 2:

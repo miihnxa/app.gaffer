@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    body{margin:0;background:#0E1116;color:#E9EEF4;font-family:"Sora",-apple-system,sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+    a{color:#C8FF3D;text-decoration:none}a:hover{color:#DCFF7A}
+    input[type=range]{accent-color:#C8FF3D}
+    ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#242C36;border-radius:4px}
+  </style>
+</helmet>
+
+<div style="width:1440px;height:900px;position:relative;overflow:hidden;background:#0E1116;color:#E9EEF4;font-family:'Sora',sans-serif">
+
+<sc-if value="{{ isEntry }}" hint-placeholder-val="{{ true }}">
+  <div style="position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;background:#0E1116">
+    <div style="padding:64px 60px;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid #1C232C">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:26px;height:26px;background:#C8FF3D;display:grid;place-items:center;font-weight:700;font-size:15px;color:#0E1116;border-radius:6px">G</div>
+        <div style="font-weight:600;letter-spacing:-.01em">Gaffer</div>
+      </div>
+      <div>
+        <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#C8FF3D;font-weight:600">Matchday assistant</div>
+        <h1 style="font-size:58px;line-height:1.02;letter-spacing:-.035em;font-weight:600;margin:18px 0 0;max-width:12ch">Know your best move before the deadline.</h1>
+        <p style="margin:22px 0 0;font-size:15px;color:#8B97A6;max-width:44ch;line-height:1.6">Reads your public FPL entry, watches the deadline, and flags the moves that cost you points. It never signs in and never changes a team.</p>
+      </div>
+      <div style="display:flex;gap:28px;font-size:12px;color:#5D6875">
+        <span>Local &middot; no account</span><span>Public FPL data</span><span>v2.0</span>
+      </div>
+    </div>
+
+    <div style="padding:64px 60px;display:flex;flex-direction:column;justify-content:center;gap:0;background:#11161C">
+      <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8B97A6;font-weight:600">Load a team</div>
+      <label style="display:block;margin-top:22px;font-size:12.5px;color:#8B97A6">Entry ID</label>
+      <input value="{{ teamId }}" onChange="{{ onTeamId }}" style="margin-top:9px;width:100%;box-sizing:border-box;background:#0E1116;border:1px solid #242C36;border-bottom:2px solid #C8FF3D;color:#E9EEF4;border-radius:8px;padding:16px 18px;font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:.06em;outline:none">
+      <p style="margin:12px 0 0;font-size:12px;color:#5D6875;line-height:1.6">The number in the URL of your Points page.<br><span style="font-family:'IBM Plex Mono',monospace;color:#8B97A6">fantasy.premierleague.com/entry/<span style="color:#C8FF3D">1234567</span>/history</span></p>
+      <button onClick="{{ enter }}" style="margin-top:26px;background:#C8FF3D;color:#0E1116;border:0;border-radius:8px;padding:15px 24px;font-family:'Sora',sans-serif;font-size:14px;font-weight:600;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center" style-hover="background:#DCFF7A">
+        <span>Load squad</span><span style="font-family:'IBM Plex Mono',monospace">&rarr;</span>
+      </button>
+      <div style="margin-top:34px;padding-top:20px;border-top:1px solid #1C232C;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:10px;align-items:baseline;font-size:12.5px;color:#8B97A6"><span style="font-family:'IBM Plex Mono',monospace;color:#5D6875">01</span><span>Public endpoints only &mdash; no password is ever asked for.</span></div>
+        <div style="display:flex;gap:10px;align-items:baseline;font-size:12.5px;color:#8B97A6"><span style="font-family:'IBM Plex Mono',monospace;color:#5D6875">02</span><span>Squads set before a gameweek starts are typed in by hand.</span></div>
+        <div style="display:flex;gap:10px;align-items:baseline;font-size:12.5px;color:#8B97A6"><span style="font-family:'IBM Plex Mono',monospace;color:#5D6875">03</span><span>Everything is cached on this machine.</span></div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ inApp }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:216px 1fr;height:900px">
+
+  <div style="background:#0A0D11;border-right:1px solid #1C232C;display:flex;flex-direction:column;padding:20px 12px 14px;gap:22px">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 6px">
+      <div style="width:26px;height:26px;background:#C8FF3D;display:grid;place-items:center;font-weight:700;font-size:15px;color:#0E1116;border-radius:6px">G</div>
+      <div>
+        <div style="font-weight:600;font-size:14px;letter-spacing:-.01em">Gaffer</div>
+        <div style="font-size:10px;color:#5D6875;font-family:'IBM Plex Mono',monospace">entry {{ teamId }}</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:1px">
+      <div onClick="{{ goSquad }}" style="display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;background:{{ navSquadBg }};color:{{ navSquadFg }}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg><span>Squad</span>
+      </div>
+      <div onClick="{{ goTransfers }}" style="display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;background:{{ navTransfersBg }};color:{{ navTransfersFg }}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg><span>Transfers</span>
+      </div>
+      <div onClick="{{ goRebuild }}" style="display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;background:{{ navRebuildBg }};color:{{ navRebuildFg }}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/></svg><span>Rebuild</span>
+      </div>
+      <div onClick="{{ goFixtures }}" style="display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;background:{{ navFixturesBg }};color:{{ navFixturesFg }}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Fixtures</span>
+      </div>
+      <div onClick="{{ goLeague }}" style="display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;background:{{ navLeagueBg }};color:{{ navLeagueFg }}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 21V7l6-4 6 4v14M6 12h12M6 17h12"/></svg><span>League</span>
+      </div>
+      <div onClick="{{ goSettings }}" style="display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:500;background:{{ navSettingsBg }};color:{{ navSettingsFg }}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7.5 19l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.7 7.5l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.7-1.1V3a2 2 0 1 1 4 0v.1A1.6 1.6 0 0 0 16.5 5l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1.1z"/></svg><span>Settings</span>
+      </div>
+    </div>
+
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px">
+      <div style="background:#11161C;border:1px solid #1C232C;border-radius:10px;padding:13px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#5D6875;font-weight:600">Deadline</span>
+          <span style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:#C8FF3D">GW3</span>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:25px;font-weight:600;color:#C8FF3D;letter-spacing:-.03em;margin-top:8px;line-height:1">{{ countdown }}</div>
+        <div style="font-size:11px;color:#5D6875;margin-top:6px;font-family:'IBM Plex Mono',monospace">Fri 4 Sep &middot; 13:30 EDT</div>
+        <div style="height:3px;border-radius:2px;background:#1C232C;margin-top:11px;overflow:hidden"><div style="height:3px;background:#C8FF3D;width:{{ deadlinePct }}"></div></div>
+      </div>
+      <p style="font-size:10.5px;color:#4C5665;margin:0;padding:0 6px;line-height:1.5">Advises only. Never signs in, never changes a team.</p>
+    </div>
+  </div>
+
+  <div style="overflow:hidden;display:flex;flex-direction:column">
+
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;padding:24px 30px 18px;border-bottom:1px solid #1C232C;flex:0 0 auto">
+      <div>
+        <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#C8FF3D;font-weight:600">{{ kicker }}</div>
+        <h1 style="margin:8px 0 0;font-size:32px;line-height:1;letter-spacing:-.03em;font-weight:600">{{ title }}</h1>
+        <div style="font-size:12px;color:#5D6875;margin-top:7px">{{ subtitle }}</div>
+      </div>
+      <div style="display:flex;gap:30px">
+        <div style="text-align:right"><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:600;line-height:1">146</div><div style="font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875;margin-top:5px">Points</div></div>
+        <div style="text-align:right"><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:600;line-height:1;color:#FF5C7A">&minus;4</div><div style="font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875;margin-top:5px">To leader</div></div>
+        <div style="text-align:right"><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:600;line-height:1">&pound;100.1</div><div style="font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875;margin-top:5px">Squad</div></div>
+        <div style="text-align:right"><div style="font-family:'IBM Plex Mono',monospace;font-size:21px;font-weight:600;line-height:1">&pound;0.0</div><div style="font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875;margin-top:5px">Bank</div></div>
+      </div>
+    </div>
+
+    <div style="flex:1;min-height:0;overflow:auto;padding:22px 30px 30px">
+
+      <sc-if value="{{ isSquad }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:22px;align-items:start">
+
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+              <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600">Gameweek 3 &middot; 3-4-3</div>
+              <div style="font-size:11.5px;color:#5D6875">Recorded by hand &mdash; pre-deadline squads aren't public</div>
+            </div>
+
+            <div style="border:1px solid #1C232C;border-radius:12px;background:#10151B;background-image:linear-gradient(#161D25 1px,transparent 1px),linear-gradient(90deg,#161D25 1px,transparent 1px);background-size:34px 34px;padding:18px 16px 14px">
+              <sc-for list="{{ pitchRows }}" as="row" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+                  <div style="width:26px;flex:0 0 26px;font-size:9px;letter-spacing:.14em;font-family:'IBM Plex Mono',monospace;color:#3E4855;text-transform:uppercase">{{ row.label }}</div>
+                  <div style="flex:1;display:flex;justify-content:center;gap:8px">
+                    <sc-for list="{{ row.players }}" as="p" hint-placeholder-count="3">
+                      <div onClick="{{ p.open }}" style="width:110px;background:#161D25;border:1px solid {{ p.border }};border-radius:9px;padding:9px 9px 8px;cursor:pointer;position:relative" style-hover="border-color:#3B4757">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                          <div style="font-size:12.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</div>
+                          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;width:15px;height:15px;flex:0 0 15px;display:grid;place-items:center;border-radius:4px;margin-left:4px;background:{{ p.badgeBg }};color:{{ p.badgeFg }}">{{ p.badge }}</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:5px;margin-top:6px">
+                          <span style="font-size:10px;color:#8B97A6;font-family:'IBM Plex Mono',monospace">{{ p.opp }}</span>
+                          <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;border-radius:3px;padding:0 4px;background:{{ p.fdrBg }};color:{{ p.fdrFg }}">{{ p.fdr }}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-top:7px;padding-top:6px;border-top:1px solid #1C232C;font-family:'IBM Plex Mono',monospace;font-size:10px">
+                          <span style="color:#5D6875">{{ p.price }}</span><span style="color:{{ p.formFg }};font-weight:600">{{ p.form }}</span>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+
+              <div style="display:flex;align-items:center;gap:12px;margin-top:14px;padding-top:14px;border-top:1px dashed #262E38">
+                <div style="width:26px;flex:0 0 26px;font-size:9px;letter-spacing:.14em;font-family:'IBM Plex Mono',monospace;color:#3E4855">BEN</div>
+                <div style="flex:1;display:flex;justify-content:center;gap:8px">
+                  <sc-for list="{{ bench }}" as="p" hint-placeholder-count="4">
+                    <div onClick="{{ p.open }}" style="width:110px;background:#12171D;border:1px solid {{ p.border }};border-radius:9px;padding:9px 9px 8px;cursor:pointer;opacity:.85">
+                      <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div style="font-size:12.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</div>
+                        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;width:15px;height:15px;flex:0 0 15px;display:grid;place-items:center;border-radius:4px;margin-left:4px;background:{{ p.badgeBg }};color:{{ p.badgeFg }}">{{ p.badge }}</div>
+                      </div>
+                      <div style="display:flex;align-items:center;gap:5px;margin-top:6px">
+                        <span style="font-size:10px;color:#8B97A6;font-family:'IBM Plex Mono',monospace">{{ p.opp }}</span>
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;border-radius:3px;padding:0 4px;background:{{ p.fdrBg }};color:{{ p.fdrFg }}">{{ p.fdr }}</span>
+                      </div>
+                      <div style="display:flex;justify-content:space-between;margin-top:7px;padding-top:6px;border-top:1px solid #1C232C;font-family:'IBM Plex Mono',monospace;font-size:10px">
+                        <span style="color:#5D6875">{{ p.price }}</span><span style="color:{{ p.formFg }};font-weight:600">{{ p.form }}</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:18px">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px">
+                <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600">What to look at</div>
+                <div style="font-size:11px;color:#5D6875;font-family:'IBM Plex Mono',monospace">{{ insightCount }}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ insights }}" as="n" hint-placeholder-count="3">
+                  <div style="border:1px solid #1C232C;border-left:2px solid {{ n.tone }};border-radius:0 9px 9px 0;background:#11161C;padding:12px 14px">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:{{ n.tone }}">{{ n.kind }}</span>
+                      <span style="font-size:10px;color:#3E4855;font-family:'IBM Plex Mono',monospace">{{ n.gw }}</span>
+                    </div>
+                    <div style="font-size:13.5px;font-weight:600;margin-top:5px;letter-spacing:-.01em">{{ n.title }}</div>
+                    <p style="margin:4px 0 0;font-size:12px;color:#8B97A6;line-height:1.5">{{ n.body }}</p>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px">
+                <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600">Mini-league</div>
+                <span onClick="{{ goLeague }}" style="font-size:11px;color:#C8FF3D;cursor:pointer">All 7 &rarr;</span>
+              </div>
+              <div style="border:1px solid #1C232C;border-radius:10px;overflow:hidden;background:#11161C">
+                <sc-for list="{{ leagueTop }}" as="r" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:22px 1fr auto auto;gap:12px;padding:10px 14px;font-size:12.5px;align-items:baseline;border-bottom:1px solid #1A212A;background:{{ r.bg }}">
+                    <span style="font-family:'IBM Plex Mono',monospace;color:{{ r.fg }}">{{ r.rank }}</span>
+                    <span style="font-weight:500;color:{{ r.fg }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.team }}</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;color:#5D6875">{{ r.gw }}</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-weight:600;color:{{ r.fg }}">{{ r.total }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isTransfers }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:300px minmax(0,1fr);gap:22px;align-items:start">
+          <div>
+            <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600;margin-bottom:11px">Pick who leaves</div>
+            <div style="border:1px solid #1C232C;border-radius:10px;overflow:hidden;background:#11161C">
+              <sc-for list="{{ squadList }}" as="p" hint-placeholder-count="8">
+                <div onClick="{{ p.setOut }}" style="display:grid;grid-template-columns:30px 1fr auto auto;gap:10px;align-items:baseline;padding:9px 13px;border-bottom:1px solid #1A212A;cursor:pointer;font-size:12.5px;background:{{ p.outBg }}">
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#5D6875">{{ p.pos }}</span>
+                  <span style="font-weight:500;color:{{ p.outFg }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5D6875">{{ p.price }}</span>
+                  <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:{{ p.formFg }}">{{ p.form }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="border:1px solid #1C232C;border-radius:12px;background:#11161C;padding:18px 20px">
+              <div style="display:flex;align-items:center;gap:16px">
+                <div style="flex:1">
+                  <div style="font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#FF5C7A;font-weight:600">Out</div>
+                  <div style="font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:4px">{{ outName }}</div>
+                  <div style="font-size:12px;color:#5D6875;margin-top:3px;font-family:'IBM Plex Mono',monospace">{{ outMeta }}</div>
+                </div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;color:#3E4855">&rarr;</div>
+                <div style="flex:1">
+                  <div style="font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#C8FF3D;font-weight:600">In</div>
+                  <div style="font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:4px">{{ inName }}</div>
+                  <div style="font-size:12px;color:#5D6875;margin-top:3px;font-family:'IBM Plex Mono',monospace">{{ inMeta }}</div>
+                </div>
+                <div style="display:flex;gap:22px;padding-left:20px;border-left:1px solid #1C232C">
+                  <div style="text-align:right"><div style="font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;color:{{ costFg }}">{{ costVal }}</div><div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875;margin-top:4px">Cost</div></div>
+                  <div style="text-align:right"><div style="font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;color:{{ formDeltaFg }}">{{ formDelta }}</div><div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875;margin-top:4px">Form &Delta;</div></div>
+                  <div style="text-align:right"><div style="font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600">0</div><div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875;margin-top:4px">Hit</div></div>
+                </div>
+              </div>
+              <div style="margin-top:16px;padding:11px 14px;border-radius:8px;background:{{ verdictBg }};border:1px solid {{ verdictBorder }};font-size:12.5px;color:{{ verdictFg }};line-height:1.5">{{ verdict }}</div>
+            </div>
+
+            <div>
+              <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600;margin-bottom:11px">Replacements worth the transfer</div>
+              <div style="border:1px solid #1C232C;border-radius:10px;overflow:hidden;background:#11161C">
+                <div style="display:grid;grid-template-columns:1.4fr .7fr .8fr .8fr .9fr 1.1fr;gap:10px;padding:9px 14px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875;border-bottom:1px solid #1C232C">
+                  <span>Player</span><span>Club</span><span style="text-align:right">Price</span><span style="text-align:right">Cost</span><span style="text-align:right">Form +</span><span>Next</span>
+                </div>
+                <sc-for list="{{ candidates }}" as="c" hint-placeholder-count="4">
+                  <div onClick="{{ c.pick }}" style="display:grid;grid-template-columns:1.4fr .7fr .8fr .8fr .9fr 1.1fr;gap:10px;padding:11px 14px;font-size:12.5px;align-items:baseline;border-bottom:1px solid #1A212A;cursor:pointer;background:{{ c.bg }}">
+                    <span style="font-weight:600">{{ c.name }}</span>
+                    <span style="color:#8B97A6;font-family:'IBM Plex Mono',monospace;font-size:11px">{{ c.club }}</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;text-align:right;font-size:11.5px">{{ c.price }}</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;text-align:right;font-size:11.5px;color:{{ c.costFg }}">{{ c.cost }}</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;text-align:right;font-size:11.5px;color:#C8FF3D;font-weight:600">{{ c.gain }}</span>
+                    <span style="font-size:11px;color:#8B97A6;font-family:'IBM Plex Mono',monospace">{{ c.next }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <p style="margin:10px 0 0;font-size:11.5px;color:#4C5665;line-height:1.55">Higher form, fit, affordable, legal on the three-per-club rule. Nothing is applied automatically &mdash; you type it into FPL yourself.</p>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isRebuild }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <div style="border:1px solid #1C232C;border-radius:12px;background:#11161C;padding:16px 20px;display:flex;align-items:center;gap:26px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:13px">
+              <span style="font-size:12.5px;color:#8B97A6">Bench budget</span>
+              <input type="range" min="12" max="26" step="0.5" value="{{ benchBudget }}" onChange="{{ onBench }}" style="width:190px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:#C8FF3D;min-width:56px">{{ benchBudgetLabel }}</span>
+            </div>
+            <div style="height:22px;width:1px;background:#1C232C"></div>
+            <span style="font-size:12px;color:#5D6875;font-family:'IBM Plex Mono',monospace">Budget &pound;100.1m &middot; {{ rebuildFormation }} &middot; &pound;0.0m spare</span>
+            <button onClick="{{ noop }}" style="margin-left:auto;background:#C8FF3D;color:#0E1116;border:0;border-radius:8px;padding:10px 20px;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Build squad</button>
+          </div>
+
+          <p style="margin:0;font-size:13px;color:#8B97A6;max-width:78ch;line-height:1.6">It buys the bench first. Build the XI first and every last pound goes on starters, leaving four &pound;4.0m players who never start &mdash; the exact position a Wildcard exists to fix.</p>
+
+          <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start">
+            <div>
+              <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600;margin-bottom:11px">Proposed squad</div>
+              <div style="border:1px solid #1C232C;border-radius:12px;background:#10151B;background-image:linear-gradient(#161D25 1px,transparent 1px),linear-gradient(90deg,#161D25 1px,transparent 1px);background-size:34px 34px;padding:16px 14px 12px">
+                <sc-for list="{{ rebuildRows }}" as="row" hint-placeholder-count="4">
+                  <div style="display:flex;justify-content:center;gap:7px;margin-bottom:9px">
+                    <sc-for list="{{ row.players }}" as="p" hint-placeholder-count="4">
+                      <div style="width:98px;background:#161D25;border:1px solid {{ p.border }};border-radius:8px;padding:8px">
+                        <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</div>
+                        <div style="display:flex;justify-content:space-between;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:10px"><span style="color:#5D6875">{{ p.price }}</span><span style="color:#C8FF3D;font-weight:600">{{ p.form }}</span></div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+                <div style="display:flex;justify-content:center;gap:7px;margin-top:12px;padding-top:12px;border-top:1px dashed #262E38">
+                  <sc-for list="{{ rebuildBench }}" as="p" hint-placeholder-count="4">
+                    <div style="width:98px;background:#12171D;border:1px solid {{ p.border }};border-radius:8px;padding:8px">
+                      <div style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.name }}</div>
+                      <div style="display:flex;justify-content:space-between;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:10px"><span style="color:#5D6875">{{ p.price }}</span><span style="color:{{ p.formFg }};font-weight:600">{{ p.form }}</span></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div>
+                <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600;margin-bottom:11px">Keep &mdash; click to lock</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                  <sc-for list="{{ keepChips }}" as="k" hint-placeholder-count="10">
+                    <span onClick="{{ k.toggle }}" style="border-radius:99px;padding:5px 12px;font-size:12px;cursor:pointer;border:1px solid {{ k.border }};background:{{ k.bg }};color:{{ k.fg }}">{{ k.label }}</span>
+                  </sc-for>
+                </div>
+              </div>
+              <div>
+                <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600;margin-bottom:11px">Bench Boost readiness</div>
+                <div style="border:1px solid #1C232C;border-radius:10px;overflow:hidden;background:#11161C">
+                  <sc-for list="{{ benchReady }}" as="b" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:1.3fr .9fr .9fr;gap:8px;padding:10px 14px;font-size:12.5px;align-items:baseline;border-bottom:1px solid #1A212A">
+                      <span style="font-weight:600">{{ b.name }} <span style="color:#5D6875;font-weight:400;font-family:'IBM Plex Mono',monospace;font-size:10.5px">{{ b.club }}</span></span>
+                      <span style="font-family:'IBM Plex Mono',monospace;color:#8B97A6;font-size:11.5px">{{ b.mins }}</span>
+                      <span style="color:{{ b.tone }};font-size:12px">{{ b.status }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isFixtures }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+            <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600">Next six &mdash; clubs you own</div>
+            <div style="display:flex;gap:10px;align-items:center;font-size:11px;color:#5D6875">
+              <span>Easy</span>
+              <span style="width:14px;height:8px;border-radius:2px;background:#1F5F45;display:inline-block"></span>
+              <span style="width:14px;height:8px;border-radius:2px;background:#2A323C;display:inline-block"></span>
+              <span style="width:14px;height:8px;border-radius:2px;background:#4A2A1E;display:inline-block"></span>
+              <span style="width:14px;height:8px;border-radius:2px;background:#4A1E2A;display:inline-block"></span>
+              <span>Hard</span>
+            </div>
+          </div>
+          <div style="border:1px solid #1C232C;border-radius:12px;overflow:hidden;background:#11161C">
+            <div style="display:grid;grid-template-columns:150px repeat(6,1fr) 74px;gap:1px;padding:10px 16px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875;border-bottom:1px solid #1C232C">
+              <span>Club</span><span>GW3</span><span>GW4</span><span>GW5</span><span>GW6</span><span>GW7</span><span>GW8</span><span style="text-align:right">Avg</span>
+            </div>
+            <sc-for list="{{ ticker }}" as="t" hint-placeholder-count="10">
+              <div style="display:grid;grid-template-columns:150px repeat(6,1fr) 74px;gap:1px;padding:7px 16px;align-items:center;border-bottom:1px solid #1A212A">
+                <div style="display:flex;flex-direction:column">
+                  <span style="font-size:12.5px;font-weight:600">{{ t.club }}</span>
+                  <span style="font-size:10px;color:#4C5665;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.owned }}</span>
+                </div>
+                <sc-for list="{{ t.cells }}" as="c" hint-placeholder-count="6">
+                  <div style="margin-right:5px;border-radius:5px;padding:6px 8px;font-size:11px;font-family:'IBM Plex Mono',monospace;background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</div>
+                </sc-for>
+                <span style="text-align:right;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:{{ t.avgFg }}">{{ t.avg }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isLeague }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:22px;align-items:start">
+          <div style="border:1px solid #1C232C;border-radius:12px;overflow:hidden;background:#11161C">
+            <div style="display:grid;grid-template-columns:34px 1fr 90px 80px 80px 90px;gap:10px;padding:11px 18px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875;border-bottom:1px solid #1C232C">
+              <span>#</span><span>Team</span><span>Manager</span><span style="text-align:right">GW</span><span style="text-align:right">Total</span><span style="text-align:right">Gap</span>
+            </div>
+            <sc-for list="{{ league }}" as="r" hint-placeholder-count="7">
+              <div onClick="{{ r.open }}" style="display:grid;grid-template-columns:34px 1fr 90px 80px 80px 90px;gap:10px;padding:13px 18px;align-items:baseline;border-bottom:1px solid #1A212A;cursor:pointer;background:{{ r.bg }}">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:{{ r.fg }}">{{ r.rank }}</span>
+                <span style="font-weight:600;font-size:14px;color:{{ r.fg }};letter-spacing:-.01em">{{ r.team }}</span>
+                <span style="font-size:11.5px;color:#5D6875;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.manager }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;text-align:right;font-size:13px;color:#8B97A6">{{ r.gw }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;text-align:right;font-size:13px;font-weight:600;color:{{ r.fg }}">{{ r.total }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;text-align:right;font-size:12.5px;color:{{ r.gapFg }}">{{ r.gap }}</span>
+              </div>
+            </sc-for>
+            <p style="margin:0;padding:13px 18px;font-size:11.5px;color:#4C5665">Click a rival to open their squad once their gameweek has started.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="border:1px solid #1C232C;border-radius:12px;background:#11161C;padding:16px 18px">
+              <div style="font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#5D6875;font-weight:600">Haykakan Premier League AraJan</div>
+              <div style="font-size:26px;font-weight:600;letter-spacing:-.02em;margin-top:8px">2nd <span style="color:#5D6875;font-size:16px">of 7</span></div>
+              <div style="height:1px;background:#1C232C;margin:14px 0"></div>
+              <div style="display:flex;flex-direction:column;gap:9px;font-size:12.5px;color:#8B97A6">
+                <div style="display:flex;justify-content:space-between"><span>Best GW rank</span><span style="font-family:'IBM Plex Mono',monospace;color:#C8FF3D">1st</span></div>
+                <div style="display:flex;justify-content:space-between"><span>Points off top</span><span style="font-family:'IBM Plex Mono',monospace;color:#FF5C7A">4</span></div>
+                <div style="display:flex;justify-content:space-between"><span>Points to 3rd</span><span style="font-family:'IBM Plex Mono',monospace">+4</span></div>
+              </div>
+            </div>
+            <div style="border:1px solid #1C232C;border-left:2px solid #C8FF3D;border-radius:0 12px 12px 0;background:#11161C;padding:14px 16px">
+              <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#C8FF3D;font-weight:600">Differential</div>
+              <p style="margin:6px 0 0;font-size:12.5px;color:#8B97A6;line-height:1.55">Only you and Propa Lad own Haaland this week. If he blanks the gap closes on its own.</p>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ true }}">
+        <div style="max-width:720px;display:flex;flex-direction:column;gap:26px">
+          <div>
+            <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600;margin-bottom:12px">Team</div>
+            <div style="border:1px solid #1C232C;border-radius:12px;background:#11161C;padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div>
+                <label style="font-size:11.5px;color:#5D6875">Entry ID</label>
+                <input value="{{ teamId }}" onChange="{{ onTeamId }}" style="margin-top:7px;width:100%;box-sizing:border-box;background:#0E1116;border:1px solid #242C36;color:#E9EEF4;border-radius:7px;padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:14px;outline:none">
+              </div>
+              <div>
+                <label style="font-size:11.5px;color:#5D6875">Team name</label>
+                <input value="{{ teamName }}" onChange="{{ onTeamName }}" style="margin-top:7px;width:100%;box-sizing:border-box;background:#0E1116;border:1px solid #242C36;color:#E9EEF4;border-radius:7px;padding:10px 12px;font-size:14px;outline:none">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600;margin-bottom:12px">Behaviour</div>
+            <div style="border:1px solid #1C232C;border-radius:12px;background:#11161C;overflow:hidden">
+              <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:20px;padding:15px 18px;border-bottom:1px solid #1A212A">
+                  <div style="flex:1">
+                    <div style="font-size:13.5px;font-weight:500">{{ t.label }}</div>
+                    <div style="font-size:11.5px;color:#5D6875;margin-top:3px">{{ t.desc }}</div>
+                  </div>
+                  <div onClick="{{ t.toggle }}" style="width:42px;height:24px;border-radius:99px;position:relative;cursor:pointer;flex:0 0 42px;background:{{ t.trackBg }};border:1px solid {{ t.trackBorder }}">
+                    <div style="position:absolute;top:2px;width:18px;height:18px;border-radius:50%;transition:left .15s;left:{{ t.knobLeft }};background:{{ t.knobBg }}"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B97A6;font-weight:600;margin-bottom:12px">Data</div>
+            <div style="border:1px solid #1C232C;border-radius:12px;background:#11161C;padding:16px 18px;display:flex;align-items:center;gap:18px">
+              <div style="flex:1;font-size:12.5px;color:#8B97A6;line-height:1.55">Bootstrap cached <span style="font-family:'IBM Plex Mono',monospace;color:#E9EEF4">6 min ago</span> &middot; 782 players, 20 clubs, 380 fixtures.</div>
+              <button onClick="{{ noop }}" style="background:#1B222B;border:1px solid #242C36;color:#E9EEF4;border-radius:7px;padding:9px 16px;font-family:'Sora',sans-serif;font-size:12.5px;cursor:pointer">Refresh now</button>
+              <button onClick="{{ exit }}" style="background:transparent;border:1px solid #3A2028;color:#FF5C7A;border-radius:7px;padding:9px 16px;font-family:'Sora',sans-serif;font-size:12.5px;cursor:pointer">Clear &amp; sign out</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:rgba(6,8,11,.6);z-index:5" onClick="{{ closeSel }}"></div>
+  <div style="position:absolute;top:0;right:0;bottom:0;width:470px;background:#11161C;border-left:1px solid #242C36;z-index:6;padding:26px 26px 20px;overflow:auto;box-shadow:-30px 0 60px rgba(0,0,0,.45)">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#5D6875">{{ selMeta }}</div>
+        <div style="font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1.05;margin-top:6px">{{ selName }}</div>
+      </div>
+      <button onClick="{{ closeSel }}" style="background:#1B222B;border:1px solid #242C36;color:#8B97A6;border-radius:7px;padding:6px 12px;font-family:'Sora',sans-serif;font-size:12px;cursor:pointer">Close</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:22px">
+      <sc-for list="{{ selStats }}" as="s" hint-placeholder-count="6">
+        <div style="background:#0E1116;border:1px solid #1C232C;border-radius:9px;padding:11px 13px">
+          <div style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5D6875">{{ s.label }}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;margin-top:4px;color:{{ s.fg }}">{{ s.value }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#5D6875;margin-top:26px">Next five</div>
+    <div style="display:flex;gap:6px;margin-top:10px">
+      <sc-for list="{{ selNext }}" as="f" hint-placeholder-count="5">
+        <div style="flex:1;border:1px solid #1C232C;border-radius:8px;padding:9px 8px;text-align:center;background:#0E1116">
+          <div style="font-size:9px;color:#4C5665;font-family:'IBM Plex Mono',monospace">{{ f.gw }}</div>
+          <div style="font-size:11.5px;font-weight:600;margin-top:4px">{{ f.opp }}</div>
+          <div style="margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;border-radius:3px;padding:1px 0;background:{{ f.bg }};color:{{ f.fg }}">{{ f.fdr }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#5D6875;margin-top:26px">Form, last five</div>
+    <div style="display:flex;align-items:flex-end;gap:6px;height:78px;margin-top:12px;padding:12px;border:1px solid #1C232C;border-radius:10px;background:#0E1116">
+      <sc-for list="{{ selHistory }}" as="h" hint-placeholder-count="5">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;justify-content:flex-end;height:100%">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8B97A6">{{ h.pts }}</span>
+          <div style="width:100%;border-radius:3px 3px 0 0;height:{{ h.h }};background:{{ h.bg }}"></div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#5D6875;margin-top:26px">Replacements worth the transfer</div>
+    <div style="margin-top:10px;border:1px solid #1C232C;border-radius:10px;overflow:hidden">
+      <sc-for list="{{ selSwaps }}" as="c" hint-placeholder-count="3">
+        <div style="display:grid;grid-template-columns:1.3fr .6fr .7fr .8fr;gap:8px;padding:11px 13px;font-size:12.5px;align-items:baseline;border-bottom:1px solid #1A212A">
+          <span style="font-weight:600">{{ c.name }}</span>
+          <span style="color:#5D6875;font-family:'IBM Plex Mono',monospace;font-size:11px">{{ c.club }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;text-align:right;font-size:11.5px">{{ c.price }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;text-align:right;font-size:11.5px;color:#C8FF3D;font-weight:600">{{ c.gain }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <p style="margin:12px 0 0;font-size:11.5px;color:#4C5665;line-height:1.55">Nothing here is applied automatically. Gaffer advises; you make the change in FPL.</p>
+  </div>
+</sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;showFdrChips&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behaviour&quot;}}">
+const FDR = {
+  2: { bg: "#1F5F45", fg: "#8BEFC0" },
+  3: { bg: "#2A323C", fg: "#B7C2CE" },
+  4: { bg: "#4A2A1E", fg: "#FF9A5C" },
+  5: { bg: "#4A1E2A", fg: "#FF7D96" }
+};
+const LIME = "#C8FF3D", CRIT = "#FF5C7A", WARN = "#FFB020", LINE = "#1C232C";
+
+function mk(name, club, opp, fdr, price, form, extra) {
+  return Object.assign({
+    name, club, opp, fdr, price, form,
+    pts: Math.round(form * 3), ppg: form, mins: 180, sel: "7.4%",
+    badge: "", flag: false, pos: "MID"
+  }, extra || {});
+}
+
+const SQUAD = {
+  gk: [mk("Verbruggen", "BHA", "LEE H", 2, 4.5, 3.0, { pos: "GK", mins: 180, sel: "12.1%" })],
+  def: [
+    mk("Gabriel", "ARS", "CHE H", 4, 8.0, 6.5, { pos: "DEF", sel: "38.4%" }),
+    mk("Shaw", "MUN", "EVE A", 3, 4.5, 1.5, { pos: "DEF", sel: "3.2%" }),
+    mk("Mitchell", "CRY", "FUL A", 3, 4.5, 0.5, { pos: "DEF", sel: "7.4%" })
+  ],
+  mid: [
+    mk("B.Fernandes", "MUN", "EVE A", 3, 12.0, 12.5, { pos: "MID", badge: "V", sel: "28.9%" }),
+    mk("Cunha", "MUN", "EVE A", 3, 8.0, 5.5, { pos: "MID", sel: "14.0%" }),
+    mk("Szoboszlai", "LIV", "IPS A", 2, 7.0, 6.0, { pos: "MID", sel: "9.8%" }),
+    mk("Gro\u00df", "BHA", "LEE H", 2, 5.5, 7.5, { pos: "MID", sel: "6.1%" })
+  ],
+  fwd: [
+    mk("Jo\u00e3o Pedro", "CHE", "ARS A", 5, 7.6, 10.0, { pos: "FWD", sel: "21.7%" }),
+    mk("Gonzalo", "FUL", "CRY H", 3, 6.0, 4.0, { pos: "FWD", sel: "5.5%" }),
+    mk("Haaland", "MCI", "COV H", 2, 15.5, 7.5, { pos: "FWD", badge: "C", sel: "62.3%" })
+  ],
+  bench: [
+    mk("Kinsky", "TOT", "NFO A", 3, 4.5, 1.5, { pos: "GK", sel: "2.1%" }),
+    mk("Thomas", "BUR", "MCI A", 5, 4.0, 5.5, { pos: "DEF", sel: "1.8%" }),
+    mk("Slater", "LEE", "AVL H", 3, 4.5, 4.0, { pos: "MID", sel: "2.6%" }),
+    mk("Hughes", "CRY", "AVL H", 3, 4.0, 0.0, { pos: "MID", flag: true, sel: "0.9%" })
+  ]
+};
+
+const NEXT5 = {
+  GK: ["LEE H 2", "BOU A 3", "MCI H 5", "WOL A 2", "NEW H 4"],
+  DEF: ["FUL A 3", "EVE H 2", "LIV A 5", "BOU H 3", "NEW A 4"],
+  MID: ["EVE A 3", "BUR H 2", "ARS A 5", "SUN H 2", "TOT A 4"],
+  FWD: ["COV H 2", "BHA A 3", "ARS H 4", "WOL A 2", "LIV H 5"]
+};
+
+const SWAPS = {
+  GK: [["Tzolakis", "HUL", 4.5, "+7.0"], ["Sels", "NFO", 5.0, "+4.5"], ["Raya", "ARS", 5.6, "+3.0"]],
+  DEF: [["Ajayi", "HUL", 4.1, "+9.5"], ["Egan", "HUL", 4.0, "+8.0"], ["Mendy", "BOU", 4.0, "+7.5"]],
+  MID: [["Cherki", "MCI", 7.7, "+5.5"], ["Saka", "ARS", 9.5, "+4.0"], ["M.Sangar\u00e9", "WOL", 5.6, "+3.5"]],
+  FWD: [["Watkins", "AVL", 8.9, "+4.5"], ["Wissa", "BRE", 6.5, "+3.5"], ["Evanilson", "BOU", 7.0, "+2.5"]]
+};
+
+const REBUILD = {
+  rows: [
+    [["Verbruggen", 4.5, 3.0]],
+    [["Calafiori", 5.6, 10.0], ["Ajayi", 4.1, 10.0], ["White", 5.5, 9.0], ["Egan", 4.0, 8.5]],
+    [["B.Fernandes", 12.0, 12.5, 1], ["Cherki", 7.7, 11.0], ["Saka", 9.5, 10.0], ["M.Sangar\u00e9", 5.6, 9.0]],
+    [["Haaland", 15.5, 7.5, 1], ["Jo\u00e3o Pedro", 7.6, 10.0]]
+  ],
+  bench: [["Tzolakis", 4.5, 10.0], ["Castagne", 4.5, 6.0], ["G.Hemmings", 4.5, 2.0], ["Thomas-Asa.", 5.0, 1.5, 0, 1]]
+};
+
+const TICKER = [
+  ["MCI", "Haaland", [2, 3, 4, 2, 3, 5]],
+  ["ARS", "Gabriel", [4, 2, 2, 3, 4, 3]],
+  ["MUN", "Shaw, B.Fernandes, Cunha", [3, 2, 5, 2, 4, 3]],
+  ["CHE", "Jo\u00e3o Pedro", [5, 3, 2, 4, 2, 3]],
+  ["LIV", "Szoboszlai", [2, 2, 3, 5, 3, 4]],
+  ["BHA", "Verbruggen, Gro\u00df", [2, 4, 3, 2, 3, 2]],
+  ["CRY", "Mitchell, Hughes", [3, 4, 4, 3, 2, 5]],
+  ["FUL", "Gonzalo", [3, 3, 2, 4, 5, 3]],
+  ["TOT", "Kinsky", [3, 5, 2, 3, 3, 2]],
+  ["LEE", "Slater", [3, 2, 4, 4, 5, 3]],
+  ["BUR", "Thomas", [5, 4, 3, 3, 2, 4]]
+];
+
+const LEAGUE = [
+  [1, "Propa Lad", "K. Sarkisyan", 91, 150],
+  [2, "Highbury Reserves", "A. Manager", 106, 146],
+  [3, "No Idea FC", "A. Petrosyan", 97, 142],
+  [4, "Top Bins FC", "D. Melkonian", 56, 122],
+  [5, "Route One", "S. Grigoryan", 72, 118],
+  [6, "Parked Bus", "L. Avetisyan", 64, 109],
+  [7, "Tiki Taka Tuesday", "V. Hakobyan", 48, 96]
+];
+
+class Component extends DCLogic {
+  state = {
+    screen: "entry",
+    teamId: "1234567",
+    teamName: "Highbury Reserves",
+    sel: null,
+    out: "Mitchell",
+    inIdx: 0,
+    bench: 19,
+    locked: { Haaland: true, "B.Fernandes": true },
+    toggles: [true, true, false, true, false],
+    now: Date.now()
+  };
+
+  componentDidMount() {
+    this.t = setInterval(() => this.setState({ now: Date.now() }), 1000);
+  }
+  componentWillUnmount() { clearInterval(this.t); }
+
+  all() { return [].concat(SQUAD.gk, SQUAD.def, SQUAD.mid, SQUAD.fwd, SQUAD.bench); }
+  find(n) { return this.all().find(p => p.name === n) || SQUAD.def[2]; }
+
+  card(p) {
+    const f = FDR[p.fdr] || FDR[3];
+    return {
+      name: p.name, opp: p.opp, fdr: p.fdr, fdrBg: f.bg, fdrFg: f.fg,
+      price: "\u00a3" + p.price.toFixed(1), form: p.form.toFixed(1),
+      formFg: p.form >= 7 ? LIME : p.form >= 3 ? "#E9EEF4" : WARN,
+      badge: p.flag ? "!" : p.badge,
+      badgeBg: p.flag ? "#4A1E2A" : p.badge === "C" ? LIME : p.badge === "V" ? "#2A323C" : "transparent",
+      badgeFg: p.flag ? CRIT : p.badge === "C" ? "#0E1116" : "#B7C2CE",
+      border: p.flag ? "#3A2028" : p.badge === "C" ? "#3D5216" : "#242C36",
+      open: () => this.setState({ sel: p.name })
+    };
+  }
+
+  countdown() {
+    const target = new Date("2026-09-04T13:30:00-04:00").getTime();
+    let s = Math.max(0, Math.floor((target - this.state.now) / 1000));
+    const d = Math.floor(s / 86400); s -= d * 86400;
+    const h = Math.floor(s / 3600); s -= h * 3600;
+    const m = Math.floor(s / 60); s -= m * 60;
+    const pad = n => String(n).padStart(2, "0");
+    return d + "d " + pad(h) + ":" + pad(m) + ":" + pad(s);
+  }
+
+  head() {
+    const s = this.state.screen;
+    if (s === "transfers") return ["Gameweek 3 \u00b7 1 free transfer", "Transfer planner", "Model a move before you make it. Nothing is submitted for you."];
+    if (s === "rebuild") return ["Gameweek 6 \u00b7 Wildcard", "Rebuild the squad", "Bench first, then the XI \u2014 the order that stops four \u00a34.0m passengers."];
+    if (s === "fixtures") return ["Gameweek 3 \u2013 8", "Fixture ticker", "Difficulty for every club you currently own."];
+    if (s === "league") return ["Haykakan Premier League AraJan", "Mini-league", "7 teams \u00b7 updated after every gameweek."];
+    if (s === "settings") return ["Local install", "Settings", "Stored on this machine. Nothing is sent anywhere."];
+    return ["Haykakan Premier League AraJan \u00b7 2nd of 7", this.state.teamName, "A. Manager \u00b7 Canada \u00b7 ID " + this.state.teamId];
+  }
+
+  nav(key) {
+    const on = this.state.screen === key;
+    return { bg: on ? "#1B222B" : "transparent", fg: on ? "#E9EEF4" : "#8B97A6" };
+  }
+
+  renderVals() {
+    const st = this.state;
+    const go = s => () => this.setState({ screen: s, sel: null });
+    const h = this.head();
+    const out = this.find(st.out);
+    const pool = SWAPS[out.pos] || SWAPS.DEF;
+    const inc = pool[Math.min(st.inIdx, pool.length - 1)];
+    const cost = inc[2] - out.price;
+    const gain = parseFloat(inc[3]);
+    const showFdr = this.props.showFdrChips !== false;
+
+    const v = {
+      isEntry: st.screen === "entry",
+      inApp: st.screen !== "entry",
+      isSquad: st.screen === "squad",
+      isTransfers: st.screen === "transfers",
+      isRebuild: st.screen === "rebuild",
+      isFixtures: st.screen === "fixtures",
+      isLeague: st.screen === "league",
+      isSettings: st.screen === "settings",
+      teamId: st.teamId,
+      teamName: st.teamName,
+      kicker: h[0], title: h[1], subtitle: h[2],
+      countdown: this.countdown(),
+      deadlinePct: "62%",
+      enter: () => this.setState({ screen: "squad" }),
+      exit: () => this.setState({ screen: "entry" }),
+      noop: () => {},
+      onTeamId: e => this.setState({ teamId: e.target.value }),
+      onTeamName: e => this.setState({ teamName: e.target.value }),
+      goSquad: go("squad"), goTransfers: go("transfers"), goRebuild: go("rebuild"),
+      goFixtures: go("fixtures"), goLeague: go("league"), goSettings: go("settings"),
+
+      pitchRows: [
+        { label: "GK", players: SQUAD.gk.map(p => this.card(p)) },
+        { label: "DEF", players: SQUAD.def.map(p => this.card(p)) },
+        { label: "MID", players: SQUAD.mid.map(p => this.card(p)) },
+        { label: "FWD", players: SQUAD.fwd.map(p => this.card(p)) }
+      ],
+      bench: SQUAD.bench.map(p => this.card(p)),
+
+      insightCount: "3 items",
+      insights: [
+        { tone: CRIT, kind: "Injury", gw: "GW3", title: "Hughes is flagged \u2014 25% chance", body: "Bench order puts him fourth, so a blank costs nothing. Leave it." },
+        { tone: WARN, kind: "Clash", gw: "GW3", title: "Gabriel and Jo\u00e3o Pedro face each other", body: "ARS v CHE. A Jo\u00e3o Pedro goal kills Gabriel's clean sheet." },
+        { tone: "#8B97A6", kind: "Clash", gw: "GW3", title: "Mitchell and Gonzalo face each other", body: "CRY v FUL. A Gonzalo goal kills Mitchell's clean sheet." }
+      ],
+
+      leagueTop: LEAGUE.slice(0, 4).map(r => ({
+        rank: r[0], team: r[1], gw: r[3], total: r[4],
+        bg: r[1] === st.teamName ? "#15200E" : "transparent",
+        fg: r[1] === st.teamName ? LIME : "#E9EEF4"
+      })),
+      league: LEAGUE.map(r => ({
+        rank: r[0], team: r[1], manager: r[2], gw: r[3], total: r[4],
+        gap: r[0] === 1 ? "\u2014" : "\u2212" + (LEAGUE[0][4] - r[4]),
+        gapFg: r[0] === 1 ? "#3E4855" : "#8B97A6",
+        bg: r[1] === st.teamName ? "#15200E" : "transparent",
+        fg: r[1] === st.teamName ? LIME : "#E9EEF4",
+        open: () => {}
+      })),
+
+      squadList: this.all().map(p => ({
+        pos: p.pos, name: p.name, price: "\u00a3" + p.price.toFixed(1), form: p.form.toFixed(1),
+        formFg: p.form >= 7 ? LIME : p.form >= 3 ? "#8B97A6" : WARN,
+        outBg: p.name === st.out ? "#1B222B" : "transparent",
+        outFg: p.name === st.out ? LIME : "#E9EEF4",
+        setOut: () => this.setState({ out: p.name, inIdx: 0 })
+      })),
+      outName: out.name,
+      outMeta: out.club + " \u00b7 " + out.pos + " \u00b7 \u00a3" + out.price.toFixed(1) + " \u00b7 form " + out.form.toFixed(1),
+      inName: inc[0],
+      inMeta: inc[1] + " \u00b7 " + out.pos + " \u00b7 \u00a3" + inc[2].toFixed(1) + " \u00b7 form " + (out.form + gain).toFixed(1),
+      costVal: (cost >= 0 ? "+" : "\u2212") + "\u00a3" + Math.abs(cost).toFixed(1),
+      costFg: cost > 0 ? CRIT : LIME,
+      formDelta: "+" + gain.toFixed(1),
+      formDeltaFg: LIME,
+      verdict: gain >= 7
+        ? "Worth it. " + inc[0] + " has been the better player by a distance and the move is free \u2014 no hit, and it stays legal on the three-per-club rule."
+        : "Marginal. " + inc[0] + " is the better form pick but the upgrade is small; holding your free transfer is defensible.",
+      verdictBg: gain >= 7 ? "#15200E" : "#221A0B",
+      verdictBorder: gain >= 7 ? "#3D5216" : "#4A3A12",
+      verdictFg: gain >= 7 ? "#D8FF8C" : "#FFD98A",
+      candidates: pool.map((c, i) => ({
+        name: c[0], club: c[1], price: "\u00a3" + c[2].toFixed(1),
+        cost: (c[2] - out.price >= 0 ? "+" : "\u2212") + "\u00a3" + Math.abs(c[2] - out.price).toFixed(1),
+        costFg: c[2] - out.price > 0 ? CRIT : "#8B97A6",
+        gain: c[3], next: (NEXT5[out.pos] || NEXT5.DEF)[0],
+        bg: i === st.inIdx ? "#1B222B" : "transparent",
+        pick: () => this.setState({ inIdx: i })
+      })),
+
+      benchBudget: st.bench,
+      benchBudgetLabel: "\u00a3" + st.bench.toFixed(1) + "m",
+      rebuildFormation: "4-4-2",
+      onBench: e => this.setState({ bench: parseFloat(e.target.value) }),
+      rebuildRows: REBUILD.rows.map(r => ({
+        players: r.map(p => ({
+          name: p[0], price: "\u00a3" + p[1].toFixed(1), form: p[2].toFixed(1),
+          border: p[3] ? "#3D5216" : "#242C36"
+        }))
+      })),
+      rebuildBench: REBUILD.bench.map(p => ({
+        name: p[0], price: "\u00a3" + p[1].toFixed(1), form: p[2].toFixed(1),
+        formFg: p[4] ? WARN : LIME,
+        border: p[4] ? "#4A3A12" : "#242C36"
+      })),
+      keepChips: this.all().map(p => {
+        const on = !!st.locked[p.name];
+        return {
+          label: p.name + " \u00a3" + p.price.toFixed(1),
+          bg: on ? "#15200E" : "#12171D",
+          border: on ? "#3D5216" : "#242C36",
+          fg: on ? LIME : "#8B97A6",
+          toggle: () => this.setState(s => {
+            const l = Object.assign({}, s.locked); l[p.name] = !l[p.name]; return { locked: l };
+          })
+        };
+      }),
+      benchReady: [
+        { name: "Tzolakis", club: "HUL", mins: "180\u2032 100%", status: "nailed", tone: LIME },
+        { name: "Castagne", club: "FUL", mins: "157\u2032 87%", status: "nailed", tone: LIME },
+        { name: "G.Hemmings", club: "AVL", mins: "160\u2032 89%", status: "nailed", tone: LIME },
+        { name: "Thomas-Asante", club: "COV", mins: "101\u2032 56%", status: "rotation risk", tone: WARN }
+      ],
+
+      ticker: TICKER.map(t => {
+        const avg = t[2].reduce((a, b) => a + b, 0) / t[2].length;
+        return {
+          club: t[0], owned: t[1],
+          cells: t[2].map((d, i) => {
+            const f = FDR[d] || FDR[3];
+            return { label: showFdr ? "GW" + (i + 3) + " \u00b7 " + d : String(d), bg: f.bg, fg: f.fg };
+          }),
+          avg: avg.toFixed(1),
+          avgFg: avg <= 2.8 ? LIME : avg >= 3.8 ? CRIT : "#8B97A6"
+        };
+      }),
+
+      toggles: [
+        ["Warn before a points hit", "Flags any transfer that costs 4 points or more."],
+        ["Watch price changes", "Checks overnight and tells you what moved."],
+        ["Auto-refresh on deadline day", "Pulls fresh data every 15 minutes on Friday."],
+        ["Flag fixture clashes", "When two of your players face each other."],
+        ["Sound on alerts", "A short tone when something changes."]
+      ].map((t, i) => {
+        const on = st.toggles[i];
+        return {
+          label: t[0], desc: t[1],
+          trackBg: on ? "#2E4410" : "#161D25",
+          trackBorder: on ? "#3D5216" : "#242C36",
+          knobBg: on ? LIME : "#5D6875",
+          knobLeft: on ? "20px" : "2px",
+          toggle: () => this.setState(s => {
+            const a = s.toggles.slice(); a[i] = !a[i]; return { toggles: a };
+          })
+        };
+      })
+    };
+
+    if (st.sel) {
+      const p = this.find(st.sel);
+      const f5 = NEXT5[p.pos] || NEXT5.DEF;
+      const hist = [1, 6, 2, 0, 8].map((n, i) => ({
+        pts: n, h: Math.max(4, n * 7) + "px",
+        bg: n >= 6 ? LIME : n >= 2 ? "#2E4410" : "#242C36"
+      }));
+      v.hasSel = true;
+      v.selName = p.name;
+      v.selMeta = p.club + " \u00b7 " + p.pos + (p.flag ? " \u00b7 flagged" : "");
+      v.closeSel = () => this.setState({ sel: null });
+      v.selStats = [
+        { label: "Price", value: "\u00a3" + p.price.toFixed(1) + "m", fg: "#E9EEF4" },
+        { label: "Form", value: p.form.toFixed(1), fg: p.form >= 7 ? LIME : p.form >= 3 ? "#E9EEF4" : WARN },
+        { label: "Points", value: p.pts, fg: "#E9EEF4" },
+        { label: "Per game", value: (p.pts / 2).toFixed(1), fg: "#E9EEF4" },
+        { label: "Minutes", value: p.mins, fg: "#E9EEF4" },
+        { label: "Selected", value: p.sel, fg: "#E9EEF4" }
+      ];
+      v.selNext = f5.map((s, i) => {
+        const parts = s.split(" ");
+        const d = parseInt(parts[2], 10);
+        const fd = FDR[d] || FDR[3];
+        return { gw: "GW" + (i + 3), opp: parts[0] + " " + parts[1], fdr: d, bg: fd.bg, fg: fd.fg };
+      });
+      v.selHistory = hist;
+      v.selSwaps = (SWAPS[p.pos] || SWAPS.DEF).map(c => ({
+        name: c[0], club: c[1], price: "\u00a3" + c[2].toFixed(1), gain: c[3]
+      }));
+    } else {
+      v.hasSel = false;
+      v.selName = ""; v.selMeta = ""; v.closeSel = () => {};
+      v.selStats = []; v.selNext = []; v.selHistory = []; v.selSwaps = [];
+    }
+    return v;
+  }
+}
+
+</script>
+</body>
+</html>
