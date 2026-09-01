@@ -14,3 +14,4 @@ config/settings.yaml
 data/gaffer.sqlite3*
 .env
 .env.*
+data/recent-teams.json
