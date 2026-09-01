@@ -39,36 +39,11 @@ exec "$HERE/.venv/bin/python" "$HERE/desktop.py" "\$@"
 LAUNCH
 chmod +x "$APP/Contents/MacOS/gaffer"
 
-# Icon: the same brand mark the app draws in its own chrome
-# (src/fpl/webapp/static/mark-icon.svg) — glyph only, transparent ground.
-ICONSET="$(mktemp -d)/gaffer.iconset"; mkdir -p "$ICONSET"
-"$HERE/.venv/bin/python" - "$ICONSET" "$HERE/src/fpl/webapp/static/mark-icon.svg" <<'PYICON'
-import sys, subprocess, pathlib, shutil
-out = pathlib.Path(sys.argv[1])
-src = pathlib.Path(sys.argv[2])
-work = out.parent
-svg = work / "mark-icon.svg"
-shutil.copyfile(src, svg)
-png = work / "mark-icon.png"
+# Icon: drawn by make-icon.py, which owns the geometry and real transparency.
+# (macOS has no SVG rasteriser and qlmanage flattens alpha onto white.)
+ICONSET="$(mktemp -d)/gaffer.iconset"
+"$HERE/.venv/bin/python" "$HERE/make-icon.py" "$ICONSET"
 
-# No SVG rasteriser ships with macOS, but Quick Look renders one.
-subprocess.run(["qlmanage", "-t", "-s", "1024", "-o", str(work), str(svg)],
-               capture_output=True)
-produced = work / "mark-icon.svg.png"
-if produced.exists():
-    produced.rename(png)
-
-if not png.exists():
-    sys.exit("could not rasterise mark.svg — icon skipped")
-
-for size in (16, 32, 64, 128, 256, 512):
-    for scale, suffix in ((1, ""), (2, "@2x")):
-        px = size * scale
-        subprocess.run(["sips", "-z", str(px), str(px), str(png),
-                        "--out", str(out / f"icon_{size}x{size}{suffix}.png")],
-                       capture_output=True)
-print("  rasterised", png.stat().st_size, "bytes")
-PYICON
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/gaffer.icns" 2>/dev/null \
   && echo "  icon built" || echo "  icon skipped (app still works)"
 
