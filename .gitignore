@@ -1,0 +1,16 @@
+.venv/
+data/cache/
+data/snapshots/
+data/sent-alerts.json
+data/pitch.html
+logs/
+__pycache__/
+*.pyc
+
+# Holds your team id and private ntfy topic. Ship settings.example.yaml instead.
+config/settings.yaml
+
+# Cloud
+data/gaffer.sqlite3*
+.env
+.env.*

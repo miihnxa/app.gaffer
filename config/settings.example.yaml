@@ -1,0 +1,50 @@
+# FPL Active Manager Assistant — settings
+# Team: "Highbury Reserves" — A. Manager
+
+entry:
+  # Find this in the URL of your "Gameweek History" page:
+  # https://fantasy.premierleague.com/entry/<TEAM_ID>/history
+  team_id: null            # set with ./fpl setup --team-id <id>
+  # Auto-discovered from entry/<team_id>/ leagues on `fpl setup`.
+  league_id: null
+  league_name: "Haykakan Premier League AraJan"
+
+timezone: "America/Montreal"   # notifications render in this zone
+
+api:
+  base_url: "https://fantasy.premierleague.com/api"
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) fpl-assistant/1.0"
+  timeout_seconds: 20
+  retries: 3
+  # Spec 1: "Cache bootstrap-static for 30+ minutes. Don't hammer it."
+  bootstrap_cache_minutes: 30
+
+notify:
+  # Swappable: ntfy | console | email  (spec 3: build as an interface)
+  provider: "ntfy"
+  ntfy:
+    server: "https://ntfy.sh"
+    # Private topic — anyone who knows this string can read your alerts.
+    # Rotate it by changing this value and re-subscribing in the app.
+    topic: "CHANGE-ME-to-a-long-random-string"
+  email:
+    enabled: false
+    smtp_host: ""
+    smtp_port: 587
+    username: ""
+    password_env: "FPL_SMTP_PASSWORD"   # read from env, never stored here
+    to: "app.gaffer@gmail.com"
+  # Never send the same alert twice within this window.
+  dedupe_hours: 12
+
+deadlines:
+  # Spec 1.2 — fire at T-24h, T-3h, T-45m
+  reminders_minutes_before: [1440, 180, 45]
+
+alerts:
+  # Spec 1.1 — alert when chance_of_playing_next_round drops below this
+  chance_of_playing_threshold: 100
+  # Only alert on price moves for owned + watchlisted players
+  price_watch_owned_only: true
+  # Spec 1.4 — warn if a transfer target's form is below the outgoing player's
+  form_guard_enabled: true

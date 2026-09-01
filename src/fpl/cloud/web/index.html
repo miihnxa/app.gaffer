@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gaffer — the FPL assistant that says no</title>
+<meta name="description" content="Gaffer checks your Fantasy Premier League transfers against your own rules and tells you when a move makes your team worse. Live data, no guesswork.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#140419; --surface:#210830; --surface-2:#2A0F3A; --line:#3E1B4F;
+  --ink:#F6EFF9; --ink-2:#C3AECD; --ink-3:#8E779A;
+  --accent:#2CE08C; --accent-2:#12805A; --accent-soft:#123A2A;
+  --crit:#FF7089; --crit-soft:#43121F; --warn:#F2B34E;
+  --turf-a:#1E6B43; --turf-b:#123F2A;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.disp{font-family:"Barlow Condensed",Impact,sans-serif;font-weight:700;margin:0;letter-spacing:.01em;text-wrap:balance}
+.num,code{font-family:"IBM Plex Mono",ui-monospace,monospace}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:rgba(20,4,25,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:14px;height:62px}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(150deg,var(--turf-a),var(--turf-b));
+  display:grid;place-items:center;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:19px;color:#fff}
+.logo b{font-family:"Barlow Condensed",sans-serif;font-size:21px;letter-spacing:.04em;text-transform:uppercase}
+nav .sp{margin-left:auto}
+.btn{display:inline-block;border-radius:9px;padding:9px 17px;font-weight:600;font-size:14.5px;text-decoration:none;border:1px solid var(--line);color:var(--ink);background:var(--surface-2)}
+.btn:hover{border-color:var(--ink-3)}
+.btn.p{background:var(--accent);color:#04220F;border-color:var(--accent)}
+.btn.p:hover{filter:brightness(1.08)}
+.btn.lg{padding:13px 26px;font-size:16px}
+
+/* hero */
+header.hero{padding:76px 0 60px;border-bottom:1px solid var(--line)}
+header.hero h1{font-size:clamp(42px,7vw,78px);line-height:.95;text-transform:uppercase;margin:14px 0 0}
+header.hero h1 em{font-style:normal;color:var(--accent)}
+.sub{font-size:19px;color:var(--ink-2);max-width:56ch;margin:20px 0 0}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;align-items:center}
+.cta .fine{font-size:13px;color:var(--ink-3)}
+
+/* the refusal — the product in one object */
+.demo{margin:52px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.demo .bar{display:flex;align-items:center;gap:7px;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.dot{width:10px;height:10px;border-radius:50%}
+.demo .ttl{margin-left:8px;font-size:12.5px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.demo pre{margin:0;padding:20px 22px;font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.75;overflow-x:auto;color:var(--ink-2)}
+.demo .out{color:var(--ink)} .demo .no{color:var(--crit)} .demo .yes{color:var(--accent)} .demo .dim{color:var(--ink-3)}
+
+/* sections */
+section{padding:74px 0;border-bottom:1px solid var(--line)}
+section h2{font-size:clamp(28px,4vw,42px);text-transform:uppercase;line-height:1}
+section .lede{color:var(--ink-2);max-width:60ch;margin:14px 0 0;font-size:17px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:18px;margin-top:38px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:22px}
+.card h3{font-size:20px;text-transform:uppercase;letter-spacing:.03em}
+.card p{color:var(--ink-2);font-size:14.5px;margin:9px 0 0}
+.card .tag{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);font-weight:600}
+
+/* pricing */
+.prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px;margin-top:38px;max-width:760px}
+.price{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px;display:flex;flex-direction:column;gap:15px}
+.price.hi{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 20px 50px rgba(44,224,140,.09)}
+.price .amt{font-family:"Barlow Condensed",sans-serif;font-size:52px;font-weight:700;line-height:.9}
+.price .amt span{font-size:16px;color:var(--ink-3);font-family:"IBM Plex Sans",sans-serif;font-weight:400}
+.price ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:14.5px;color:var(--ink-2)}
+.price li::before{content:"✓ ";color:var(--accent);font-weight:700}
+.price li.x{color:var(--ink-3)} .price li.x::before{content:"— ";color:var(--ink-3)}
+.price .btn{text-align:center;margin-top:auto}
+
+/* faq + footer */
+details{border-top:1px solid var(--line);padding:17px 0}
+details summary{cursor:pointer;font-weight:600;font-size:16.5px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";float:right;color:var(--accent);font-family:"IBM Plex Mono",monospace}
+details[open] summary::after{content:"−"}
+details p{color:var(--ink-2);margin:11px 0 0;font-size:15px;max-width:66ch}
+footer{padding:44px 0;color:var(--ink-3);font-size:13.5px}
+footer .row{display:flex;gap:22px;flex-wrap:wrap;align-items:center}
+footer a{color:var(--ink-2);text-decoration:none}
+footer a:hover{color:var(--ink)}
+.disclaimer{margin-top:22px;padding:15px 17px;background:var(--surface);border:1px solid var(--line);border-radius:11px;max-width:74ch;line-height:1.6}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="logo" href="/"><span class="mark">G</span><b>Gaffer</b></a>
+  <span class="sp"></span>
+  <a class="btn" href="#pricing">Pricing</a>
+  <a class="btn p" href="/app">Open the app</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Fantasy Premier League assistant</div>
+  <h1>It tells you<br>when you're<br><em>about to be wrong</em></h1>
+  <p class="sub">Most FPL tools suggest transfers. Gaffer checks the transfer you already
+     want to make against your own rules, and blocks it when the numbers say it makes your
+     team worse. Live prices, live form, live fixtures.</p>
+  <div class="cta">
+    <a class="btn p lg" href="/app">Open the app — free</a>
+    <span class="fine">No card. Enter a team ID and it works.</span>
+  </div>
+
+  <div class="demo">
+    <div class="bar">
+      <span class="dot" style="background:#FF5F57"></span>
+      <span class="dot" style="background:#FEBC2E"></span>
+      <span class="dot" style="background:#28C840"></span>
+      <span class="ttl">gaffer — transfer check</span>
+    </div>
+<pre><span class="dim">$</span> <span class="out">gaffer transfer --out Brobbey --in "Igor Jesus"</span>
+
+OUT  Brobbey (SUN, FWD, £6.0m)          form <span class="out">2.0</span>
+IN   Igor Jesus (NFO, FWD, £6.0m)       form <span class="no">1.5</span>
+
+Form change: <span class="no">-0.5</span>   Cost: £+0.0m
+
+<span class="no">BLOCKED:</span>
+  <span class="no">✗</span> Igor Jesus form 1.5 is BELOW Brobbey form 2.0 — you'd be
+    paying a transfer to move backwards</pre>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <div class="eyebrow">What it does</div>
+  <h2>Four things, done properly</h2>
+  <p class="lede">Built on the official Fantasy Premier League data. No predictions, no
+     black box — every call it makes is one you can check yourself.</p>
+  <div class="cards">
+    <div class="card">
+      <div class="tag">Free</div>
+      <h3>Your squad, read properly</h3>
+      <p>The XI on a pitch with fixture difficulty, injuries and flags, blank gameweeks,
+         illegal formations, bad bench order, and players of yours facing each other.</p>
+    </div>
+    <div class="card">
+      <div class="tag">Pro</div>
+      <h3>The transfer guard</h3>
+      <p>Every suggested replacement has already cleared your form rule, your bank,
+         the three-per-club limit and your hit rules. If nothing clears them, it says so
+         instead of inventing a pick.</p>
+    </div>
+    <div class="card">
+      <div class="tag">Pro</div>
+      <h3>The squad rebuilder</h3>
+      <p>Lock who you keep, set a bench budget, get a legal 15. It buys the bench
+         <em>first</em>, so a Bench Boost is actually worth playing — most builders spend
+         everything on the XI and leave you four £4.0m players.</p>
+    </div>
+    <div class="card">
+      <div class="tag">Free</div>
+      <h3>Your mini-leagues</h3>
+      <p>Standings, weekly movement, and one click into any rival's squad to see what
+         they own that you don't.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="pricing"><div class="wrap">
+  <div class="eyebrow">Pricing</div>
+  <h2>One plan. Cancel anytime.</h2>
+  <p class="lede">The free tier is genuinely useful — it isn't a trial that stops working.
+     Pro adds the analysis that takes real computation.</p>
+  <div class="prices">
+    <div class="price">
+      <div><div class="amt">Free<span></span></div></div>
+      <ul>
+        <li>Any team, any mini-league</li>
+        <li>Squad, fixtures and difficulty</li>
+        <li>Injuries, flags and blanks</li>
+        <li>Rule and legality checks</li>
+        <li class="x">Transfer suggestions</li>
+        <li class="x">Squad rebuilder</li>
+      </ul>
+      <a class="btn" href="/app">Open the app</a>
+    </div>
+    <div class="price hi">
+      <div><div class="amt">£3.99<span> / month</span></div>
+        <div style="font-size:13.5px;color:var(--ink-3);margin-top:5px">or £29/year — two months free</div></div>
+      <ul>
+        <li>Everything in Free</li>
+        <li>Ranked transfer suggestions</li>
+        <li>The squad rebuilder</li>
+        <li>Bench Boost readiness scoring</li>
+        <li>Rival squad diffing</li>
+        <li>Unlimited team lookups</li>
+      </ul>
+      <a class="btn p" href="/app?upgrade=1">Start 7 days free</a>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="eyebrow">Questions</div>
+  <h2>The honest answers</h2>
+  <div style="margin-top:30px">
+    <details open><summary>Do I have to give you my FPL password?</summary>
+      <p>No — and you never should, to anyone. Gaffer only needs your team ID, the number
+         in the URL of your Points page. Everything it reads is public. It cannot sign in
+         to your account and cannot change your team.</p></details>
+    <details><summary>Can it make my transfers for me?</summary>
+      <p>No, deliberately. Fantasy Premier League has no official write API, so any tool
+         claiming to act for you is storing your login and driving the website. That's a
+         credential risk and a good way to get an account flagged. Gaffer advises; you tap
+         it in yourself.</p></details>
+    <details><summary>Will it show transfers I've already made this week?</summary>
+      <p>Not until the deadline passes. The public FPL data doesn't publish a squad for a
+         gameweek that hasn't started, so nobody can see your pending team without your
+         login. Gaffer tells you plainly which gameweek it's showing rather than pretending
+         it's current.</p></details>
+    <details><summary>Is this official?</summary>
+      <p>No. Gaffer is independent and not affiliated with, endorsed by, or connected to
+         the Premier League or Fantasy Premier League.</p></details>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <div class="row">
+    <a class="logo" href="/"><span class="mark">G</span><b>Gaffer</b></a>
+    <span class="sp" style="margin-left:auto"></span>
+    <a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/app">App</a>
+  </div>
+  <p class="disclaimer">Gaffer is an independent tool and is <b>not affiliated with,
+    endorsed by, or connected to</b> the Premier League, Fantasy Premier League, or any
+    football club. "Premier League" and "Fantasy Premier League" are trademarks of the
+    Football Association Premier League Limited. Player and fixture data is read from
+    publicly available Fantasy Premier League endpoints and is not redistributed in bulk.</p>
+</div></footer>
+
+</body></html>

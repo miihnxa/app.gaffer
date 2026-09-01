@@ -1,0 +1,484 @@
+<title>Highbury Reserves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F2EEF5; --surface:#FFFFFF; --surface-2:#F7F4F9; --line:#DCD3E2;
+  --ink:#25082E; --ink-2:#5C4B65; --ink-3:#8A7B92;
+  --accent:#05935A; --accent-soft:#E2F5EC;
+  --crit:#C42545; --crit-soft:#FBE7EB;
+  --warn:#B26A00; --warn-soft:#FBF0DC;
+  --good:#12805A; --good-soft:#E4F4EA;
+  --turf-a:#2E8B57; --turf-b:#1F6B41; --turf-line:rgba(255,255,255,.34);
+  --chip:#F0EAF3;
+  --shadow:0 1px 2px rgba(37,8,46,.06),0 8px 24px rgba(37,8,46,.07);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#16041C; --surface:#230931; --surface-2:#2C0F3B; --line:#3E1B4F;
+    --ink:#F6EFF9; --ink-2:#C3AECD; --ink-3:#8E779A;
+    --accent:#2CE08C; --accent-soft:#123A2A;
+    --crit:#FF7089; --crit-soft:#43121F;
+    --warn:#F2B34E; --warn-soft:#3D2A0D;
+    --good:#3FD68C; --good-soft:#123A28;
+    --turf-a:#1E6B43; --turf-b:#134A2E; --turf-line:rgba(255,255,255,.22);
+    --chip:#331246;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#16041C; --surface:#230931; --surface-2:#2C0F3B; --line:#3E1B4F;
+  --ink:#F6EFF9; --ink-2:#C3AECD; --ink-3:#8E779A;
+  --accent:#2CE08C; --accent-soft:#123A2A;
+  --crit:#FF7089; --crit-soft:#43121F;
+  --warn:#F2B34E; --warn-soft:#3D2A0D;
+  --good:#3FD68C; --good-soft:#123A28;
+  --turf-a:#1E6B43; --turf-b:#134A2E; --turf-line:rgba(255,255,255,.22);
+  --chip:#331246;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:28px 20px 72px}
+h1,h2,h3,.disp{font-family:"Barlow Condensed","Barlow",Impact,sans-serif; font-weight:700; letter-spacing:.01em; text-wrap:balance; margin:0}
+.num{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3)}
+
+/* ---- masthead ---- */
+header.top{display:flex; flex-wrap:wrap; align-items:flex-end; gap:20px 28px; padding-bottom:20px; border-bottom:2px solid var(--ink); margin-bottom:24px}
+header.top h1{font-size:clamp(34px,5.4vw,54px); line-height:.94; text-transform:uppercase}
+header.top .sub{color:var(--ink-2); font-size:14px; margin-top:6px}
+.stats{display:flex; gap:24px; margin-left:auto; flex-wrap:wrap}
+.stat{min-width:74px}
+.stat .v{font-family:"Barlow Condensed",sans-serif; font-weight:700; font-size:27px; line-height:1; font-variant-numeric:tabular-nums}
+.stat .k{font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-3); margin-top:3px}
+
+/* ---- layout ---- */
+.cols{display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:22px; align-items:start}
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow)}
+.card>.hd{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 16px; border-bottom:1px solid var(--line)}
+.card>.hd h2{font-size:19px; text-transform:uppercase; letter-spacing:.03em}
+.card>.bd{padding:16px}
+
+/* ---- pitch ---- */
+.pitch{
+  position:relative; border-radius:12px; overflow:hidden;
+  background:
+    repeating-linear-gradient(180deg, rgba(255,255,255,.045) 0 8.33%, rgba(0,0,0,.03) 8.33% 16.66%),
+    linear-gradient(175deg,var(--turf-a),var(--turf-b));
+  padding:20px 12px 14px; display:flex; flex-direction:column; gap:8px;
+}
+.pitch::before{content:""; position:absolute; inset:9px; border:2px solid var(--turf-line); border-radius:6px; pointer-events:none}
+.pitch::after{content:""; position:absolute; left:50%; top:9px; width:104px; height:104px; transform:translateX(-50%); border:2px solid var(--turf-line); border-top:0; border-radius:0 0 999px 999px; pointer-events:none}
+.row{display:flex; justify-content:center; gap:6px; flex-wrap:wrap; position:relative; z-index:1}
+.bench-strip{display:flex; justify-content:center; gap:6px; flex-wrap:wrap; padding:12px 8px 6px; margin-top:6px; border-top:2px dashed var(--turf-line)}
+.bench-label{position:absolute; left:14px; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.6)}
+
+/* ---- player chip ---- */
+.pl{
+  width:96px; background:var(--surface); border:1px solid var(--line); border-radius:8px;
+  padding:6px 5px 5px; text-align:center; cursor:pointer; position:relative;
+  transition:transform .13s ease, box-shadow .13s ease; box-shadow:0 2px 5px rgba(0,0,0,.22);
+  font-size:12px; color:var(--ink);
+}
+.pl:hover,.pl:focus-visible{transform:translateY(-3px); box-shadow:0 8px 18px rgba(0,0,0,.3); outline:none}
+.pl:focus-visible{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+.pl.sel{border-color:var(--accent); box-shadow:0 0 0 2px var(--accent)}
+.pl .nm{font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:-.01em}
+.pl .fx{font-size:10px; color:var(--ink-2); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.pl .mt{display:flex; justify-content:center; gap:6px; margin-top:3px; font-size:10.5px; color:var(--ink-2)}
+.pl .mt b{color:var(--ink); font-weight:600}
+.pl .bar{height:3px; border-radius:2px 2px 0 0; margin:-6px -5px 5px; background:var(--accent)}
+.pl.f-warn .bar{background:var(--warn)} .pl.f-crit .bar{background:var(--crit)}
+.badge{position:absolute; top:-6px; right:-6px; width:19px; height:19px; border-radius:50%; font-size:10px; font-weight:700; display:grid; place-items:center; border:2px solid var(--surface); font-family:"Barlow Condensed",sans-serif}
+.badge.c{background:var(--ink); color:var(--surface)}
+.badge.v{background:var(--ink-3); color:var(--surface)}
+.badge.flag{background:var(--crit); color:#fff; left:-6px; right:auto}
+.fdr{display:inline-block; min-width:15px; padding:0 3px; border-radius:3px; font-size:9.5px; font-weight:600; color:#fff; font-family:"IBM Plex Mono",monospace}
+.fdr1,.fdr2{background:#12805A} .fdr3{background:#7C7391} .fdr4{background:#C1503A} .fdr5{background:#8E1B32}
+
+/* ---- view switcher ---- */
+.tabs{display:flex; gap:4px; flex-wrap:wrap}
+.tab{font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size:14px; letter-spacing:.04em; text-transform:uppercase;
+  background:var(--surface-2); color:var(--ink-2); border:1px solid var(--line); border-radius:99px; padding:4px 13px; cursor:pointer}
+.tab:hover{color:var(--ink)}
+.tab[aria-pressed="true"]{background:var(--ink); color:var(--surface); border-color:var(--ink)}
+.tab:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.wcnote{display:flex; gap:14px; flex-wrap:wrap; align-items:baseline; margin:0 2px 10px; font-size:13px; color:var(--ink-2)}
+.wcnote b{font-family:"IBM Plex Mono",monospace; color:var(--ink)}
+
+/* ---- replacements ---- */
+.reps{width:100%; border-collapse:collapse; margin-top:8px; font-size:13px}
+.reps th{font-size:9.5px; padding:6px 8px}
+.reps td{padding:7px 8px}
+.reps .up{color:var(--accent); font-weight:600}
+.reps .dn{color:var(--crit)}
+
+.srcnote{margin:10px 2px 0; padding:9px 12px; border-radius:8px; font-size:12.5px; line-height:1.45;
+  background:var(--warn-soft); color:var(--warn); border:1px solid color-mix(in srgb, var(--warn) 25%, transparent)}
+.srcnote[hidden]{display:none}
+
+/* ---- advice ---- */
+.adv{display:flex; flex-direction:column}
+.adv-item{display:grid; grid-template-columns:4px 1fr; gap:12px; padding:12px 16px; border-bottom:1px solid var(--line)}
+.adv-item:last-child{border-bottom:0}
+.adv-item .stripe{border-radius:2px}
+.critical .stripe{background:var(--crit)} .warning .stripe{background:var(--warn)} .info .stripe{background:var(--accent)}
+.adv-item h3{font-size:15.5px; font-family:"IBM Plex Sans",sans-serif; font-weight:600; letter-spacing:0}
+.adv-item p{margin:3px 0 0; font-size:13px; color:var(--ink-2)}
+.pill{display:inline-block; padding:1px 7px; border-radius:99px; font-size:10px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; margin-bottom:4px}
+.critical .pill{background:var(--crit-soft); color:var(--crit)}
+.warning .pill{background:var(--warn-soft); color:var(--warn)}
+.info .pill{background:var(--accent-soft); color:var(--accent)}
+.empty{padding:22px 16px; color:var(--ink-3); font-size:14px}
+
+/* ---- meters / budget ---- */
+.meter{height:7px; border-radius:4px; background:var(--chip); overflow:hidden; margin:7px 0 4px}
+.meter i{display:block; height:100%; background:var(--accent); border-radius:4px}
+.meter i.over{background:var(--crit)}
+.kv{display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px dashed var(--line); font-size:13.5px}
+.kv:last-child{border-bottom:0}
+.kv .k{color:var(--ink-2)} .kv .v{font-family:"IBM Plex Mono",monospace; font-weight:500}
+.shape{padding:12px 0; border-bottom:1px solid var(--line)}
+.shape:last-child{border-bottom:0}
+.shape .t{display:flex; align-items:baseline; justify-content:space-between; gap:8px}
+.shape .t b{font-family:"Barlow Condensed",sans-serif; font-size:17px; letter-spacing:.02em}
+.shape p{margin:4px 0 0; font-size:12.5px; color:var(--ink-2)}
+.yes{color:var(--accent); font-weight:600; font-size:12px}
+.no{color:var(--crit); font-weight:600; font-size:12px}
+
+/* ---- table ---- */
+.tw{overflow-x:auto}
+table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:640px}
+#lgtbl{min-width:0}
+th{text-align:left; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); font-weight:600; padding:8px 10px; border-bottom:1px solid var(--line); white-space:nowrap}
+td{padding:9px 10px; border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface-2)}
+td.n{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; text-align:right}
+tr.benched td{color:var(--ink-2)}
+tr.benched td:first-child::before{content:"BEN "; font-size:9px; letter-spacing:.1em; color:var(--ink-3)}
+
+/* ---- detail drawer ---- */
+.drawer{position:fixed; inset:auto 0 0 0; background:var(--surface); border-top:2px solid var(--ink); box-shadow:0 -8px 40px rgba(0,0,0,.25); transform:translateY(102%); transition:transform .22s cubic-bezier(.4,0,.2,1); z-index:50; max-height:74vh; overflow-y:auto}
+.drawer.open{transform:translateY(0)}
+.drawer .inner{max-width:1180px; margin:0 auto; padding:18px 20px 26px}
+.drawer .x{position:absolute; top:12px; right:16px; background:var(--surface-2); border:1px solid var(--line); color:var(--ink); border-radius:8px; padding:5px 11px; cursor:pointer; font-size:13px; font-family:inherit}
+.dgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:12px; margin:14px 0}
+.dgrid .b{background:var(--surface-2); border:1px solid var(--line); border-radius:8px; padding:9px 11px}
+.dgrid .b .k{font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
+.dgrid .b .v{font-family:"IBM Plex Mono",monospace; font-size:17px; font-weight:600; margin-top:2px}
+.fxrow{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
+.fxrow span{background:var(--surface-2); border:1px solid var(--line); border-radius:6px; padding:4px 8px; font-size:12px}
+.news{background:var(--crit-soft); color:var(--crit); border-radius:8px; padding:10px 12px; font-size:13px; margin-top:10px}
+footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--line); color:var(--ink-3); font-size:12px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" id="eyebrow">Fantasy Premier League</div>
+      <h1 id="teamname">Highbury Reserves</h1>
+      <div class="sub" id="strap"></div>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="cols">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div class="card">
+        <div class="hd"><h2 id="pitchhd">Starting XI</h2><div class="tabs" id="tabs"></div></div>
+        <div class="bd" style="padding:12px">
+          <div class="wcnote" id="wcnote"></div>
+          <div class="pitch" id="pitch"></div>
+          <p class="srcnote" id="srcnote"></p>
+          <p style="margin:10px 2px 0;font-size:12px;color:var(--ink-3)">
+            Tap a player for form, fixtures, price and news. Colour bar shows fitness; the number beside each fixture is its difficulty.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h2>Full squad</h2><span class="eyebrow" id="valhd"></span></div>
+        <div class="tw"><table id="tbl"></table></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <div class="card">
+        <div class="hd"><h2>Recommended changes</h2><span class="eyebrow" id="advcount"></span></div>
+        <div class="adv" id="adv"></div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h2>Budget</h2><span class="eyebrow">Wildcard GW<span id="wcgw"></span></span></div>
+        <div class="bd" id="budget"></div>
+      </div>
+
+      <div class="card" id="leaguecard" hidden>
+        <div class="hd"><h2>Mini-league</h2><span class="eyebrow" id="lgname"></span></div>
+        <div class="tw"><table id="lgtbl"></table></div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><h2>Chip clock</h2><span class="eyebrow" id="chipexp"></span></div>
+        <div class="bd" id="chips"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span id="gen"></span>
+    <span>Advice only — this tool never makes a transfer or changes a lineup.</span>
+  </footer>
+</div>
+
+<div class="drawer" id="drawer" role="dialog" aria-label="Player detail">
+  <div class="inner"><button class="x" id="closed">Close</button><div id="dbody"></div></div>
+</div>
+
+<script>
+const D = /*__DATA__*/{};
+
+const el = (t,c,h)=>{const n=document.createElement(t); if(c)n.className=c; if(h!==undefined)n.innerHTML=h; return n;};
+const money = v => '£'+Number(v).toFixed(1)+'m';
+const fdr = f => `<span class="fdr fdr${f.difficulty}">${f.difficulty}</span>`;
+const fxText = p => p.fixtures_gw.length
+  ? p.fixtures_gw.map(f=>`${f.opponent} ${f.home?'H':'A'} ${fdr(f)}`).join(' ')
+  : '<span style="color:var(--crit)">BLANK</span>';
+
+/* masthead */
+document.getElementById('teamname').textContent = D.team.name;
+document.getElementById('eyebrow').textContent = D.team.league || 'Fantasy Premier League';
+document.getElementById('strap').textContent =
+  `GW${D.gw.next} · deadline ${D.gw.deadline_local} · ${D.gw.countdown} to go`;
+document.getElementById('valhd').textContent = `${money(D.squad.value)} squad · ${money(D.squad.bank)} bank`;
+document.getElementById('wcgw').textContent = D.budget.wildcard_gw;
+document.getElementById('chipexp').textContent = `expires GW${D.chips.expiry}`;
+document.getElementById('gen').textContent = `Built ${D.generated} · source: ${D.squad.source}`;
+const srcnote = document.getElementById('srcnote');
+if(D.squad.source_note && D.squad.source !== 'live FPL API'){ srcnote.textContent = D.squad.source_note; }
+else { srcnote.hidden = true; }
+
+const S = document.getElementById('stats');
+D.team.stats.forEach(s=>{
+  const d = el('div','stat'); d.append(el('div','v',s.v), el('div','k',s.k)); S.append(d);
+});
+
+/* pitch */
+function chip(p){
+  const cls = p.status==='ok' ? '' : (p.severity==='critical'?'f-crit':'f-warn');
+  const b = el('button','pl '+cls);
+  b.type='button'; b.dataset.id=p.id;
+  b.innerHTML = `<div class="bar"></div>
+    <div class="nm">${p.name}</div>
+    <div class="fx">${fxText(p)}</div>
+    <div class="mt"><span>${money(p.price)}</span><span><b>${p.form}</b> fm</span></div>
+    ${p.is_captain?'<span class="badge c">C</span>':p.is_vice?'<span class="badge v">V</span>':''}
+    ${p.status!=='ok'?'<span class="badge flag">!</span>':''}`;
+  b.addEventListener('click',()=>openPlayer(p.id));
+  return b;
+}
+const pitch = document.getElementById('pitch');
+let VIEW = 'current';
+
+function squadFor(view){
+  if(view==='current') return D.squad;
+  const w = D.wildcards[view];
+  return {xi:w.xi, bench:w.bench, formation:formationOf(w.xi)};
+}
+function formationOf(xi){
+  const c = p => xi.filter(x=>x.pos===p).length;
+  return `${c('DEF')}-${c('MID')}-${c('FWD')}`;
+}
+function renderPitch(){
+  const sq = squadFor(VIEW);
+  pitch.textContent = '';
+  ['GKP','DEF','MID','FWD'].forEach(pos=>{
+    const line = sq.xi.filter(p=>p.pos===pos);
+    if(!line.length) return;
+    const r = el('div','row'); line.forEach(p=>r.append(chip(p))); pitch.append(r);
+  });
+  const bench = el('div','bench-strip');
+  bench.append(el('span','bench-label','Bench'));
+  sq.bench.forEach(p=>bench.append(chip(p)));
+  pitch.append(bench);
+
+  const note = document.getElementById('wcnote');
+  const hd = document.getElementById('pitchhd');
+  if(VIEW==='current'){
+    hd.textContent = 'Starting XI';
+    note.innerHTML = `<span>Formation <b>${D.squad.formation}</b></span>
+      <span><b>${money(D.squad.value)}</b> squad, <b>${money(D.squad.bank)}</b> bank</span>
+      <span style="color:var(--ink-3)">Your live squad</span>`;
+  } else {
+    const w = D.wildcards[VIEW];
+    hd.textContent = `Wildcard GW${w.gw} · Shape ${VIEW}`;
+    note.innerHTML = `<span><b>${money(w.cost)}</b> spent, <b>${money(w.spare)}</b> spare</span>
+      <span>Bench Boost ready: <b>${w.bench_ready}/4</b></span>
+      <span>Formation <b>${formationOf(w.xi)}</b></span>
+      <span style="color:var(--ink-3)">${w.label} — ${w.note}</span>`;
+  }
+}
+
+/* tabs */
+const tabs = document.getElementById('tabs');
+function addTab(key,label){
+  const b = el('button','tab',label); b.type='button';
+  b.setAttribute('aria-pressed', String(VIEW===key));
+  b.addEventListener('click',()=>{
+    VIEW = key; renderPitch();
+    tabs.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-pressed', String(t.dataset.k===key)));
+  });
+  b.dataset.k = key; tabs.append(b);
+}
+addTab('current','Current');
+Object.keys(D.wildcards||{}).forEach(k=>addTab(k,'Shape '+k));
+renderPitch();
+
+/* table */
+const tbl = document.getElementById('tbl');
+tbl.innerHTML = `<thead><tr><th>Player</th><th>Club</th><th>Pos</th><th class="n">Price</th>
+  <th class="n">Form</th><th class="n">Pts</th><th class="n">Sel%</th><th>GW${D.gw.next}</th><th>Status</th></tr></thead>`;
+const tb = el('tbody');
+D.squad.xi.concat(D.squad.bench).forEach(p=>{
+  const tr = el('tr', p.benched?'benched':'');
+  const badge = p.is_captain?' (C)':p.is_vice?' (V)':'';
+  tr.innerHTML = `<td><b>${p.name}</b>${badge}</td><td>${p.club}</td><td>${p.pos}</td>
+    <td class="n">${money(p.price)}</td><td class="n">${p.form}</td><td class="n">${p.points}</td>
+    <td class="n">${p.selected}%</td><td>${fxText(p)}</td>
+    <td style="color:${p.status==='ok'?'var(--ink-3)':'var(--crit)'}">${p.status==='ok'?'—':p.status}</td>`;
+  tr.addEventListener('click',()=>openPlayer(p.id));
+  tr.style.cursor='pointer';
+  tb.append(tr);
+});
+tbl.append(tb);
+
+/* advice */
+const A = document.getElementById('adv');
+document.getElementById('advcount').textContent = D.advice.length ? `${D.advice.length} item${D.advice.length>1?'s':''}` : 'all clear';
+if(!D.advice.length){
+  A.append(el('div','empty','Nothing to change. Squad is legal, nobody in the XI is flagged, and the bench order matches your rules.'));
+} else {
+  D.advice.forEach(a=>{
+    const d = el('div','adv-item '+a.severity);
+    d.append(el('div','stripe'));
+    d.append(el('div','',`<span class="pill">${a.severity}</span><h3>${a.title}</h3><p>${a.detail}</p>`));
+    A.append(d);
+  });
+}
+
+/* budget */
+const B = document.getElementById('budget');
+B.innerHTML = `<div class="kv"><span class="k">Squad value</span><span class="v">${money(D.budget.value)}</span></div>
+  <div class="kv"><span class="k">Bank</span><span class="v">${money(D.budget.bank)}</span></div>
+  <div class="kv"><span class="k">Available on the Wildcard</span><span class="v">${money(D.budget.available)}</span></div>
+  <div class="kv"><span class="k">Bench target</span><span class="v">${money(D.budget.bench_target)}</span></div>
+  <p style="margin:12px 0 4px;font-size:12.5px;color:var(--ink-2)">
+    Isak needs <b>+${money(D.budget.isak_gap).slice(1)}</b> on the forward line while the Bench Boost needs the bench up from
+    ${money(D.budget.bench_current)}. These compete — the arithmetic below, your call.</p>`;
+D.budget.shapes.forEach(s=>{
+  const d = el('div','shape');
+  d.innerHTML = `<div class="t"><b>Shape ${s.key} · ${s.label}</b>
+      <span class="${s.affordable?'yes':'no'}">${s.affordable?'FITS':'DOESN’T FIT'}</span></div>
+    <div class="meter"><i class="${s.affordable?'':'over'}" style="width:${Math.min(100,s.spend_pct)}%"></i></div>
+    <div class="kv"><span class="k">Forwards</span><span class="v">${s.forwards}</span></div>
+    <div class="kv"><span class="k">Left for the other 8 starters</span><span class="v">${money(s.outfield)} (${money(s.per_player)} ea)</span></div>
+    <p>${s.blocked || s.note}</p>`;
+  B.append(d);
+});
+
+/* chips */
+const C = document.getElementById('chips');
+D.chips.items.forEach(c=>{
+  const d = el('div','kv');
+  d.innerHTML = `<span class="k"><b style="color:var(--ink)">${c.name}</b> ${c.note?'· '+c.note:''}</span>
+    <span class="v">GW${c.gw}${c.used?' ✓':''}</span>`;
+  C.append(d);
+});
+C.append(el('p','',`<span style="font-size:12.5px;color:var(--ink-2)">Chip set 1 expires at the GW${D.chips.expiry} deadline — ${D.chips.gws_left} gameweeks away. Unused chips are lost, there is no rollover.</span>`));
+
+function repsTable(p){
+  if(!p.replacements || !p.replacements.length){
+    return `<div class="eyebrow" style="margin-top:16px">Replacements</div>
+      <p style="font-size:13px;color:var(--ink-2);margin:6px 0 0">
+        Nothing in this position clears your rules on ${money(p.price)} + ${money(D.squad.bank)} bank —
+        every candidate is either lower form than ${p.name}, flagged, unaffordable, or would break the 3-per-club limit.</p>`;
+  }
+  const rows = p.replacements.map(r=>`<tr>
+      <td><b>${r.name}</b></td><td>${r.club}</td>
+      <td class="n">${money(r.price)}</td>
+      <td class="n ${r.cost>0?'dn':''}">${r.cost>0?'+':''}${r.cost.toFixed(1)}</td>
+      <td class="n up">+${r.form_delta.toFixed(1)}</td>
+      <td class="n">${r.form}</td>
+      <td>${r.fixture} <span class="fdr fdr${r.fdr}">${r.fdr}</span></td>
+      <td class="n">${r.fdr5}</td></tr>`).join('');
+  return `<div class="eyebrow" style="margin-top:18px">Replacements that clear your rules</div>
+    <div class="tw"><table class="reps">
+      <thead><tr><th>Player</th><th>Club</th><th class="n">Price</th><th class="n">Cost</th>
+        <th class="n">Form +</th><th class="n">Form</th><th>Next</th><th class="n">5GW FDR</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
+    <p style="font-size:12px;color:var(--ink-3);margin:8px 0 0">
+      Ranked by form and fixtures. Each one already passed the lower-form guard, your bank,
+      the 3-per-club limit and the no-hits-before-GW6 rule. Nothing here is applied automatically.</p>`;
+}
+
+/* league */
+if(D.league && D.league.rows && D.league.rows.length){
+  document.getElementById('leaguecard').hidden = false;
+  document.getElementById('lgname').textContent = D.league.name;
+  const t = document.getElementById('lgtbl');
+  t.innerHTML = `<thead><tr><th></th><th>Team</th><th class="n">Total</th><th class="n">GW</th><th class="n">vs you</th></tr></thead>`;
+  const tb2 = el('tbody');
+  D.league.rows.forEach(r=>{
+    const tr = el('tr');
+    if(r.me) tr.style.background = 'var(--accent-soft)';
+    const mv = r.moved ? `<span style="color:${r.moved>0?'var(--accent)':'var(--crit)'};font-size:11px"> ${r.moved>0?'▲':'▼'}${Math.abs(r.moved)}</span>` : '';
+    tr.innerHTML = `<td class="n" style="color:var(--ink-3)">${r.rank}</td>
+      <td><b>${r.name}</b>${mv}<br><span style="font-size:11px;color:var(--ink-3)">${r.manager}</span></td>
+      <td class="n">${r.total}</td><td class="n">${r.gw}</td>
+      <td class="n" style="color:${r.me?'var(--ink-3)':(r.gap>0?'var(--accent)':'var(--crit)')}">${r.me?'—':(r.gap>0?'+':'')+r.gap}</td>`;
+    tb2.append(tr);
+  });
+  t.append(tb2);
+}
+
+/* drawer */
+const drawer = document.getElementById('drawer'), dbody = document.getElementById('dbody');
+function allShown(){
+  const sq = squadFor(VIEW);
+  return sq.xi.concat(sq.bench);
+}
+function openPlayer(id){
+  const p = allShown().find(x=>x.id===id)
+         || D.squad.xi.concat(D.squad.bench).find(x=>x.id===id);
+  if(!p) return;
+  document.querySelectorAll('.pl').forEach(n=>n.classList.toggle('sel', n.dataset.id==String(id)));
+  dbody.innerHTML = `<div class="eyebrow">${p.club} · ${p.pos} · ${p.benched?'bench '+(p.position-11):'starting XI'}</div>
+    <h2 style="font-size:30px;margin-top:2px">${p.name}</h2>
+    <div class="dgrid">
+      <div class="b"><div class="k">Price</div><div class="v">${money(p.price)}</div></div>
+      <div class="b"><div class="k">Form</div><div class="v">${p.form}</div></div>
+      <div class="b"><div class="k">Points</div><div class="v">${p.points}</div></div>
+      <div class="b"><div class="k">Selected</div><div class="v">${p.selected}%</div></div>
+      <div class="b"><div class="k">To price change</div><div class="v">${p.price_pct}%</div></div>
+    </div>
+    <div class="eyebrow">Next five</div>
+    <div class="fxrow">${p.fixtures_next.map(f=>`<span>GW${f.gw} ${f.opponent} ${f.home?'(H)':'(A)'} ${fdr(f)}</span>`).join('') || '<span>No scheduled fixtures</span>'}</div>
+    ${p.status!=='ok' ? `<div class="news"><b>${p.status}</b>${p.news?' — '+p.news:''} · ${p.chance}% chance to play</div>`:''}
+    ${repsTable(p)}`;
+  drawer.classList.add('open');
+}
+document.getElementById('closed').addEventListener('click',()=>{
+  drawer.classList.remove('open');
+  document.querySelectorAll('.pl').forEach(n=>n.classList.remove('sel'));
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') document.getElementById('closed').click(); });
+</script>

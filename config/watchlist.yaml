@@ -1,0 +1,19 @@
+# Spec 1.5 — watchlist. Pinned by FPL element id, NOT name.
+# The live API has two "Hughes", two "Palmer" and two "Thomas" — name
+# matching would resolve to the wrong player. ids verified 1 Sep 2026.
+watchlist:
+  - id: 379
+    name: "Isak"
+    note: "GW6 Wildcard target — Shape A. Needs +£3.0m."
+  - id: 106
+    name: "Igor Thiago"
+    note: "Brentford forward"
+  - id: 399
+    name: "Cherki"
+    note: "Man City"
+  - id: 154
+    name: "Palmer"
+    note: "Chelsea — NOT Palmer (IPS, gk, id 301)"
+  - id: 12
+    name: "Saka"
+    note: "GW10 + GW19 captain candidate"

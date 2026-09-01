@@ -1,0 +1,99 @@
+# The plan this tool automates.
+# Source: Mourinho-to-the-PL-Season-Plan-GW3-GW19.md
+
+# Chip set 1 hard expiry. Verified against live bootstrap-static `chips`:
+# every set-1 chip carries stop_event: 19. The tool re-checks this from the
+# API on every run rather than trusting this number.
+chip_deadline_gw: 19
+
+chips:
+  wildcard:    {planned_gw: 6,  note: "After the international break. GW6-10 ticker swing."}
+  "3xc":       {planned_gw: 7,  note: "Haaland, City home to Ipswich."}
+  bboost:      {planned_gw: 8,  note: "Straight after the Wildcard, bench = 4 real starters."}
+  freehit:     {planned_gw: 16, alt_gw: 13, note: "GW16 aggressive (City v Hull). GW13 defensive."}
+
+# Section 4 — the three competing Wildcard shapes.
+wildcard_shapes:
+  A:
+    label: "Isak in, João Pedro out"
+    forwards: [411, 379]          # Haaland, Isak
+    budget_third_forward: 5.5
+    note: "Cleanest route to Isak. Loses Chelsea's GW17-18 run."
+    default: true
+  B:
+    label: "Keep João Pedro, skip Isak"
+    forwards: [411, 165]          # Haaland, João Pedro
+    budget_third_forward: 6.5
+    note: "Most money for the bench. No elite second striker."
+  C:
+    label: "Isak in, Haaland out"
+    forwards: [379, 165]          # Isak, João Pedro
+    budget_third_forward: 6.0
+    note: "ONLY if Haaland is injured — breaks the GW7 Triple Captain."
+    requires_haaland_flagged: true
+
+# Section 6 — Wildcard build brief
+wildcard_brief:
+  keep_non_negotiable: [411, 426, 109]        # Haaland, B.Fernandes, Verbruggen
+  keep_unless_form_collapses: [569, 368, 124] # Gonzalo, Szoboszlai, Groß
+  sell_all: [173, 278, 290, 496]              # Thomas, Hughes, Slater, Kinsky
+  decide_at_the_time: [165, 4, 428, 423]      # João Pedro, Gabriel, Cunha, Shaw
+  bench_budget_target: 19.0                   # up from £17.0m of fodder
+
+# Section 7 — planned captains by gameweek
+captains:
+  3:  {id: 411, name: "Haaland"}
+  4:  {id: 165, name: "João Pedro", note: "Manchester derby — United assets face Haaland"}
+  5:  {id: 411, name: "Haaland"}
+  7:  {id: 411, name: "Haaland", note: "TRIPLE CAPTAIN"}
+  8:  {id: 411, name: "Haaland"}
+  10: {id: 12,  name: "Saka"}
+  12: {id: 426, name: "B.Fernandes"}
+  14: {id: 426, name: "B.Fernandes"}
+  16: {id: 411, name: "Haaland"}
+  19: {id: 12,  name: "Saka"}
+
+# Section 6 of the build spec — my rules. The tool alerts if I break one.
+rules:
+  no_hits_before_gw: 6
+  block_lower_form_transfer_in: true
+  roll_transfers_until_gw: 6
+  max_players_per_club: 3
+  min_defenders: 3
+
+# Section 8 — abandon-plan triggers. Escalate hard if any TWO are true.
+abandon_triggers:
+  xi_flagged_count: 2
+  points_behind_leader: 15
+  haaland_flagged: true          # breaks captaincy and Triple Captain at once
+  xi_lost_starting_place: 3
+
+# Your team for the UPCOMING deadline, recorded by hand.
+#
+# The public FPL API cannot see this. Picks are only published once a gameweek
+# starts, and `entry/{id}/transfers/` stays empty until then — so a transfer you
+# have already made is invisible to the tool. Only the auth-gated `my-team/{id}`
+# would show it, and this tool deliberately avoids auth.
+#
+# Keep `gw` pointing at the next deadline and the tool will use this instead of
+# the stale completed-gameweek picks. All ids verified against bootstrap-static.
+pending_squad:
+  gw: 3
+  verified: "1 Sep 2026, from the FPL Pick Team page"
+  starting_xi:
+    - {id: 109, name: "Verbruggen",  pos: GK,  price: 4.5,  club: BHA}
+    - {id: 4,   name: "Gabriel",     pos: DEF, price: 8.0,  club: ARS}
+    - {id: 423, name: "Shaw",        pos: DEF, price: 4.5,  club: MUN}
+    - {id: 204, name: "Mitchell",    pos: DEF, price: 4.5,  club: CRY}
+    - {id: 426, name: "B.Fernandes", pos: MID, price: 12.0, club: MUN, vice_captain: true}
+    - {id: 428, name: "Cunha",       pos: MID, price: 8.0,  club: MUN}
+    - {id: 368, name: "Szoboszlai",  pos: MID, price: 7.0,  club: LIV}
+    - {id: 124, name: "Groß",        pos: MID, price: 5.5,  club: BHA}
+    - {id: 165, name: "João Pedro",  pos: FWD, price: 7.6,  club: CHE}
+    - {id: 569, name: "Gonzalo",     pos: FWD, price: 6.0,  club: FUL}
+    - {id: 411, name: "Haaland",     pos: FWD, price: 15.5, club: MCI, captain: true}
+  bench:
+    - {id: 496, name: "Kinsky", pos: GK,  price: 4.5, club: TOT}
+    - {id: 173, name: "Thomas", pos: DEF, price: 4.0, club: COV}
+    - {id: 290, name: "Slater", pos: MID, price: 4.5, club: HUL}
+    - {id: 278, name: "Hughes", pos: DEF, price: 4.0, club: HUL, flagged: true}

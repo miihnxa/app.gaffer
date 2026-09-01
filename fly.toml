@@ -1,0 +1,32 @@
+# fly launch --no-deploy   then   fly deploy
+app = "gaffer-app"
+primary_region = "lhr"          # London — closest to the FPL API
+
+[build]
+
+[env]
+  GAFFER_BASE_URL = "https://gaffer-app.fly.dev"
+  GAFFER_TRIAL_DAYS = "7"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 1       # keep one warm: a cold start refetches FPL data
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 40
+    hard_limit = 80
+
+[[mounts]]
+  source = "gaffer_data"
+  destination = "/data"
+
+[checks.health]
+  type = "http"
+  port = 8080
+  path = "/healthz"
+  interval = "30s"
+  timeout = "5s"

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gaffer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/static/app.css">
+<link rel="stylesheet" href="/static/cloud.css">
+</head>
+<body>
+
+
+<div id="shell">
+  <aside id="rail">
+    <div class="brand">
+      <div class="mark">G</div>
+      <div><div class="bn">Gaffer</div><div class="bs">FPL assistant</div></div>
+    </div>
+
+    <nav id="nav">
+      <button class="nv" data-view="squad"   aria-pressed="true"><span>Squad</span></button>
+      <button class="nv" data-view="rebuild"><span>Rebuild</span></button>
+      <button class="nv" data-view="league"><span>Leagues</span></button>
+      <button class="nv" data-view="players"><span>Players</span></button>
+    </nav>
+
+    <div class="railfoot">
+      <div id="acct" class="acct"></div>
+      <div class="gwbox">
+        <div class="k">Next deadline</div>
+        <div class="v" id="railgw">—</div>
+        <div class="cd" id="railcd">—</div>
+      </div>
+      <p class="disclaim">Advises only. Never signs in, never changes a team.</p>
+    </div>
+  </aside>
+
+  <main id="main">
+    <header id="topbar">
+      <div class="teambox">
+        <button id="teambtn" class="teambtn">
+          <span id="teamname">Load a team</span>
+          <span id="teammeta" class="meta"></span>
+          <span class="chev">⌄</span>
+        </button>
+        <div id="teammenu" class="menu" hidden>
+          <label class="mlabel" for="tid">FPL team ID</label>
+          <div class="mrow">
+            <input id="tid" type="number" inputmode="numeric" placeholder="e.g. 1234567" autocomplete="off">
+            <button id="tgo" class="btn primary">Load</button>
+          </div>
+          <p class="mhint">Find it in the URL of your Points page:<br>
+            <code>premierleague.com/entry/<b>ID</b>/history</code></p>
+          <div id="recents"></div>
+        </div>
+      </div>
+      <div class="tstats" id="tstats"></div>
+    </header>
+
+    <div id="err" class="err" hidden></div>
+    <div id="loading" class="loading" hidden><span class="spin"></span><span id="loadmsg">Loading…</span></div>
+
+    <section id="v-squad" class="view"></section>
+    <section id="v-rebuild" class="view" hidden></section>
+    <section id="v-league" class="view" hidden></section>
+    <section id="v-players" class="view" hidden></section>
+  </main>
+</div>
+
+<div id="drawer" class="drawer" role="dialog" aria-label="Player detail">
+  <button class="x" id="dx">Close</button>
+  <div id="dbody"></div>
+</div>
+<div id="scrim" class="scrim" hidden></div>
+
+<script src="/static/app.js"></script>
+<script src="/static/cloud.js"></script>
+</body>
+</html>
