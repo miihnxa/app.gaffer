@@ -1,0 +1,84 @@
+{
+  "id": 987654,
+  "me": 1234567,
+  "name": "Haykakan Premier League AraJan",
+  "rows": [
+    {
+      "entry": 3096121,
+      "gw": 91,
+      "is_me": false,
+      "last_rank": 2,
+      "manager": "A M",
+      "moved": 1,
+      "name": "Propa Lad",
+      "rank": 1,
+      "total": 150
+    },
+    {
+      "entry": 1234567,
+      "gw": 106,
+      "is_me": true,
+      "last_rank": 6,
+      "manager": "A. Manager",
+      "moved": 4,
+      "name": "Highbury Reserves",
+      "rank": 2,
+      "total": 146
+    },
+    {
+      "entry": 3172996,
+      "gw": 97,
+      "is_me": false,
+      "last_rank": 4,
+      "manager": "Jason K",
+      "moved": 1,
+      "name": "No Idea FC",
+      "rank": 3,
+      "total": 142
+    },
+    {
+      "entry": 3454627,
+      "gw": 56,
+      "is_me": false,
+      "last_rank": 1,
+      "manager": "Gary Ingilizian",
+      "moved": -3,
+      "name": "Top Bins FC",
+      "rank": 4,
+      "total": 122
+    },
+    {
+      "entry": 3085304,
+      "gw": 95,
+      "is_me": false,
+      "last_rank": 7,
+      "manager": "Sevan Yigidbashian",
+      "moved": 2,
+      "name": "Bliges Sousé FC",
+      "rank": 5,
+      "total": 115
+    },
+    {
+      "entry": 3096790,
+      "gw": 56,
+      "is_me": false,
+      "last_rank": 3,
+      "manager": "Taniel Migdesyan",
+      "moved": -3,
+      "name": "tanmigd",
+      "rank": 6,
+      "total": 108
+    },
+    {
+      "entry": 3165174,
+      "gw": 61,
+      "is_me": false,
+      "last_rank": 5,
+      "manager": "Kevork Boyadjian",
+      "moved": -2,
+      "name": "Top Of The Mornin'",
+      "rank": 7,
+      "total": 102
+    }
+  ]
+}

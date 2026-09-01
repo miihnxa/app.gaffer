@@ -1,0 +1,1060 @@
+{
+  "bench": [
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "NEW",
+      "fdr5": 2.6,
+      "fixtures_gw": [
+        {
+          "difficulty": 3,
+          "gw": 3,
+          "home": true,
+          "opponent": "BOU"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 3,
+          "gw": 3,
+          "home": true,
+          "opponent": "BOU"
+        },
+        {
+          "difficulty": 3,
+          "gw": 4,
+          "home": false,
+          "opponent": "LEE"
+        },
+        {
+          "difficulty": 2,
+          "gw": 5,
+          "home": true,
+          "opponent": "HUL"
+        },
+        {
+          "difficulty": 2,
+          "gw": 6,
+          "home": false,
+          "opponent": "COV"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": true,
+          "opponent": "AVL"
+        }
+      ],
+      "form": 6.0,
+      "id": 593,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 180,
+      "name": "Dedić",
+      "news": "",
+      "owned": false,
+      "points": 12,
+      "pos": "DEF",
+      "position": 0,
+      "ppg": 6.0,
+      "price": 4.5,
+      "price_pct": 2,
+      "replacements": [],
+      "selected": 1.7,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "AVL",
+      "fdr5": 2.8,
+      "fixtures_gw": [
+        {
+          "difficulty": 2,
+          "gw": 3,
+          "home": false,
+          "opponent": "HUL"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 2,
+          "gw": 3,
+          "home": false,
+          "opponent": "HUL"
+        },
+        {
+          "difficulty": 3,
+          "gw": 4,
+          "home": true,
+          "opponent": "NFO"
+        },
+        {
+          "difficulty": 3,
+          "gw": 5,
+          "home": false,
+          "opponent": "TOT"
+        },
+        {
+          "difficulty": 3,
+          "gw": 6,
+          "home": true,
+          "opponent": "BRE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": false,
+          "opponent": "NEW"
+        }
+      ],
+      "form": 2.0,
+      "id": 51,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 160,
+      "name": "George Hemmings",
+      "news": "",
+      "owned": false,
+      "points": 4,
+      "pos": "MID",
+      "position": 0,
+      "ppg": 2.0,
+      "price": 4.5,
+      "price_pct": 4,
+      "replacements": [],
+      "selected": 0.9,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "COV",
+      "fdr5": 3.0,
+      "fixtures_gw": [
+        {
+          "difficulty": 5,
+          "gw": 3,
+          "home": false,
+          "opponent": "MCI"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 5,
+          "gw": 3,
+          "home": false,
+          "opponent": "MCI"
+        },
+        {
+          "difficulty": 2,
+          "gw": 4,
+          "home": true,
+          "opponent": "BHA"
+        },
+        {
+          "difficulty": 3,
+          "gw": 5,
+          "home": false,
+          "opponent": "NFO"
+        },
+        {
+          "difficulty": 2,
+          "gw": 6,
+          "home": true,
+          "opponent": "NEW"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": false,
+          "opponent": "TOT"
+        }
+      ],
+      "form": 1.5,
+      "id": 194,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 101,
+      "name": "Thomas-Asante",
+      "news": "",
+      "owned": false,
+      "points": 3,
+      "pos": "FWD",
+      "position": 0,
+      "ppg": 1.5,
+      "price": 5.0,
+      "price_pct": 4,
+      "replacements": [],
+      "selected": 0.8,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "BHA",
+      "fdr5": 2.8,
+      "fixtures_gw": [
+        {
+          "difficulty": 2,
+          "gw": 3,
+          "home": true,
+          "opponent": "LEE"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 2,
+          "gw": 3,
+          "home": true,
+          "opponent": "LEE"
+        },
+        {
+          "difficulty": 2,
+          "gw": 4,
+          "home": false,
+          "opponent": "COV"
+        },
+        {
+          "difficulty": 4,
+          "gw": 5,
+          "home": true,
+          "opponent": "ARS"
+        },
+        {
+          "difficulty": 3,
+          "gw": 6,
+          "home": false,
+          "opponent": "SUN"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": true,
+          "opponent": "CRY"
+        }
+      ],
+      "form": 3.0,
+      "id": 109,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 180,
+      "name": "Verbruggen",
+      "news": "",
+      "owned": true,
+      "points": 6,
+      "pos": "GKP",
+      "position": 0,
+      "ppg": 3.0,
+      "price": 4.5,
+      "price_pct": 26,
+      "replacements": [],
+      "selected": 21.6,
+      "severity": "ok",
+      "status": "ok"
+    }
+  ],
+  "bench_detail": [
+    {
+      "club": "NEW",
+      "fdr": 3,
+      "fixture": "BOU (H)",
+      "form": 6.0,
+      "minutes": 180,
+      "name": "Dedić",
+      "ok": true,
+      "pos": "DEF",
+      "price": 4.5,
+      "share": 1.0,
+      "verdict": "nailed"
+    },
+    {
+      "club": "AVL",
+      "fdr": 2,
+      "fixture": "HUL (A)",
+      "form": 2.0,
+      "minutes": 160,
+      "name": "George Hemmings",
+      "ok": true,
+      "pos": "MID",
+      "price": 4.5,
+      "share": 0.89,
+      "verdict": "nailed"
+    },
+    {
+      "club": "COV",
+      "fdr": 5,
+      "fixture": "MCI (A)",
+      "form": 1.5,
+      "minutes": 101,
+      "name": "Thomas-Asante",
+      "ok": true,
+      "pos": "FWD",
+      "price": 5.0,
+      "share": 0.56,
+      "verdict": "rotation risk"
+    },
+    {
+      "club": "BHA",
+      "fdr": 2,
+      "fixture": "LEE (H)",
+      "form": 3.0,
+      "minutes": 180,
+      "name": "Verbruggen",
+      "ok": true,
+      "pos": "GKP",
+      "price": 4.5,
+      "share": 1.0,
+      "verdict": "nailed"
+    }
+  ],
+  "bench_ready": 4,
+  "budget": 100.1,
+  "cost": 100.1,
+  "formation": "4-4-2",
+  "gw": 3,
+  "kept": [
+    "B.Fernandes",
+    "Haaland",
+    "João Pedro",
+    "Verbruggen"
+  ],
+  "out": [
+    "Brobbey",
+    "Cunha",
+    "Gabriel",
+    "Groß",
+    "Hughes",
+    "Kinsky",
+    "Mitchell",
+    "Shaw",
+    "Slater",
+    "Szoboszlai",
+    "Thomas"
+  ],
+  "spare": 0.0,
+  "xi": [
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "HUL",
+      "fdr5": 3.2,
+      "fixtures_gw": [
+        {
+          "difficulty": 3,
+          "gw": 3,
+          "home": true,
+          "opponent": "AVL"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 3,
+          "gw": 3,
+          "home": true,
+          "opponent": "AVL"
+        },
+        {
+          "difficulty": 4,
+          "gw": 4,
+          "home": false,
+          "opponent": "CHE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 5,
+          "home": false,
+          "opponent": "NEW"
+        },
+        {
+          "difficulty": 3,
+          "gw": 6,
+          "home": true,
+          "opponent": "EVE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": false,
+          "opponent": "FUL"
+        }
+      ],
+      "form": 10.0,
+      "id": 572,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 180,
+      "name": "Tzolakis",
+      "news": "",
+      "owned": false,
+      "points": 20,
+      "pos": "GKP",
+      "position": 0,
+      "ppg": 10.0,
+      "price": 4.5,
+      "price_pct": 91,
+      "replacements": [],
+      "selected": 6.3,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "ARS",
+      "fdr5": 3.0,
+      "fixtures_gw": [
+        {
+          "difficulty": 4,
+          "gw": 3,
+          "home": true,
+          "opponent": "CHE"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 4,
+          "gw": 3,
+          "home": true,
+          "opponent": "CHE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 4,
+          "home": false,
+          "opponent": "SUN"
+        },
+        {
+          "difficulty": 3,
+          "gw": 5,
+          "home": false,
+          "opponent": "BHA"
+        },
+        {
+          "difficulty": 2,
+          "gw": 6,
+          "home": true,
+          "opponent": "LEE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": false,
+          "opponent": "NFO"
+        }
+      ],
+      "form": 10.0,
+      "id": 8,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 170,
+      "name": "Calafiori",
+      "news": "",
+      "owned": false,
+      "points": 20,
+      "pos": "DEF",
+      "position": 0,
+      "ppg": 10.0,
+      "price": 5.6,
+      "price_pct": 66,
+      "replacements": [],
+      "selected": 42.9,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "HUL",
+      "fdr5": 3.2,
+      "fixtures_gw": [
+        {
+          "difficulty": 3,
+          "gw": 3,
+          "home": true,
+          "opponent": "AVL"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 3,
+          "gw": 3,
+          "home": true,
+          "opponent": "AVL"
+        },
+        {
+          "difficulty": 4,
+          "gw": 4,
+          "home": false,
+          "opponent": "CHE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 5,
+          "home": false,
+          "opponent": "NEW"
+        },
+        {
+          "difficulty": 3,
+          "gw": 6,
+          "home": true,
+          "opponent": "EVE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": false,
+          "opponent": "FUL"
+        }
+      ],
+      "form": 10.0,
+      "id": 279,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 153,
+      "name": "Ajayi",
+      "news": "",
+      "owned": false,
+      "points": 20,
+      "pos": "DEF",
+      "position": 0,
+      "ppg": 10.0,
+      "price": 4.1,
+      "price_pct": 10,
+      "replacements": [],
+      "selected": 6.9,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "ARS",
+      "fdr5": 3.0,
+      "fixtures_gw": [
+        {
+          "difficulty": 4,
+          "gw": 3,
+          "home": true,
+          "opponent": "CHE"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 4,
+          "gw": 3,
+          "home": true,
+          "opponent": "CHE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 4,
+          "home": false,
+          "opponent": "SUN"
+        },
+        {
+          "difficulty": 3,
+          "gw": 5,
+          "home": false,
+          "opponent": "BHA"
+        },
+        {
+          "difficulty": 2,
+          "gw": 6,
+          "home": true,
+          "opponent": "LEE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": false,
+          "opponent": "NFO"
+        }
+      ],
+      "form": 9.0,
+      "id": 10,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 180,
+      "name": "White",
+      "news": "",
+      "owned": false,
+      "points": 18,
+      "pos": "DEF",
+      "position": 0,
+      "ppg": 9.0,
+      "price": 5.5,
+      "price_pct": 58,
+      "replacements": [],
+      "selected": 7.1,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "MUN",
+      "fdr5": 3.2,
+      "fixtures_gw": [
+        {
+          "difficulty": 3,
+          "gw": 3,
+          "home": false,
+          "opponent": "EVE"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 3,
+          "gw": 3,
+          "home": false,
+          "opponent": "EVE"
+        },
+        {
+          "difficulty": 4,
+          "gw": 4,
+          "home": true,
+          "opponent": "MCI"
+        },
+        {
+          "difficulty": 3,
+          "gw": 5,
+          "home": false,
+          "opponent": "FUL"
+        },
+        {
+          "difficulty": 3,
+          "gw": 6,
+          "home": true,
+          "opponent": "TOT"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": false,
+          "opponent": "LEE"
+        }
+      ],
+      "form": 12.5,
+      "id": 426,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": true,
+      "minutes": 180,
+      "name": "B.Fernandes",
+      "news": "",
+      "owned": true,
+      "points": 25,
+      "pos": "MID",
+      "position": 0,
+      "ppg": 12.5,
+      "price": 12.0,
+      "price_pct": -15,
+      "replacements": [],
+      "selected": 48.3,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "MCI",
+      "fdr5": 2.8,
+      "fixtures_gw": [
+        {
+          "difficulty": 2,
+          "gw": 3,
+          "home": true,
+          "opponent": "COV"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 2,
+          "gw": 3,
+          "home": true,
+          "opponent": "COV"
+        },
+        {
+          "difficulty": 4,
+          "gw": 4,
+          "home": false,
+          "opponent": "MUN"
+        },
+        {
+          "difficulty": 2,
+          "gw": 5,
+          "home": true,
+          "opponent": "SUN"
+        },
+        {
+          "difficulty": 4,
+          "gw": 6,
+          "home": false,
+          "opponent": "LIV"
+        },
+        {
+          "difficulty": 2,
+          "gw": 7,
+          "home": true,
+          "opponent": "IPS"
+        }
+      ],
+      "form": 11.0,
+      "id": 399,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 108,
+      "name": "Cherki",
+      "news": "",
+      "owned": false,
+      "points": 22,
+      "pos": "MID",
+      "position": 0,
+      "ppg": 11.0,
+      "price": 7.7,
+      "price_pct": 29,
+      "replacements": [],
+      "selected": 23.2,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "MCI",
+      "fdr5": 2.8,
+      "fixtures_gw": [
+        {
+          "difficulty": 2,
+          "gw": 3,
+          "home": true,
+          "opponent": "COV"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 2,
+          "gw": 3,
+          "home": true,
+          "opponent": "COV"
+        },
+        {
+          "difficulty": 4,
+          "gw": 4,
+          "home": false,
+          "opponent": "MUN"
+        },
+        {
+          "difficulty": 2,
+          "gw": 5,
+          "home": true,
+          "opponent": "SUN"
+        },
+        {
+          "difficulty": 4,
+          "gw": 6,
+          "home": false,
+          "opponent": "LIV"
+        },
+        {
+          "difficulty": 2,
+          "gw": 7,
+          "home": true,
+          "opponent": "IPS"
+        }
+      ],
+      "form": 7.5,
+      "id": 411,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": true,
+      "minutes": 180,
+      "name": "Haaland",
+      "news": "",
+      "owned": true,
+      "points": 15,
+      "pos": "FWD",
+      "position": 0,
+      "ppg": 7.5,
+      "price": 15.5,
+      "price_pct": 38,
+      "replacements": [],
+      "selected": 70.3,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "ARS",
+      "fdr5": 3.0,
+      "fixtures_gw": [
+        {
+          "difficulty": 4,
+          "gw": 3,
+          "home": true,
+          "opponent": "CHE"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 4,
+          "gw": 3,
+          "home": true,
+          "opponent": "CHE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 4,
+          "home": false,
+          "opponent": "SUN"
+        },
+        {
+          "difficulty": 3,
+          "gw": 5,
+          "home": false,
+          "opponent": "BHA"
+        },
+        {
+          "difficulty": 2,
+          "gw": 6,
+          "home": true,
+          "opponent": "LEE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": false,
+          "opponent": "NFO"
+        }
+      ],
+      "form": 10.0,
+      "id": 12,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 157,
+      "name": "Saka",
+      "news": "",
+      "owned": false,
+      "points": 20,
+      "pos": "MID",
+      "position": 0,
+      "ppg": 10.0,
+      "price": 9.5,
+      "price_pct": 16,
+      "replacements": [],
+      "selected": 10.4,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "CHE",
+      "fdr5": 3.2,
+      "fixtures_gw": [
+        {
+          "difficulty": 5,
+          "gw": 3,
+          "home": false,
+          "opponent": "ARS"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 5,
+          "gw": 3,
+          "home": false,
+          "opponent": "ARS"
+        },
+        {
+          "difficulty": 2,
+          "gw": 4,
+          "home": true,
+          "opponent": "HUL"
+        },
+        {
+          "difficulty": 3,
+          "gw": 5,
+          "home": false,
+          "opponent": "BRE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 6,
+          "home": true,
+          "opponent": "BOU"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": false,
+          "opponent": "EVE"
+        }
+      ],
+      "form": 10.0,
+      "id": 165,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 180,
+      "name": "João Pedro",
+      "news": "",
+      "owned": true,
+      "points": 20,
+      "pos": "FWD",
+      "position": 0,
+      "ppg": 10.0,
+      "price": 7.6,
+      "price_pct": 97,
+      "replacements": [],
+      "selected": 69.8,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "BRE",
+      "fdr5": 3.4,
+      "fixtures_gw": [
+        {
+          "difficulty": 2,
+          "gw": 3,
+          "home": true,
+          "opponent": "SUN"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 2,
+          "gw": 3,
+          "home": true,
+          "opponent": "SUN"
+        },
+        {
+          "difficulty": 3,
+          "gw": 4,
+          "home": false,
+          "opponent": "BOU"
+        },
+        {
+          "difficulty": 4,
+          "gw": 5,
+          "home": true,
+          "opponent": "CHE"
+        },
+        {
+          "difficulty": 4,
+          "gw": 6,
+          "home": false,
+          "opponent": "AVL"
+        },
+        {
+          "difficulty": 4,
+          "gw": 7,
+          "home": true,
+          "opponent": "LIV"
+        }
+      ],
+      "form": 9.0,
+      "id": 565,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 165,
+      "name": "M.Sangaré",
+      "news": "",
+      "owned": false,
+      "points": 18,
+      "pos": "MID",
+      "position": 0,
+      "ppg": 9.0,
+      "price": 5.6,
+      "price_pct": 98,
+      "replacements": [],
+      "selected": 12.1,
+      "severity": "ok",
+      "status": "ok"
+    },
+    {
+      "benched": false,
+      "chance": 100,
+      "club": "HUL",
+      "fdr5": 3.2,
+      "fixtures_gw": [
+        {
+          "difficulty": 3,
+          "gw": 3,
+          "home": true,
+          "opponent": "AVL"
+        }
+      ],
+      "fixtures_next": [
+        {
+          "difficulty": 3,
+          "gw": 3,
+          "home": true,
+          "opponent": "AVL"
+        },
+        {
+          "difficulty": 4,
+          "gw": 4,
+          "home": false,
+          "opponent": "CHE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 5,
+          "home": false,
+          "opponent": "NEW"
+        },
+        {
+          "difficulty": 3,
+          "gw": 6,
+          "home": true,
+          "opponent": "EVE"
+        },
+        {
+          "difficulty": 3,
+          "gw": 7,
+          "home": false,
+          "opponent": "FUL"
+        }
+      ],
+      "form": 8.5,
+      "id": 277,
+      "is_captain": false,
+      "is_vice": false,
+      "locked": false,
+      "minutes": 180,
+      "name": "Egan",
+      "news": "",
+      "owned": false,
+      "points": 17,
+      "pos": "DEF",
+      "position": 0,
+      "ppg": 8.5,
+      "price": 4.0,
+      "price_pct": 53,
+      "replacements": [],
+      "selected": 3.8,
+      "severity": "ok",
+      "status": "ok"
+    }
+  ]
+}

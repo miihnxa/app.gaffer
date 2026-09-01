@@ -1,7 +1,7 @@
 """Gaffer Cloud — the public API.
 
-Free tier   : squad, fixtures, flags, basic checks, league standings
-Pro tier    : squad rebuilder, transfer suggestions, rival diffing, alerts
+Everything is free. No accounts required: sign-in exists only so the app can
+remember your team id across devices, and every endpoint works signed out.
 
 Read-only against the public FPL API. Never signs in to anyone's FPL account
 and never changes a team.
@@ -15,12 +15,14 @@ from pathlib import Path
 from flask import Flask, g, jsonify, make_response, request, send_from_directory
 
 from ..webapp.service import TeamNotFound
-from . import auth, billing, cache, limits, store
+from . import auth, cache, limits, store
 
 log = logging.getLogger(__name__)
 WEB = Path(__file__).parent / "web"
 
-FREE_TEAM_LOOKUPS_PER_DAY = 25
+# Kept as an abuse ceiling, not a paywall — a normal session is a handful of
+# lookups. Anonymous callers are limited by IP in limits.py instead.
+DAILY_LOOKUP_CEILING = 400
 
 
 def base_url() -> str:
@@ -35,6 +37,17 @@ def create_app() -> Flask:
     # --- CORS, so a Lovable/Base44 frontend on another origin can call this ---
     allowed = [o.strip() for o in
                os.environ.get("GAFFER_CORS_ORIGINS", "").split(",") if o.strip()]
+
+    @app.after_request
+    def edge_cache(resp):
+        # Every response is the same for every caller, so a CDN can absorb the
+        # traffic. 300s matches the FPL API's own max-age.
+        if request.path.startswith("/api/") and resp.status_code == 200 \
+                and request.path not in ("/api/me", "/api/config"):
+            resp.headers.setdefault(
+                "Cache-Control", "public, max-age=60, s-maxage=300, "
+                                 "stale-while-revalidate=600")
+        return resp
 
     @app.after_request
     def cors(resp):
@@ -106,11 +119,9 @@ def create_app() -> Flask:
     def me():
         u = g.user
         if u is None:
-            return jsonify({"signed_in": False, "plan": "anon"})
-        return jsonify({"signed_in": True, "email": u.email, "plan": u.plan,
-                        "pro": u.is_pro, "status": u.status,
-                        "team_id": u.team_id,
-                        "billing": billing.configured()})
+            return jsonify({"signed_in": False})
+        return jsonify({"signed_in": True, "email": u.email,
+                        "team_id": u.team_id})
 
     # ================= free =================
     @app.get("/api/config")
@@ -131,18 +142,13 @@ def create_app() -> Flask:
         user = g.user
         if user is not None:
             calls = store.bump_usage(user.id)
-            if not user.is_pro and calls > FREE_TEAM_LOOKUPS_PER_DAY:
+            if calls > DAILY_LOOKUP_CEILING:
                 return jsonify({
-                    "error": f"Free accounts get {FREE_TEAM_LOOKUPS_PER_DAY} team "
-                             f"lookups a day. Pro is unlimited.",
-                    "code": "upgrade_required"}), 402
+                    "error": "That's a lot of lookups in one day. Try again "
+                             "tomorrow, or get in touch if you need more.",
+                    "code": "rate_limited"}), 429
             store.set_team(user.id, team_id)
-        svc = cache.service()
-        # Replacement suggestions are the paid feature — don't compute them for
-        # free accounts, it's the expensive part of the request too.
-        payload = svc.team_payload(team_id,
-                                   with_replacements=bool(user and user.is_pro))
-        payload["pro"] = bool(user and user.is_pro)
+        payload = cache.service().team_payload(team_id, with_replacements=True)
         return jsonify(payload)
 
     @app.get("/api/league/<int:league_id>")
@@ -161,39 +167,12 @@ def create_app() -> Flask:
 
     # ================= pro =================
     @app.get("/api/team/<int:team_id>/rebuild")
-    @auth.pro_required
     def rebuild(team_id: int):
         locked = [int(x) for x in request.args.getlist("lock") if x.isdigit()]
         return jsonify(cache.service().rebuild(
             team_id, locked_ids=locked,
             bench_budget=float(request.args.get("bench", 19.0)),
             budget=request.args.get("budget", type=float)))
-
-    # ================= billing =================
-    @app.post("/api/billing/checkout")
-    @auth.login_required
-    def checkout():
-        if not billing.configured():
-            return jsonify({"error": "Billing isn't switched on yet."}), 503
-        cadence = (request.json or {}).get("cadence", "monthly")
-        return jsonify({"url": billing.checkout_url(g.user, cadence, base_url())})
-
-    @app.post("/api/billing/portal")
-    @auth.login_required
-    def portal():
-        if not billing.configured():
-            return jsonify({"error": "Billing isn't switched on yet."}), 503
-        return jsonify({"url": billing.portal_url(g.user, base_url())})
-
-    @app.post("/api/billing/webhook")
-    def webhook():
-        try:
-            kind = billing.handle_webhook(
-                request.get_data(), request.headers.get("Stripe-Signature", ""))
-        except Exception as exc:  # noqa: BLE001 — Stripe retries on non-2xx
-            log.warning("stripe webhook rejected: %s", exc)
-            return jsonify({"error": "invalid"}), 400
-        return jsonify({"received": kind})
 
     # ================= pages =================
     @app.get("/healthz")

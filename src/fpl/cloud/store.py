@@ -23,12 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
   id            TEXT PRIMARY KEY,
   email         TEXT UNIQUE NOT NULL,
   created_at    TEXT NOT NULL,
-  team_id       INTEGER,
-  plan          TEXT NOT NULL DEFAULT 'free',
-  status        TEXT NOT NULL DEFAULT 'active',
-  period_end    TEXT,
-  stripe_customer      TEXT,
-  stripe_subscription  TEXT
+  team_id       INTEGER
 );
 CREATE TABLE IF NOT EXISTS login_tokens (
   token      TEXT PRIMARY KEY,
@@ -42,7 +37,6 @@ CREATE TABLE IF NOT EXISTS usage (
   calls   INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (user_id, day)
 );
-CREATE INDEX IF NOT EXISTS idx_users_customer ON users(stripe_customer);
 """
 
 
@@ -50,24 +44,7 @@ CREATE INDEX IF NOT EXISTS idx_users_customer ON users(stripe_customer);
 class User:
     id: str
     email: str
-    plan: str
-    status: str
     team_id: int | None
-    period_end: str | None
-    stripe_customer: str | None
-    stripe_subscription: str | None
-
-    @property
-    def is_pro(self) -> bool:
-        if self.plan != "pro" or self.status not in ("active", "trialing"):
-            return False
-        if self.period_end:
-            try:
-                if datetime.fromisoformat(self.period_end) < datetime.now(timezone.utc):
-                    return False
-            except ValueError:
-                pass
-        return True
 
 
 def _connect() -> sqlite3.Connection:
@@ -95,10 +72,7 @@ def init() -> None:
 
 
 def _row_to_user(r) -> User:
-    return User(id=r["id"], email=r["email"], plan=r["plan"], status=r["status"],
-                team_id=r["team_id"], period_end=r["period_end"],
-                stripe_customer=r["stripe_customer"],
-                stripe_subscription=r["stripe_subscription"])
+    return User(id=r["id"], email=r["email"], team_id=r["team_id"])
 
 
 def get_or_create_user(email: str) -> User:
@@ -125,29 +99,6 @@ def get_user(user_id: str) -> User | None:
 def set_team(user_id: str, team_id: int) -> None:
     with db() as conn:
         conn.execute("UPDATE users SET team_id=? WHERE id=?", (int(team_id), user_id))
-
-
-def set_subscription(*, customer: str, subscription: str | None, plan: str,
-                     status: str, period_end: str | None,
-                     email: str | None = None) -> None:
-    """Called from the Stripe webhook. Matches on customer id, falling back to
-    email for the very first checkout, where we may not have the id yet."""
-    with db() as conn:
-        row = conn.execute("SELECT id FROM users WHERE stripe_customer=?",
-                           (customer,)).fetchone()
-        if row is None and email:
-            row = conn.execute("SELECT id FROM users WHERE email=?",
-                               (email.strip().lower(),)).fetchone()
-            if row:
-                conn.execute("UPDATE users SET stripe_customer=? WHERE id=?",
-                             (customer, row["id"]))
-        if row is None:
-            return
-        conn.execute(
-            "UPDATE users SET plan=?, status=?, period_end=?, stripe_subscription=? "
-            "WHERE id=?",
-            (plan, status, period_end, subscription, row["id"]),
-        )
 
 
 # --- magic-link tokens -------------------------------------------

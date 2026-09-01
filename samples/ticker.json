@@ -1,0 +1,722 @@
+[
+  {
+    "club": "NEW",
+    "fdr": 2.6,
+    "fixtures": [
+      {
+        "difficulty": 3,
+        "gw": 3,
+        "home": true,
+        "opponent": "BOU"
+      },
+      {
+        "difficulty": 3,
+        "gw": 4,
+        "home": false,
+        "opponent": "LEE"
+      },
+      {
+        "difficulty": 2,
+        "gw": 5,
+        "home": true,
+        "opponent": "HUL"
+      },
+      {
+        "difficulty": 2,
+        "gw": 6,
+        "home": false,
+        "opponent": "COV"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": true,
+        "opponent": "AVL"
+      }
+    ]
+  },
+  {
+    "club": "AVL",
+    "fdr": 2.8,
+    "fixtures": [
+      {
+        "difficulty": 2,
+        "gw": 3,
+        "home": false,
+        "opponent": "HUL"
+      },
+      {
+        "difficulty": 3,
+        "gw": 4,
+        "home": true,
+        "opponent": "NFO"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": false,
+        "opponent": "TOT"
+      },
+      {
+        "difficulty": 3,
+        "gw": 6,
+        "home": true,
+        "opponent": "BRE"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": false,
+        "opponent": "NEW"
+      }
+    ]
+  },
+  {
+    "club": "BHA",
+    "fdr": 2.8,
+    "fixtures": [
+      {
+        "difficulty": 2,
+        "gw": 3,
+        "home": true,
+        "opponent": "LEE"
+      },
+      {
+        "difficulty": 2,
+        "gw": 4,
+        "home": false,
+        "opponent": "COV"
+      },
+      {
+        "difficulty": 4,
+        "gw": 5,
+        "home": true,
+        "opponent": "ARS"
+      },
+      {
+        "difficulty": 3,
+        "gw": 6,
+        "home": false,
+        "opponent": "SUN"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": true,
+        "opponent": "CRY"
+      }
+    ]
+  },
+  {
+    "club": "CRY",
+    "fdr": 2.8,
+    "fixtures": [
+      {
+        "difficulty": 3,
+        "gw": 3,
+        "home": false,
+        "opponent": "FUL"
+      },
+      {
+        "difficulty": 2,
+        "gw": 4,
+        "home": true,
+        "opponent": "IPS"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": false,
+        "opponent": "LEE"
+      },
+      {
+        "difficulty": 3,
+        "gw": 6,
+        "home": true,
+        "opponent": "NFO"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": false,
+        "opponent": "BHA"
+      }
+    ]
+  },
+  {
+    "club": "LIV",
+    "fdr": 2.8,
+    "fixtures": [
+      {
+        "difficulty": 2,
+        "gw": 3,
+        "home": false,
+        "opponent": "IPS"
+      },
+      {
+        "difficulty": 2,
+        "gw": 4,
+        "home": true,
+        "opponent": "FUL"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": false,
+        "opponent": "BOU"
+      },
+      {
+        "difficulty": 4,
+        "gw": 6,
+        "home": true,
+        "opponent": "MCI"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": false,
+        "opponent": "BRE"
+      }
+    ]
+  },
+  {
+    "club": "MCI",
+    "fdr": 2.8,
+    "fixtures": [
+      {
+        "difficulty": 2,
+        "gw": 3,
+        "home": true,
+        "opponent": "COV"
+      },
+      {
+        "difficulty": 4,
+        "gw": 4,
+        "home": false,
+        "opponent": "MUN"
+      },
+      {
+        "difficulty": 2,
+        "gw": 5,
+        "home": true,
+        "opponent": "SUN"
+      },
+      {
+        "difficulty": 4,
+        "gw": 6,
+        "home": false,
+        "opponent": "LIV"
+      },
+      {
+        "difficulty": 2,
+        "gw": 7,
+        "home": true,
+        "opponent": "IPS"
+      }
+    ]
+  },
+  {
+    "club": "ARS",
+    "fdr": 3.0,
+    "fixtures": [
+      {
+        "difficulty": 4,
+        "gw": 3,
+        "home": true,
+        "opponent": "CHE"
+      },
+      {
+        "difficulty": 3,
+        "gw": 4,
+        "home": false,
+        "opponent": "SUN"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": false,
+        "opponent": "BHA"
+      },
+      {
+        "difficulty": 2,
+        "gw": 6,
+        "home": true,
+        "opponent": "LEE"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": false,
+        "opponent": "NFO"
+      }
+    ]
+  },
+  {
+    "club": "COV",
+    "fdr": 3.0,
+    "fixtures": [
+      {
+        "difficulty": 5,
+        "gw": 3,
+        "home": false,
+        "opponent": "MCI"
+      },
+      {
+        "difficulty": 2,
+        "gw": 4,
+        "home": true,
+        "opponent": "BHA"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": false,
+        "opponent": "NFO"
+      },
+      {
+        "difficulty": 2,
+        "gw": 6,
+        "home": true,
+        "opponent": "NEW"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": false,
+        "opponent": "TOT"
+      }
+    ]
+  },
+  {
+    "club": "EVE",
+    "fdr": 3.0,
+    "fixtures": [
+      {
+        "difficulty": 4,
+        "gw": 3,
+        "home": true,
+        "opponent": "MUN"
+      },
+      {
+        "difficulty": 3,
+        "gw": 4,
+        "home": false,
+        "opponent": "TOT"
+      },
+      {
+        "difficulty": 2,
+        "gw": 5,
+        "home": true,
+        "opponent": "IPS"
+      },
+      {
+        "difficulty": 2,
+        "gw": 6,
+        "home": false,
+        "opponent": "HUL"
+      },
+      {
+        "difficulty": 4,
+        "gw": 7,
+        "home": true,
+        "opponent": "CHE"
+      }
+    ]
+  },
+  {
+    "club": "FUL",
+    "fdr": 3.0,
+    "fixtures": [
+      {
+        "difficulty": 3,
+        "gw": 3,
+        "home": true,
+        "opponent": "CRY"
+      },
+      {
+        "difficulty": 4,
+        "gw": 4,
+        "home": false,
+        "opponent": "LIV"
+      },
+      {
+        "difficulty": 4,
+        "gw": 5,
+        "home": true,
+        "opponent": "MUN"
+      },
+      {
+        "difficulty": 2,
+        "gw": 6,
+        "home": false,
+        "opponent": "IPS"
+      },
+      {
+        "difficulty": 2,
+        "gw": 7,
+        "home": true,
+        "opponent": "HUL"
+      }
+    ]
+  },
+  {
+    "club": "TOT",
+    "fdr": 3.0,
+    "fixtures": [
+      {
+        "difficulty": 3,
+        "gw": 3,
+        "home": false,
+        "opponent": "NFO"
+      },
+      {
+        "difficulty": 3,
+        "gw": 4,
+        "home": true,
+        "opponent": "EVE"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": true,
+        "opponent": "AVL"
+      },
+      {
+        "difficulty": 4,
+        "gw": 6,
+        "home": false,
+        "opponent": "MUN"
+      },
+      {
+        "difficulty": 2,
+        "gw": 7,
+        "home": true,
+        "opponent": "COV"
+      }
+    ]
+  },
+  {
+    "club": "BOU",
+    "fdr": 3.2,
+    "fixtures": [
+      {
+        "difficulty": 3,
+        "gw": 3,
+        "home": false,
+        "opponent": "NEW"
+      },
+      {
+        "difficulty": 3,
+        "gw": 4,
+        "home": true,
+        "opponent": "BRE"
+      },
+      {
+        "difficulty": 4,
+        "gw": 5,
+        "home": true,
+        "opponent": "LIV"
+      },
+      {
+        "difficulty": 4,
+        "gw": 6,
+        "home": false,
+        "opponent": "CHE"
+      },
+      {
+        "difficulty": 2,
+        "gw": 7,
+        "home": true,
+        "opponent": "SUN"
+      }
+    ]
+  },
+  {
+    "club": "CHE",
+    "fdr": 3.2,
+    "fixtures": [
+      {
+        "difficulty": 5,
+        "gw": 3,
+        "home": false,
+        "opponent": "ARS"
+      },
+      {
+        "difficulty": 2,
+        "gw": 4,
+        "home": true,
+        "opponent": "HUL"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": false,
+        "opponent": "BRE"
+      },
+      {
+        "difficulty": 3,
+        "gw": 6,
+        "home": true,
+        "opponent": "BOU"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": false,
+        "opponent": "EVE"
+      }
+    ]
+  },
+  {
+    "club": "HUL",
+    "fdr": 3.2,
+    "fixtures": [
+      {
+        "difficulty": 3,
+        "gw": 3,
+        "home": true,
+        "opponent": "AVL"
+      },
+      {
+        "difficulty": 4,
+        "gw": 4,
+        "home": false,
+        "opponent": "CHE"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": false,
+        "opponent": "NEW"
+      },
+      {
+        "difficulty": 3,
+        "gw": 6,
+        "home": true,
+        "opponent": "EVE"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": false,
+        "opponent": "FUL"
+      }
+    ]
+  },
+  {
+    "club": "MUN",
+    "fdr": 3.2,
+    "fixtures": [
+      {
+        "difficulty": 3,
+        "gw": 3,
+        "home": false,
+        "opponent": "EVE"
+      },
+      {
+        "difficulty": 4,
+        "gw": 4,
+        "home": true,
+        "opponent": "MCI"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": false,
+        "opponent": "FUL"
+      },
+      {
+        "difficulty": 3,
+        "gw": 6,
+        "home": true,
+        "opponent": "TOT"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": false,
+        "opponent": "LEE"
+      }
+    ]
+  },
+  {
+    "club": "NFO",
+    "fdr": 3.2,
+    "fixtures": [
+      {
+        "difficulty": 3,
+        "gw": 3,
+        "home": true,
+        "opponent": "TOT"
+      },
+      {
+        "difficulty": 4,
+        "gw": 4,
+        "home": false,
+        "opponent": "AVL"
+      },
+      {
+        "difficulty": 2,
+        "gw": 5,
+        "home": true,
+        "opponent": "COV"
+      },
+      {
+        "difficulty": 3,
+        "gw": 6,
+        "home": false,
+        "opponent": "CRY"
+      },
+      {
+        "difficulty": 4,
+        "gw": 7,
+        "home": true,
+        "opponent": "ARS"
+      }
+    ]
+  },
+  {
+    "club": "BRE",
+    "fdr": 3.4,
+    "fixtures": [
+      {
+        "difficulty": 2,
+        "gw": 3,
+        "home": true,
+        "opponent": "SUN"
+      },
+      {
+        "difficulty": 3,
+        "gw": 4,
+        "home": false,
+        "opponent": "BOU"
+      },
+      {
+        "difficulty": 4,
+        "gw": 5,
+        "home": true,
+        "opponent": "CHE"
+      },
+      {
+        "difficulty": 4,
+        "gw": 6,
+        "home": false,
+        "opponent": "AVL"
+      },
+      {
+        "difficulty": 4,
+        "gw": 7,
+        "home": true,
+        "opponent": "LIV"
+      }
+    ]
+  },
+  {
+    "club": "IPS",
+    "fdr": 3.4,
+    "fixtures": [
+      {
+        "difficulty": 4,
+        "gw": 3,
+        "home": true,
+        "opponent": "LIV"
+      },
+      {
+        "difficulty": 3,
+        "gw": 4,
+        "home": false,
+        "opponent": "CRY"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": false,
+        "opponent": "EVE"
+      },
+      {
+        "difficulty": 2,
+        "gw": 6,
+        "home": true,
+        "opponent": "FUL"
+      },
+      {
+        "difficulty": 5,
+        "gw": 7,
+        "home": false,
+        "opponent": "MCI"
+      }
+    ]
+  },
+  {
+    "club": "LEE",
+    "fdr": 3.4,
+    "fixtures": [
+      {
+        "difficulty": 3,
+        "gw": 3,
+        "home": false,
+        "opponent": "BHA"
+      },
+      {
+        "difficulty": 2,
+        "gw": 4,
+        "home": true,
+        "opponent": "NEW"
+      },
+      {
+        "difficulty": 3,
+        "gw": 5,
+        "home": true,
+        "opponent": "CRY"
+      },
+      {
+        "difficulty": 5,
+        "gw": 6,
+        "home": false,
+        "opponent": "ARS"
+      },
+      {
+        "difficulty": 4,
+        "gw": 7,
+        "home": true,
+        "opponent": "MUN"
+      }
+    ]
+  },
+  {
+    "club": "SUN",
+    "fdr": 3.4,
+    "fixtures": [
+      {
+        "difficulty": 3,
+        "gw": 3,
+        "home": false,
+        "opponent": "BRE"
+      },
+      {
+        "difficulty": 4,
+        "gw": 4,
+        "home": true,
+        "opponent": "ARS"
+      },
+      {
+        "difficulty": 5,
+        "gw": 5,
+        "home": false,
+        "opponent": "MCI"
+      },
+      {
+        "difficulty": 2,
+        "gw": 6,
+        "home": true,
+        "opponent": "BHA"
+      },
+      {
+        "difficulty": 3,
+        "gw": 7,
+        "home": false,
+        "opponent": "BOU"
+      }
+    ]
+  }
+]

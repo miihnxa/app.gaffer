@@ -78,26 +78,6 @@ def login_required(fn):
     return wrapper
 
 
-def pro_required(fn):
-    """Gate a paid feature. The message names the feature, not the plan —
-    a 402 that just says "upgrade" is useless to the person reading it."""
-    @wraps(fn)
-    def wrapper(*a, **kw):
-        user = current_user()
-        if user is None:
-            return jsonify({"error": "Sign in to continue.",
-                            "code": "auth_required"}), 401
-        if not user.is_pro:
-            return jsonify({
-                "error": "This is a Pro feature.",
-                "code": "upgrade_required",
-                "plan": user.plan,
-            }), 402
-        g.user = user
-        return fn(*a, **kw)
-    return wrapper
-
-
 def optional_user(fn):
     @wraps(fn)
     def wrapper(*a, **kw):

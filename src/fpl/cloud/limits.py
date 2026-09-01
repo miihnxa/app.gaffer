@@ -16,10 +16,10 @@ from flask import jsonify, request
 _hits: dict[str, deque] = defaultdict(deque)
 _lock = Lock()
 
-# requests per window, per identity
-ANON_PER_MIN = 20
-USER_PER_MIN = 60
-PRO_PER_MIN = 180
+# Requests per minute. Signed-in callers get more because they're identifiable;
+# anonymous ones share an IP bucket and could be anyone behind a NAT.
+ANON_PER_MIN = 40
+USER_PER_MIN = 120
 
 
 def identity(user) -> tuple[str, int]:
@@ -28,7 +28,7 @@ def identity(user) -> tuple[str, int]:
               or request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
               or request.remote_addr or "anon")
         return f"ip:{ip}", ANON_PER_MIN
-    return f"user:{user.id}", PRO_PER_MIN if user.is_pro else USER_PER_MIN
+    return f"user:{user.id}", USER_PER_MIN
 
 
 def check(user) -> tuple[bool, int]:

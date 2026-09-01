@@ -1,0 +1,471 @@
+{
+  "advice": [
+    {
+      "detail": "ARS v CHE in GW3. A João Pedro goal kills Gabriel's clean sheet.",
+      "kind": "internal-clash",
+      "players": [
+        "Gabriel",
+        "João Pedro"
+      ],
+      "severity": "info",
+      "title": "Gabriel and João Pedro face each other"
+    }
+  ],
+  "entry": {
+    "bank": 0.0,
+    "gw_points": 106,
+    "id": 1234567,
+    "manager": "A. Manager",
+    "name": "Highbury Reserves",
+    "overall_points": 146,
+    "overall_rank": 2439660,
+    "region": "Canada",
+    "started_event": 1,
+    "transfers": 0,
+    "value": 100.1
+  },
+  "leagues": [
+    {
+      "id": 16,
+      "last_rank": 1119854,
+      "name": "Man Utd",
+      "rank": 507696,
+      "size": 1653101
+    },
+    {
+      "id": 59,
+      "last_rank": 70464,
+      "name": "Canada",
+      "rank": 26791,
+      "size": 97441
+    },
+    {
+      "id": 276,
+      "last_rank": 7094514,
+      "name": "Gameweek 1",
+      "rank": 2439624,
+      "size": 8899691
+    },
+    {
+      "id": 314,
+      "last_rank": 7094513,
+      "name": "Overall",
+      "rank": 2439660,
+      "size": 9904802
+    },
+    {
+      "id": 987654,
+      "last_rank": 6,
+      "name": "Haykakan Premier League AraJan",
+      "rank": 2,
+      "size": 7
+    },
+    {
+      "id": 1541157,
+      "last_rank": 70464,
+      "name": "Fubo League",
+      "rank": 26791,
+      "size": 97441
+    }
+  ],
+  "squad": {
+    "bank": 0.0,
+    "bench": [
+      {
+        "benched": true,
+        "chance": 100,
+        "club": "TOT",
+        "fdr5": 3.0,
+        "fixtures_gw": [
+          {
+            "difficulty": 3,
+            "gw": 3,
+            "home": false,
+            "opponent": "NFO"
+          }
+        ],
+        "fixtures_next": [
+          {
+            "difficulty": 3,
+            "gw": 3,
+            "home": false,
+            "opponent": "NFO"
+          },
+          {
+            "difficulty": 3,
+            "gw": 4,
+            "home": true,
+            "opponent": "EVE"
+          },
+          {
+            "difficulty": 3,
+            "gw": 5,
+            "home": true,
+            "opponent": "AVL"
+          },
+          {
+            "difficulty": 4,
+            "gw": 6,
+            "home": false,
+            "opponent": "MUN"
+          },
+          {
+            "difficulty": 2,
+            "gw": 7,
+            "home": true,
+            "opponent": "COV"
+          }
+        ],
+        "form": 1.5,
+        "id": 496,
+        "is_captain": false,
+        "is_vice": false,
+        "minutes": 180,
+        "name": "Kinsky",
+        "news": "",
+        "points": 3,
+        "pos": "GKP",
+        "position": 12,
+        "ppg": 1.5,
+        "price": 4.5,
+        "price_pct": -22,
+        "replacements": [
+          {
+            "club": "HUL",
+            "cost": 0.0,
+            "fdr": 3,
+            "fdr5": 3.2,
+            "fixture": "AVL (H)",
+            "form": 10.0,
+            "form_delta": 8.5,
+            "id": 572,
+            "name": "Tzolakis",
+            "notes": [
+              "form improves by +8.5"
+            ],
+            "points": 20,
+            "pos": "GKP",
+            "price": 4.5,
+            "selected": 6.3
+          },
+          {
+            "club": "FUL",
+            "cost": 0.0,
+            "fdr": 3,
+            "fdr5": 3.0,
+            "fixture": "CRY (H)",
+            "form": 2.5,
+            "form_delta": 1.0,
+            "id": 250,
+            "name": "Leno",
+            "notes": [
+              "form improves by +1.0"
+            ],
+            "points": 5,
+            "pos": "GKP",
+            "price": 4.5,
+            "selected": 3.1
+          },
+          {
+            "club": "BOU",
+            "cost": 0.0,
+            "fdr": 3,
+            "fdr5": 3.2,
+            "fixture": "NEW (A)",
+            "form": 2.5,
+            "form_delta": 1.0,
+            "id": 57,
+            "name": "Petrović",
+            "notes": [
+              "form improves by +1.0"
+            ],
+            "points": 5,
+            "pos": "GKP",
+            "price": 4.5,
+            "selected": 3.4
+          },
+          {
+            "club": "IPS",
+            "cost": 0.0,
+            "fdr": 4,
+            "fdr5": 3.4,
+            "fixture": "LIV (H)",
+            "form": 2.0,
+            "form_delta": 0.5,
+            "id": 564,
+            "name": "Scherpen",
+            "notes": [
+              "form improves by +0.5"
+            ],
+            "points": 4,
+            "pos": "GKP",
+            "price": 4.5,
+            "selected": 0.6
+          }
+        ],
+        "selected": 20.6,
+        "severity": "ok",
+        "status": "ok"
+      }
+    ],
+    "chip": null,
+    "clubs": {
+      "ARS": 1,
+      "BHA": 2,
+      "CHE": 1,
+      "COV": 1,
+      "CRY": 1,
+      "HUL": 2,
+      "LIV": 1,
+      "MCI": 1,
+      "MUN": 3,
+      "SUN": 1,
+      "TOT": 1
+    },
+    "formation": "3-4-3",
+    "gw": 2,
+    "is_owner": false,
+    "note": "This is your GW2 team as it was played. Transfers, captain changes and bench order you have already set for GW3 are NOT visible here — the public API only publishes picks once a gameweek starts. Check the FPL site to confirm your pending team.",
+    "source": "api",
+    "stale": true,
+    "value": 100.1,
+    "xi": [
+      {
+        "benched": false,
+        "chance": 100,
+        "club": "BHA",
+        "fdr5": 2.8,
+        "fixtures_gw": [
+          {
+            "difficulty": 2,
+            "gw": 3,
+            "home": true,
+            "opponent": "LEE"
+          }
+        ],
+        "fixtures_next": [
+          {
+            "difficulty": 2,
+            "gw": 3,
+            "home": true,
+            "opponent": "LEE"
+          },
+          {
+            "difficulty": 2,
+            "gw": 4,
+            "home": false,
+            "opponent": "COV"
+          },
+          {
+            "difficulty": 4,
+            "gw": 5,
+            "home": true,
+            "opponent": "ARS"
+          },
+          {
+            "difficulty": 3,
+            "gw": 6,
+            "home": false,
+            "opponent": "SUN"
+          },
+          {
+            "difficulty": 3,
+            "gw": 7,
+            "home": true,
+            "opponent": "CRY"
+          }
+        ],
+        "form": 3.0,
+        "id": 109,
+        "is_captain": false,
+        "is_vice": false,
+        "minutes": 180,
+        "name": "Verbruggen",
+        "news": "",
+        "points": 6,
+        "pos": "GKP",
+        "position": 1,
+        "ppg": 3.0,
+        "price": 4.5,
+        "price_pct": 26,
+        "replacements": [
+          {
+            "club": "HUL",
+            "cost": 0.0,
+            "fdr": 3,
+            "fdr5": 3.2,
+            "fixture": "AVL (H)",
+            "form": 10.0,
+            "form_delta": 7.0,
+            "id": 572,
+            "name": "Tzolakis",
+            "notes": [
+              "form improves by +7.0"
+            ],
+            "points": 20,
+            "pos": "GKP",
+            "price": 4.5,
+            "selected": 6.3
+          }
+        ],
+        "selected": 21.6,
+        "severity": "ok",
+        "status": "ok"
+      },
+      {
+        "benched": false,
+        "chance": 100,
+        "club": "ARS",
+        "fdr5": 3.0,
+        "fixtures_gw": [
+          {
+            "difficulty": 4,
+            "gw": 3,
+            "home": true,
+            "opponent": "CHE"
+          }
+        ],
+        "fixtures_next": [
+          {
+            "difficulty": 4,
+            "gw": 3,
+            "home": true,
+            "opponent": "CHE"
+          },
+          {
+            "difficulty": 3,
+            "gw": 4,
+            "home": false,
+            "opponent": "SUN"
+          },
+          {
+            "difficulty": 3,
+            "gw": 5,
+            "home": false,
+            "opponent": "BHA"
+          },
+          {
+            "difficulty": 2,
+            "gw": 6,
+            "home": true,
+            "opponent": "LEE"
+          },
+          {
+            "difficulty": 3,
+            "gw": 7,
+            "home": false,
+            "opponent": "NFO"
+          }
+        ],
+        "form": 6.5,
+        "id": 4,
+        "is_captain": false,
+        "is_vice": false,
+        "minutes": 180,
+        "name": "Gabriel",
+        "news": "",
+        "points": 13,
+        "pos": "DEF",
+        "position": 2,
+        "ppg": 6.5,
+        "price": 8.0,
+        "price_pct": -24,
+        "replacements": [
+          {
+            "club": "ARS",
+            "cost": -2.4,
+            "fdr": 4,
+            "fdr5": 3.0,
+            "fixture": "CHE (H)",
+            "form": 10.0,
+            "form_delta": 3.5,
+            "id": 8,
+            "name": "Calafiori",
+            "notes": [
+              "form improves by +3.5"
+            ],
+            "points": 20,
+            "pos": "DEF",
+            "price": 5.6,
+            "selected": 42.9
+          },
+          {
+            "club": "HUL",
+            "cost": -3.9,
+            "fdr": 3,
+            "fdr5": 3.2,
+            "fixture": "AVL (H)",
+            "form": 10.0,
+            "form_delta": 3.5,
+            "id": 279,
+            "name": "Ajayi",
+            "notes": [
+              "form improves by +3.5"
+            ],
+            "points": 20,
+            "pos": "DEF",
+            "price": 4.1,
+            "selected": 6.9
+          },
+          {
+            "club": "ARS",
+            "cost": -2.5,
+            "fdr": 4,
+            "fdr5": 3.0,
+            "fixture": "CHE (H)",
+            "form": 9.0,
+            "form_delta": 2.5,
+            "id": 10,
+            "name": "White",
+            "notes": [
+              "form improves by +2.5"
+            ],
+            "points": 18,
+            "pos": "DEF",
+            "price": 5.5,
+            "selected": 7.1
+          },
+          {
+            "club": "EVE",
+            "cost": -2.0,
+            "fdr": 4,
+            "fdr5": 3.0,
+            "fixture": "MUN (H)",
+            "form": 9.0,
+            "form_delta": 2.5,
+            "id": 229,
+            "name": "Tarkowski",
+            "notes": [
+              "form improves by +2.5"
+            ],
+            "points": 18,
+            "pos": "DEF",
+            "price": 6.0,
+            "selected": 10.2
+          },
+          {
+            "club": "BHA",
+            "cost": -3.3,
+            "fdr": 2,
+            "fdr5": 2.8,
+            "fixture": "LEE (H)",
+            "form": 8.5,
+            "form_delta": 2.0,
+            "id": 115,
+            "name": "De Cuyper",
+            "notes": [
+              "form improves by +2.0"
+            ],
+            "points": 17,
+            "pos": "DEF",
+            "price": 4.7,
+            "selected": 13.7
+          }
+        ],
+        "selected": 27.0,
+        "severity": "ok",
+        "status": "ok"
+      }
+    ]
+  }
+}

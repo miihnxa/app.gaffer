@@ -1,124 +1,118 @@
-# Launching Gaffer
+# Launching Gaffer — free
 
-Everything below is the work that remains. The product is built; this is
-plumbing, accounts and a legal decision.
+The product is built. This is what's left: hosting, a domain, and the frontend.
 
 ---
 
-## 0. Read this first — the legal position
+## 0. The legal position, now that it's free
 
-Gaffer reads the **public** Fantasy Premier League endpoints. That is how
-almost every FPL tool works, and several are paid products (Fantasy Football
-Hub, FPL Review Premium, Fantasy Football Scout). So there is real precedent
-for charging. But the endpoints are undocumented and carry no commercial
-licence, so there is genuine risk, and it rises the moment money is involved.
+Gaffer reads the **public** Fantasy Premier League endpoints. That's how nearly
+every FPL tool works. Giving it away removes the sharpest edge of the risk —
+you are not commercialising someone else's data — and puts you alongside the
+many free community tools that have run for years without trouble.
 
-**What reduces it, all already done in the code and copy:**
+Still worth keeping true, and all already done in code and copy:
 
-- No Premier League or club branding, badges, kits or crests anywhere.
-- The name is "Gaffer", not "FPL <something>" — no implied endorsement.
-- A clear not-affiliated disclaimer on the landing page, terms and privacy.
-- Data is used for per-user analysis, **not redistributed in bulk** — there is
-  no "download all players" endpoint.
+- No Premier League or club branding, badges, kits or crests.
+- Named "Gaffer", not "FPL <something>" — no implied endorsement.
+- Not-affiliated disclaimer on the landing page, terms and privacy.
+- Analysis per user, **no bulk redistribution** — there is no dump-all endpoint.
 - The shared cache honours the API's own `cache-control: max-age=300`, and
-  requests are rate limited, so the service is a light, well-behaved client.
-- No scraping of paid competitors, per the original build spec.
+  requests are rate limited. The service is a light, well-behaved client.
 
-**What I cannot do for you:** tell you it is legally safe. Before you take
-money, get an hour with a solicitor who knows IP — specifically about the
-trademark use in marketing copy and the unlicensed API. That hour is cheap
-next to a takedown after you have paying subscribers.
-
-**Lower-risk variation if you want one:** let each user paste their own data or
-authenticate against FPL themselves, and sell only the analysis. It's a worse
-product; it's a cleaner position.
+**If you later decide to charge**, re-read this section — the risk calculus
+changes and it's worth a conversation with an IP solicitor first.
 
 ---
 
-## 1. Accounts you need (only you can create these)
+## 1. Deploy the API — free options
 
-| Service | For | Cost |
-|---|---|---|
-| **Stripe** | Subscriptions | 1.5% + 20p per charge |
-| **Fly.io** (or Railway/Render) | Hosting | ~$5/mo |
-| **Domain** | gaffer.app or similar | ~$15/yr |
-| **Email sender** (Resend/Postmark/SES) | Magic-link sign-in | Free tier is plenty |
+The app is a container, so anything that runs Docker works. Ranked for a free
+launch:
 
----
-
-## 2. Deploy the API
+### Fly.io — recommended
+Free allowance covers this comfortably. Needs a card on file for verification
+but won't charge at this size.
 
 ```bash
 brew install flyctl && fly auth login
-fly launch --no-deploy          # accept the existing fly.toml
+fly launch --no-deploy
 fly volumes create gaffer_data --size 1 --region lhr
-```
-
-Set the secrets:
-
-```bash
-fly secrets set \
-  GAFFER_SECRET="$(python3 -c 'import secrets;print(secrets.token_urlsafe(48))')" \
-  STRIPE_SECRET_KEY="sk_live_..." \
-  STRIPE_WEBHOOK_SECRET="whsec_..." \
-  STRIPE_PRICE_MONTHLY="price_..." \
-  STRIPE_PRICE_ANNUAL="price_..." \
-  SMTP_HOST="smtp.resend.com" SMTP_PORT="587" \
-  SMTP_USER="resend" SMTP_PASSWORD="re_..." \
-  SMTP_FROM="hello@yourdomain.com"
-```
-
-```bash
+fly secrets set GAFFER_SECRET="$(python3 -c 'import secrets;print(secrets.token_urlsafe(48))')"
 fly deploy
 ```
 
-`GAFFER_SECRET` must be at least 32 bytes — the app refuses to start otherwise,
-because a short HS256 key is weaker than the hash it feeds.
+### Render — no card
+Free web service, but it **sleeps after 15 minutes idle** and takes ~40s to
+wake, refetching FPL data on boot. Fine for launch, irritating once people use
+it. Point it at the Dockerfile and set `GAFFER_SECRET`.
 
-## 3. Stripe
+### Railway
+$5 of monthly credit, no sleeping. Comfortably enough for this.
 
-1. Create a **Product** "Gaffer Pro" with two prices: £3.99/month and £29/year.
-   Copy both price ids into the secrets above.
-2. Add a webhook endpoint: `https://yourdomain.com/api/billing/webhook`,
-   subscribed to `checkout.session.completed`,
-   `customer.subscription.created|updated|deleted`. Copy the signing secret.
-3. Test with `stripe listen --forward-to localhost:8080/api/billing/webhook`.
+**Whichever you pick**, `GAFFER_SECRET` must be at least 32 bytes — the app
+refuses to boot otherwise, since a short HS256 key is weaker than the hash it
+feeds. Everything else has a working default.
 
-The webhook signature is verified before the body is parsed — that is what
-stops anyone POSTing themselves a free subscription.
-
-## 4. Before you charge anyone
-
-- [ ] Legal review (section 0)
-- [ ] Point the domain at the app, set `GAFFER_BASE_URL`
-- [ ] Send a real magic-link email and click it end to end
-- [ ] Run one real £3.99 checkout with a live card, then refund it
-- [ ] Cancel from the billing portal, confirm access drops to free
-- [ ] Confirm the free tier still works signed-out
-- [ ] Load-check: the FPL API is one upstream for all your users
+Optional, only if you want sign-in emails to actually send:
+`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`.
+Resend's free tier is 3,000 emails a month. Without it, sign-in is disabled in
+practice — which is fine, because nothing requires an account.
 
 ---
 
-## 5. Where Lovable and Base44 fit
+## 2. Frontend
 
-Neither runs Python, and the Python engine *is* the product — the transfer
-guard, the rebuilder, the fixture maths, and 27 tests covering the rules.
-Rebuilding that in a prompt-driven app builder would mean rewriting tested
-logic in TypeScript and losing the thing competitors can't copy in a weekend.
+Two routes. Pick one:
 
-**Use them for the frontend, calling this API.** That's a real division of
-labour and it works:
+**A — ship what exists.** `src/fpl/cloud/web/` is already built, on-brand and
+responsive, and it's served by the same container. Nothing more to do. Deploy
+and you have a working product today.
 
-1. Deploy this API first (section 2). It already sends CORS headers — set
-   `GAFFER_CORS_ORIGINS` to your Lovable/Base44 domain.
-2. Build the interface there against the endpoints in `API.md`.
-3. Keep auth and billing **here**, not in Supabase — the paywall has to be
-   enforced server-side next to the data, or anyone can call the API directly
-   and skip it.
+**B — rebuild the UI in Lovable or Base44.** See `LOVABLE-BRIEF.md` — it has
+staged prompts, the exact palette and type, screen-by-screen specs, and real
+API samples to attach. Set `GAFFER_CORS_ORIGINS` to your Lovable domain or the
+browser will block every request.
 
-**Or skip them.** The app in `src/fpl/cloud/web/` is already built, on-brand
-and responsive. Lovable is worth it if you want a richer marketing site than
-the current landing page, not for the app itself.
+Do A first regardless. It costs nothing, and it means you have something live
+while you iterate on B.
 
-My recommendation: ship what exists, get ten paying users, and only then decide
-whether the frontend is what's holding you back. It probably won't be.
+---
+
+## 3. Domain
+
+You already own the repo name `gaffer.app`. If you own the domain too, point it
+at the deploy and set `GAFFER_BASE_URL=https://gaffer.app`. If not, the
+`.fly.dev` or `.onrender.com` subdomain is fine to launch on.
+
+---
+
+## 4. Before you tell anyone
+
+- [ ] Load a team ID that isn't yours and confirm it works
+- [ ] Check it on a phone — most people will open it on one
+- [ ] Confirm the stale-gameweek banner appears before a deadline
+- [ ] Break something on purpose: a bad team id should say so, not 500
+- [ ] Watch the logs through one deadline — that's peak traffic
+
+---
+
+## 5. Where the traffic risk actually is
+
+Every user of your service hits the same upstream FPL API through your one
+server. The shared cache means one fetch serves everyone for 5 minutes, and
+responses carry `s-maxage=300` so a CDN in front absorbs the rest.
+
+If it gets popular, put Cloudflare in front before you scale the server. That
+is the single highest-leverage thing you can do, and it's free.
+
+---
+
+## 6. What to build next, if people use it
+
+The engine already supports these — they just need surfacing:
+
+- **Deadline reminders** by email, the thing the CLI already does over ntfy.
+- **Price change alerts** — `engine/prices.py` is written and tested.
+- **Rival diffing** in the league view — `engine/league.py` has it.
+- **Live gameweek tracking** — `engine/live.py`, polls only during matches.

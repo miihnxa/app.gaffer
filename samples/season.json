@@ -1,0 +1,10 @@
+{
+  "chip_expiry": 19,
+  "countdown": "2d 23h 59m",
+  "current_gw": 2,
+  "deadline_local": "Fri 04 Sep, 13:30",
+  "deadline_utc": "2026-09-04T17:30:00+00:00",
+  "next_gw": 3,
+  "timezone": "America/Montreal",
+  "total_players": 10264361
+}

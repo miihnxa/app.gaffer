@@ -1,0 +1,41 @@
+[
+  {
+    "club": "ARS",
+    "fdr5": 3.0,
+    "flagged": false,
+    "form": 10.0,
+    "id": 12,
+    "name": "Saka",
+    "points": 20,
+    "pos": "MID",
+    "price": 9.5,
+    "selected": 10.4,
+    "status": "available"
+  },
+  {
+    "club": "AVL",
+    "fdr5": 2.8,
+    "flagged": false,
+    "form": 1.0,
+    "id": 611,
+    "name": "Wan-Bissaka",
+    "points": 1,
+    "pos": "DEF",
+    "price": 4.5,
+    "selected": 0.1,
+    "status": "available"
+  },
+  {
+    "club": "COV",
+    "fdr5": 3.0,
+    "flagged": false,
+    "form": 0.5,
+    "id": 185,
+    "name": "Sakamoto",
+    "points": 1,
+    "pos": "MID",
+    "price": 5.0,
+    "selected": 0.1,
+    "status": "available"
+  }
+]
