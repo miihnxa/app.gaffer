@@ -39,35 +39,35 @@ exec "$HERE/.venv/bin/python" "$HERE/desktop.py" "\$@"
 LAUNCH
 chmod +x "$APP/Contents/MacOS/gaffer"
 
-# Icon: render the pitch-green badge at every size macOS asks for.
+# Icon: the same brand mark the app draws in its own chrome
+# (src/fpl/webapp/static/mark.svg), rendered at every size macOS asks for.
 ICONSET="$(mktemp -d)/gaffer.iconset"; mkdir -p "$ICONSET"
-"$HERE/.venv/bin/python" - "$ICONSET" <<'PYICON'
-import sys, subprocess, pathlib
+"$HERE/.venv/bin/python" - "$ICONSET" "$HERE/src/fpl/webapp/static/mark.svg" <<'PYICON'
+import sys, subprocess, pathlib, shutil
 out = pathlib.Path(sys.argv[1])
-svg = '''<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-<stop offset="0" stop-color="#2E8B57"/><stop offset="1" stop-color="#123F2A"/></linearGradient></defs>
-<rect width="1024" height="1024" rx="228" fill="#140419"/>
-<rect x="112" y="112" width="800" height="800" rx="160" fill="url(#g)"/>
-<rect x="196" y="196" width="632" height="632" rx="104" fill="none" stroke="#ffffff" stroke-opacity=".34" stroke-width="14"/>
-<circle cx="512" cy="512" r="120" fill="none" stroke="#ffffff" stroke-opacity=".34" stroke-width="14"/>
-<path d="M370 196v96h284v-96" fill="none" stroke="#ffffff" stroke-opacity=".34" stroke-width="14"/>
-<path d="M370 828v-96h284v96" fill="none" stroke="#ffffff" stroke-opacity=".34" stroke-width="14"/>
-<text x="512" y="596" font-family="Helvetica-Bold,Helvetica,Arial" font-weight="bold"
- font-size="300" fill="#ffffff" text-anchor="middle">G</text></svg>'''
-src = out.parent/"icon.svg"; src.write_text(svg)
-png = out.parent/"icon.png"
-subprocess.run(["qlmanage","-t","-s","1024","-o",str(out.parent),str(src)],
+src = pathlib.Path(sys.argv[2])
+work = out.parent
+svg = work / "mark.svg"
+shutil.copyfile(src, svg)
+png = work / "mark.png"
+
+# No SVG rasteriser ships with macOS, but Quick Look renders one.
+subprocess.run(["qlmanage", "-t", "-s", "1024", "-o", str(work), str(svg)],
                capture_output=True)
-cand = out.parent/"icon.svg.png"
-if cand.exists(): cand.rename(png)
+produced = work / "mark.svg.png"
+if produced.exists():
+    produced.rename(png)
+
 if not png.exists():
-    subprocess.run(["sips","-s","format","png",str(src),"--out",str(png)],capture_output=True)
-for size in (16,32,64,128,256,512):
-    for scale,suffix in ((1,""),(2,"@2x")):
-        px = size*scale
-        subprocess.run(["sips","-z",str(px),str(px),str(png),
-                        "--out",str(out/f"icon_{size}x{size}{suffix}.png")],capture_output=True)
+    sys.exit("could not rasterise mark.svg — icon skipped")
+
+for size in (16, 32, 64, 128, 256, 512):
+    for scale, suffix in ((1, ""), (2, "@2x")):
+        px = size * scale
+        subprocess.run(["sips", "-z", str(px), str(px), str(png),
+                        "--out", str(out / f"icon_{size}x{size}{suffix}.png")],
+                       capture_output=True)
+print("  rasterised", png.stat().st_size, "bytes")
 PYICON
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/gaffer.icns" 2>/dev/null \
   && echo "  icon built" || echo "  icon skipped (app still works)"

@@ -30,7 +30,8 @@ input[type=range]{accent-color:var(--accent)}
 #entry{display:grid;grid-template-columns:1fr 1fr;height:100vh}
 .ent-l{background:var(--bg);padding:64px 60px;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--line)}
 .lock{display:flex;align-items:center;gap:10px}
-.lock .tile{width:26px;height:26px;border-radius:6px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:15px;font-weight:700}
+.lock .tile{width:26px;height:26px;border-radius:6px;background:var(--accent);display:grid;place-items:center;flex:none}
+.lock .tile svg{width:26px;height:26px;display:block}
 .lock b{font-weight:600;font-size:15px}
 .ent-l h1{font-size:58px;line-height:1.02;letter-spacing:-.035em;margin:14px 0 0;max-width:12ch;font-weight:600}
 .ent-l p{font-size:15px;line-height:1.6;color:var(--muted);max-width:44ch;margin:18px 0 0}
