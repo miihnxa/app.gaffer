@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <style>
+    body{margin:0;background:#140419;color:#F6EFF9;font-family:"IBM Plex Sans",-apple-system,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+    a{color:#2CE08C}a:hover{color:#5AEBA8}
+    .cd{font-family:"Barlow Condensed",Impact,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.01em}
+    .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  </style>
+</helmet>
+<div style="height:900px;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 0%,#1E0A2B 0%,#140419 60%)">
+  <div style="width:520px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0">
+    <div style="width:56px;height:56px;border-radius:15px;background:linear-gradient(150deg,#1E6B43,#123F2A);display:grid;place-items:center;margin-bottom:26px">
+      <span class="cd" style="font-size:34px;color:#fff;line-height:1">G</span>
+    </div>
+    <div class="cd" style="font-size:68px;line-height:.9">Gaffer</div>
+    <p style="margin:16px 0 0;font-size:17px;color:#C3AECD;max-width:40ch;line-height:1.5">
+      It tells you when you&rsquo;re about to make your team worse.
+    </p>
+
+    <div style="display:flex;gap:9px;width:100%;margin-top:36px">
+      <input value="1234567" style="flex:1;min-width:0;background:#210830;border:1px solid #3E1B4F;color:#F6EFF9;border-radius:11px;padding:15px 17px;font-family:'IBM Plex Mono',monospace;font-size:17px;letter-spacing:.04em">
+      <button class="cd" style="background:#2CE08C;color:#04220F;border:0;border-radius:11px;padding:0 30px;font-size:17px;letter-spacing:.05em;cursor:pointer">Load</button>
+    </div>
+
+    <p style="margin:14px 0 0;font-size:12.5px;color:#8E779A;line-height:1.55">
+      The number in the URL of your Points page on the FPL site.<br>
+      <span style="color:#C3AECD">fantasy.premierleague.com/entry/<span style="color:#2CE08C;font-weight:600">1234567</span>/history</span>
+    </p>
+
+    <div style="display:flex;align-items:center;gap:9px;margin-top:40px;padding-top:22px;border-top:1px solid #2C0F3B;width:100%;justify-content:center">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8E779A" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      <span style="font-size:12px;color:#8E779A">No password, no sign-in. Team ID only &mdash; it&rsquo;s public.</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

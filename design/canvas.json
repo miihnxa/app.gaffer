@@ -1,0 +1,15 @@
+{
+  "artboards": [
+    { "file": "Entry.dc.html",   "x": 0,    "y": 0,    "w": 1180, "h": 900, "title": "Team entry" },
+    { "file": "Main.dc.html",    "x": 1300, "y": 0,    "w": 1440, "h": 900, "title": "Squad" },
+    { "file": "Detail.dc.html",  "x": 2860, "y": 0,    "w": 560,  "h": 900, "title": "Player detail" },
+    { "file": "Rebuild.dc.html", "x": 1300, "y": 1020, "w": 1180, "h": 900, "title": "Rebuilder" }
+  ],
+  "annotations": [
+    { "id": "note-tokens", "x": 0, "y": 1020, "w": 380,
+      "text": "Palette and type lifted from the shipped app, not reinvented:\nground #140419 / surface #210830 / line #3E1B4F\naccent #2CE08C (emphasis only)\nwarn #F2B34E = doubt, crit #FF7089 = injured\nturf #1E6B43 to #123F2A\n\nBarlow Condensed display, IBM Plex Sans body, IBM Plex Mono for every number." },
+    { "id": "note-changed", "x": 0, "y": 1320, "w": 380,
+      "text": "What changed from the current build:\n\n1. The deadline is now a scoreboard block in the rail, not a caption. It is the thing you open the app for.\n\n2. Masthead reads as a matchday programme: league position as the eyebrow, team name at 44px, stats as a scoreboard row.\n\n3. Points-to-leader is its own stat and turns red when behind.\n\n4. Player cards widened to 96px so long names stop truncating." }
+  ],
+  "launch": { "view": "canvas" }
+}

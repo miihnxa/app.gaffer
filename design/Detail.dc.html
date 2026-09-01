@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <style>
+    body{margin:0;background:#140419;color:#F6EFF9;font-family:"IBM Plex Sans",-apple-system,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+    a{color:#2CE08C}a:hover{color:#5AEBA8}
+    .cd{font-family:"Barlow Condensed",Impact,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.01em}
+    .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  </style>
+</helmet>
+<div style="width:560px;height:900px;background:#210830;border-left:1px solid #3E1B4F;padding:26px 24px;overflow:hidden;display:flex;flex-direction:column;gap:0">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div>
+      <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8E779A">Crystal Palace &middot; Defender</div>
+      <div class="cd" style="font-size:38px;line-height:1;margin-top:4px">Mitchell</div>
+    </div>
+    <button style="background:#2A0F3A;border:1px solid #3E1B4F;color:#F6EFF9;border-radius:8px;padding:5px 12px;font-size:12.5px;cursor:pointer">Close</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px">
+    <div style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:9px;padding:10px 12px">
+      <div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8E779A">Price</div>
+      <div class="mono" style="font-size:19px;font-weight:600;margin-top:3px">&pound;4.5m</div></div>
+    <div style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:9px;padding:10px 12px">
+      <div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8E779A">Form</div>
+      <div class="mono" style="font-size:19px;font-weight:600;margin-top:3px;color:#F2B34E">0.5</div></div>
+    <div style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:9px;padding:10px 12px">
+      <div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8E779A">Points</div>
+      <div class="mono" style="font-size:19px;font-weight:600;margin-top:3px">1</div></div>
+    <div style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:9px;padding:10px 12px">
+      <div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8E779A">Per game</div>
+      <div class="mono" style="font-size:19px;font-weight:600;margin-top:3px">0.5</div></div>
+    <div style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:9px;padding:10px 12px">
+      <div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8E779A">Minutes</div>
+      <div class="mono" style="font-size:19px;font-weight:600;margin-top:3px">180</div></div>
+    <div style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:9px;padding:10px 12px">
+      <div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8E779A">Selected</div>
+      <div class="mono" style="font-size:19px;font-weight:600;margin-top:3px">7.4%</div></div>
+  </div>
+
+  <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8E779A;margin-top:24px">Next five</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:9px">
+    <span style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:7px;padding:5px 9px;font-size:11.5px">GW3 FUL (A) <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></span>
+    <span style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:7px;padding:5px 9px;font-size:11.5px">GW4 EVE (H) <span class="mono" style="background:#12805A;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">2</span></span>
+    <span style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:7px;padding:5px 9px;font-size:11.5px">GW5 LIV (A) <span class="mono" style="background:#8E1B32;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">5</span></span>
+    <span style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:7px;padding:5px 9px;font-size:11.5px">GW6 BOU (H) <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></span>
+    <span style="background:#2A0F3A;border:1px solid #3E1B4F;border-radius:7px;padding:5px 9px;font-size:11.5px">GW7 NEW (A) <span class="mono" style="background:#C1503A;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">4</span></span>
+  </div>
+
+  <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8E779A;margin-top:26px">Replacements worth the transfer</div>
+  <div style="margin-top:10px;border:1px solid #3E1B4F;border-radius:10px;overflow:hidden">
+    <div style="display:grid;grid-template-columns:1.4fr .7fr .8fr .8fr .8fr 1.2fr;gap:8px;padding:9px 12px;background:#2A0F3A;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:#8E779A">
+      <span>Player</span><span>Club</span><span style="text-align:right">Price</span><span style="text-align:right">Cost</span><span style="text-align:right">Form +</span><span>Next</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1.4fr .7fr .8fr .8fr .8fr 1.2fr;gap:8px;padding:10px 12px;font-size:12.5px;align-items:baseline;border-top:1px solid #31153F">
+      <span style="font-weight:600">Ajayi</span><span style="color:#C3AECD">HUL</span>
+      <span class="mono" style="text-align:right">&pound;4.1</span><span class="mono" style="text-align:right;color:#FF7089">+0.4</span>
+      <span class="mono" style="text-align:right;color:#2CE08C;font-weight:600">+9.5</span>
+      <span style="font-size:11.5px">EVE H <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></span>
+    </div>
+    <div style="display:grid;grid-template-columns:1.4fr .7fr .8fr .8fr .8fr 1.2fr;gap:8px;padding:10px 12px;font-size:12.5px;align-items:baseline;border-top:1px solid #31153F">
+      <span style="font-weight:600">Egan</span><span style="color:#C3AECD">HUL</span>
+      <span class="mono" style="text-align:right">&pound;4.0</span><span class="mono" style="text-align:right;color:#C3AECD">&minus;0.5</span>
+      <span class="mono" style="text-align:right;color:#2CE08C;font-weight:600">+8.0</span>
+      <span style="font-size:11.5px">EVE H <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></span>
+    </div>
+    <div style="display:grid;grid-template-columns:1.4fr .7fr .8fr .8fr .8fr 1.2fr;gap:8px;padding:10px 12px;font-size:12.5px;align-items:baseline;border-top:1px solid #31153F">
+      <span style="font-weight:600">Mendy</span><span style="color:#C3AECD">BOU</span>
+      <span class="mono" style="text-align:right">&pound;4.0</span><span class="mono" style="text-align:right;color:#C3AECD">&minus;0.5</span>
+      <span class="mono" style="text-align:right;color:#2CE08C;font-weight:600">+7.5</span>
+      <span style="font-size:11.5px">NEW A <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></span>
+    </div>
+  </div>
+  <p style="margin:10px 0 0;font-size:11.5px;color:#8E779A;line-height:1.5">
+    Higher form than Mitchell, fit, affordable, and legal on the three-per-club rule.
+    Nothing here is applied automatically &mdash; you type it in yourself.
+  </p>
+</div>
+</x-dc>
+</body>
+</html>

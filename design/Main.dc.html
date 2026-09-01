@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <style>
+    body{margin:0;background:#140419;color:#F6EFF9;font-family:"IBM Plex Sans",-apple-system,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+    a{color:#2CE08C}a:hover{color:#5AEBA8}
+    .cd{font-family:"Barlow Condensed",Impact,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.01em}
+    .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  </style>
+</helmet>
+
+<div style="display:grid;grid-template-columns:232px 1fr;height:900px;background:#140419">
+
+  <!-- rail -->
+  <div style="background:#0D0212;display:flex;flex-direction:column;padding:22px 14px 16px;gap:26px;border-right:1px solid #2C0F3B">
+    <div style="display:flex;gap:11px;align-items:center;padding:0 4px">
+      <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(150deg,#1E6B43,#123F2A);display:grid;place-items:center">
+        <span class="cd" style="font-size:21px;color:#fff;line-height:1">G</span>
+      </div>
+      <div>
+        <div class="cd" style="font-size:20px;line-height:1;color:#F0E7F4">Gaffer</div>
+        <div style="font-size:10.5px;color:#9A85A6;margin-top:2px">Matchday assistant</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;background:rgba(255,255,255,.1);color:#F0E7F4;font-weight:600">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>
+        <span>Squad</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;color:#9A85A6">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/></svg>
+        <span>Rebuild</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;color:#9A85A6">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 21V7l6-4 6 4v14M6 12h12M6 17h12"/></svg>
+        <span>Leagues</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;color:#9A85A6">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span>Players</span>
+      </div>
+    </div>
+
+    <!-- the deadline is the emotional core of the product: give it scoreboard treatment -->
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:14px">
+      <div style="border:1px solid #2C0F3B;border-radius:11px;overflow:hidden;background:#150320">
+        <div style="padding:8px 12px;border-bottom:1px solid #2C0F3B;display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#9A85A6">Deadline</span>
+          <span class="cd" style="font-size:13px;color:#F0E7F4">GW3</span>
+        </div>
+        <div style="padding:12px">
+          <div class="mono" style="font-size:30px;font-weight:600;color:#2CE08C;line-height:1;letter-spacing:-.02em">3d 06h</div>
+          <div class="mono" style="font-size:12px;color:#9A85A6;margin-top:5px">21m remaining</div>
+          <div style="height:1px;background:#2C0F3B;margin:11px 0"></div>
+          <div style="font-size:11.5px;color:#C3AECD;line-height:1.45">Fri 4 Sep<br>13:30 <span style="color:#9A85A6">EDT</span></div>
+        </div>
+      </div>
+      <p style="font-size:10.5px;color:#9A85A6;margin:0;padding:0 4px;line-height:1.45">Advises only. Never signs in, never changes a team.</p>
+    </div>
+  </div>
+
+  <!-- main -->
+  <div style="padding:26px 28px;overflow:hidden;display:flex;flex-direction:column;gap:20px">
+
+    <!-- masthead -->
+    <div style="display:flex;align-items:flex-end;gap:26px;border-bottom:2px solid #F6EFF9;padding-bottom:17px">
+      <div>
+        <div style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#2CE08C;font-weight:600">Haykakan Premier League AraJan &middot; 2nd of 7</div>
+        <div class="cd" style="font-size:44px;line-height:.94;margin-top:7px">Highbury Reserves</div>
+        <div style="font-size:12.5px;color:#8E779A;margin-top:6px">A. Manager &middot; Canada &middot; ID 1234567</div>
+      </div>
+      <div style="display:flex;gap:26px;margin-left:auto">
+        <div><div class="cd mono" style="font-size:27px;line-height:1">146</div><div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#8E779A;margin-top:4px">Points</div></div>
+        <div><div class="cd mono" style="font-size:27px;line-height:1;color:#FF7089">&minus;4</div><div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#8E779A;margin-top:4px">To leader</div></div>
+        <div><div class="cd mono" style="font-size:27px;line-height:1">&pound;100.1</div><div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#8E779A;margin-top:4px">Squad</div></div>
+        <div><div class="cd mono" style="font-size:27px;line-height:1">&pound;0.0</div><div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:#8E779A;margin-top:4px">Bank</div></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:minmax(0,1.62fr) minmax(0,1fr);gap:20px;align-items:start;min-height:0">
+
+      <!-- pitch card -->
+      <div style="background:#210830;border:1px solid #3E1B4F;border-radius:12px;overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid #3E1B4F">
+          <span class="cd" style="font-size:17px;letter-spacing:.04em">Gameweek 3</span>
+          <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8E779A">3-4-3 &middot; recorded by hand</span>
+        </div>
+
+        <div style="padding:12px">
+          <div style="background:rgba(242,179,78,.1);border:1px solid rgba(242,179,78,.3);color:#F2B34E;border-radius:8px;padding:9px 12px;font-size:12px;line-height:1.45;margin-bottom:11px">
+            Your GW3 team as recorded by hand &mdash; the public FPL data can&rsquo;t show a squad before its gameweek starts. Prices, form and flags below are live.
+          </div>
+
+          <div style="position:relative;border-radius:11px;overflow:hidden;padding:20px 10px 12px;display:flex;flex-direction:column;gap:9px;background:repeating-linear-gradient(180deg,rgba(255,255,255,.045) 0 8.33%,rgba(0,0,0,.03) 8.33% 16.66%),linear-gradient(175deg,#1E6B43,#123F2A)">
+            <div style="position:absolute;inset:8px;border:2px solid rgba(255,255,255,.2);border-radius:5px;pointer-events:none"></div>
+            <div style="position:absolute;left:50%;top:8px;width:120px;height:56px;transform:translateX(-50%);border:2px solid rgba(255,255,255,.2);border-top:0;border-radius:0 0 6px 6px;pointer-events:none"></div>
+
+            <div style="display:flex;justify-content:center;gap:7px;position:relative;z-index:1">
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;position:relative;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Verbruggen</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">LEE H <span class="mono" style="background:#12805A;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">2</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;4.5</span><span style="color:#F6EFF9;font-weight:600">3.0</span></div></div>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:center;gap:7px;position:relative;z-index:1">
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Gabriel</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">CHE H <span class="mono" style="background:#C1503A;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">4</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;8.0</span><span style="color:#F6EFF9;font-weight:600">6.5</span></div></div>
+              </div>
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Shaw</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">EVE A <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;4.5</span><span style="color:#F6EFF9;font-weight:600">1.5</span></div></div>
+              </div>
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Mitchell</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">FUL A <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;4.5</span><span style="color:#F6EFF9;font-weight:600">0.5</span></div></div>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:center;gap:7px;position:relative;z-index:1">
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;position:relative;overflow:visible">
+                <div style="height:3px;background:#2CE08C;border-radius:8px 8px 0 0"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">B.Fernandes</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">EVE A <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;12.0</span><span style="color:#F6EFF9;font-weight:600">12.5</span></div></div>
+                <div class="cd" style="position:absolute;top:-7px;right:-7px;width:19px;height:19px;border-radius:50%;background:#8E779A;color:#210830;font-size:11px;display:grid;place-items:center;border:2px solid #210830">V</div>
+              </div>
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Cunha</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">EVE A <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;8.0</span><span style="color:#F6EFF9;font-weight:600">5.5</span></div></div>
+              </div>
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Szoboszlai</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">IPS A <span class="mono" style="background:#12805A;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">2</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;7.0</span><span style="color:#F6EFF9;font-weight:600">6.0</span></div></div>
+              </div>
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Gro&szlig;</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">LEE H <span class="mono" style="background:#12805A;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">2</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;5.5</span><span style="color:#F6EFF9;font-weight:600">7.5</span></div></div>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:center;gap:7px;position:relative;z-index:1">
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Jo&atilde;o Pedro</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">ARS A <span class="mono" style="background:#8E1B32;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">5</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;7.6</span><span style="color:#F6EFF9;font-weight:600">10.0</span></div></div>
+              </div>
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Gonzalo</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">CRY H <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;6.0</span><span style="color:#F6EFF9;font-weight:600">4.0</span></div></div>
+              </div>
+              <div style="width:96px;background:#210830;border:1px solid #2CE08C;border-radius:8px;padding:0 0 5px;text-align:center;position:relative;box-shadow:0 0 0 1px rgba(44,224,140,.4)">
+                <div style="height:3px;background:#2CE08C;border-radius:8px 8px 0 0"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Haaland</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">COV H <span class="mono" style="background:#12805A;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">2</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;15.5</span><span style="color:#F6EFF9;font-weight:600">7.5</span></div></div>
+                <div class="cd" style="position:absolute;top:-7px;right:-7px;width:19px;height:19px;border-radius:50%;background:#2CE08C;color:#04220F;font-size:11px;display:grid;place-items:center;border:2px solid #210830">C</div>
+              </div>
+            </div>
+
+            <div style="display:flex;justify-content:center;gap:7px;padding:13px 8px 2px;margin-top:5px;border-top:2px dashed rgba(255,255,255,.2);position:relative">
+              <span style="position:absolute;left:12px;top:15px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55)">Bench</span>
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Kinsky</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">NFO A <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;4.5</span><span style="color:#F6EFF9;font-weight:600">1.5</span></div></div>
+              </div>
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Thomas</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">MCI A <span class="mono" style="background:#8E1B32;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">5</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;4.0</span><span style="color:#F6EFF9;font-weight:600">5.5</span></div></div>
+              </div>
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;overflow:hidden">
+                <div style="height:3px;background:#2CE08C"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Slater</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">AVL H <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;4.5</span><span style="color:#F6EFF9;font-weight:600">4.0</span></div></div>
+              </div>
+              <div style="width:96px;background:#210830;border:1px solid #3E1B4F;border-radius:8px;padding:0 0 5px;text-align:center;position:relative">
+                <div style="height:3px;background:#FF7089;border-radius:8px 8px 0 0"></div>
+                <div style="padding:5px 5px 0"><div style="font-weight:600;font-size:12px">Hughes</div>
+                <div style="font-size:9.5px;color:#C3AECD;margin-top:2px">AVL H <span class="mono" style="background:#7C7391;color:#fff;border-radius:3px;padding:0 3px;font-size:9px">3</span></div>
+                <div class="mono" style="display:flex;justify-content:center;gap:7px;margin-top:3px;font-size:10px;color:#C3AECD"><span>&pound;4.0</span><span style="color:#F6EFF9;font-weight:600">0.0</span></div></div>
+                <div class="cd" style="position:absolute;top:-7px;left:-7px;width:19px;height:19px;border-radius:50%;background:#FF7089;color:#43121F;font-size:12px;display:grid;place-items:center;border:2px solid #210830">!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- right column -->
+      <div style="display:flex;flex-direction:column;gap:20px">
+
+        <div style="background:#210830;border:1px solid #3E1B4F;border-radius:12px;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid #3E1B4F">
+            <span class="cd" style="font-size:17px;letter-spacing:.04em">What to look at</span>
+            <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8E779A">2 items</span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:4px 1fr;gap:12px;padding:13px 15px;border-bottom:1px solid #31153F">
+            <div style="background:#2CE08C;border-radius:2px"></div>
+            <div>
+              <span style="display:inline-block;padding:1px 7px;border-radius:99px;font-size:9.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:#123A2A;color:#2CE08C;margin-bottom:4px">Info</span>
+              <div style="font-weight:600;font-size:14.5px">Gabriel and Jo&atilde;o Pedro face each other</div>
+              <p style="margin:4px 0 0;font-size:12.5px;color:#C3AECD">ARS v CHE in GW3. A Jo&atilde;o Pedro goal kills Gabriel&rsquo;s clean sheet.</p>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:4px 1fr;gap:12px;padding:13px 15px">
+            <div style="background:#2CE08C;border-radius:2px"></div>
+            <div>
+              <span style="display:inline-block;padding:1px 7px;border-radius:99px;font-size:9.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:#123A2A;color:#2CE08C;margin-bottom:4px">Info</span>
+              <div style="font-weight:600;font-size:14.5px">Mitchell and Gonzalo face each other</div>
+              <p style="margin:4px 0 0;font-size:12.5px;color:#C3AECD">CRY v FUL in GW3. A Gonzalo goal kills Mitchell&rsquo;s clean sheet.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#210830;border:1px solid #3E1B4F;border-radius:12px;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid #3E1B4F">
+            <span class="cd" style="font-size:17px;letter-spacing:.04em">Mini-league</span>
+            <span style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8E779A">7 teams</span>
+          </div>
+          <div style="padding:4px 0">
+            <div style="display:grid;grid-template-columns:22px 1fr auto auto;gap:10px;padding:8px 15px;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#8E779A;border-bottom:1px solid #31153F">
+              <span>#</span><span>Team</span><span>GW</span><span>Total</span>
+            </div>
+            <div style="display:grid;grid-template-columns:22px 1fr auto auto;gap:10px;padding:9px 15px;font-size:13px;align-items:baseline;border-bottom:1px solid #31153F">
+              <span class="mono" style="color:#8E779A">1</span><span style="font-weight:500">Propa Lad</span><span class="mono" style="color:#C3AECD">91</span><span class="mono" style="font-weight:600">150</span>
+            </div>
+            <div style="display:grid;grid-template-columns:22px 1fr auto auto;gap:10px;padding:9px 15px;font-size:13px;align-items:baseline;border-bottom:1px solid #31153F;background:#123A2A">
+              <span class="mono" style="color:#2CE08C">2</span><span style="font-weight:600;color:#2CE08C">Highbury Reserves</span><span class="mono" style="color:#2CE08C">106</span><span class="mono" style="font-weight:600;color:#2CE08C">146</span>
+            </div>
+            <div style="display:grid;grid-template-columns:22px 1fr auto auto;gap:10px;padding:9px 15px;font-size:13px;align-items:baseline;border-bottom:1px solid #31153F">
+              <span class="mono" style="color:#8E779A">3</span><span style="font-weight:500">No Idea FC</span><span class="mono" style="color:#C3AECD">97</span><span class="mono" style="font-weight:600">142</span>
+            </div>
+            <div style="display:grid;grid-template-columns:22px 1fr auto auto;gap:10px;padding:9px 15px;font-size:13px;align-items:baseline">
+              <span class="mono" style="color:#8E779A">4</span><span style="font-weight:500">Top Bins FC</span><span class="mono" style="color:#C3AECD">56</span><span class="mono" style="font-weight:600">122</span>
+            </div>
+            <p style="margin:0;padding:11px 15px 9px;font-size:11.5px;color:#8E779A">Click any rival to open their squad.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
