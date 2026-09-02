@@ -6,7 +6,6 @@ anyone's team.
 """
 from __future__ import annotations
 
-import json
 import logging
 import socket
 from pathlib import Path
@@ -18,35 +17,17 @@ from .service import Service, TeamNotFound
 
 log = logging.getLogger(__name__)
 STATIC = Path(__file__).parent / "static"
-RECENTS = DATA_DIR / "recent-teams.json"
-
-
 def free_port(preferred: int = 8730) -> int:
     for port in range(preferred, preferred + 40):
-        with socket.socket() as s:
+        with socket.socket() as sock:
             try:
-                s.bind(("127.0.0.1", port))
+                sock.bind(("127.0.0.1", port))
                 return port
             except OSError:
                 continue
-    with socket.socket() as s:
-        s.bind(("127.0.0.1", 0))
-        return s.getsockname()[1]
-
-
-def _recents() -> list[dict]:
-    if RECENTS.exists():
-        try:
-            return json.loads(RECENTS.read_text())
-        except json.JSONDecodeError:
-            return []
-    return []
-
-
-def _remember(team_id: int, name: str, manager: str) -> None:
-    rows = [r for r in _recents() if r["id"] != int(team_id)]
-    rows.insert(0, {"id": int(team_id), "name": name, "manager": manager})
-    RECENTS.write_text(json.dumps(rows[:8], indent=1))
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        return sock.getsockname()[1]
 
 
 def create_app(service: Service | None = None) -> Flask:
@@ -78,18 +59,14 @@ def create_app(service: Service | None = None) -> Flask:
 
     @app.get("/api/config")
     def config():
-        return jsonify({
-            "default_team_id": svc.cfg.team_id,
-            "default_league_id": svc.cfg.league_id,
-            "timezone": svc.cfg.tz.key,
-            "recents": _recents(),
-        })
+        # Deliberately no team id. The app must not open on whoever's id
+        # happens to be in settings.yaml — each person enters their own, and
+        # the client remembers it locally.
+        return jsonify({"timezone": svc.cfg.tz.key})
 
     @app.get("/api/team/<int:team_id>")
     def team(team_id: int):
-        payload = svc.team_payload(team_id)
-        _remember(team_id, payload["entry"]["name"], payload["entry"]["manager"])
-        return jsonify(payload)
+        return jsonify(svc.team_payload(team_id))
 
     @app.get("/api/team/<int:team_id>/rebuild")
     def rebuild(team_id: int):

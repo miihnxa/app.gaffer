@@ -11,30 +11,52 @@
 </head>
 <body>
 
-<!-- ============ entry ============ -->
+<!-- ============ welcome ============ -->
 <div id="entry">
   <div class="ent-l">
     <div class="lock"><span class="tile"><svg viewBox="0 0 96 96" fill="none" aria-hidden="true"><path d="M62.6 32.1A22 22 0 1 0 70 48" stroke="#0E1116" stroke-width="9" stroke-linecap="round"/><path d="M70 48H51.5" stroke="#0E1116" stroke-width="9" stroke-linecap="round"/><path d="M62.2 39.6l8.6 8.6-8.6 8.6" stroke="#0E1116" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Gaffer</b></div>
     <div>
       <div class="lbl">Matchday assistant</div>
-      <h1>Know your best move before the deadline.</h1>
-      <p>Gaffer reads your Fantasy Premier League squad from public data and tells you what
-         to fix — flagged players, blank gameweeks, and the transfers that actually improve
-         your team rather than just changing it.</p>
+      <h1>Welcome to Gaffer.</h1>
+      <p>Enter any Fantasy Premier League team ID and Gaffer reads that squad from public
+         data — flagged players, blank gameweeks, fixture difficulty, and the transfers that
+         actually improve the team rather than just changing it.</p>
+      <p style="margin-top:14px">It works for any manager in the game, so you can load a
+         rival's team as easily as your own.</p>
     </div>
     <div class="ent-foot"><span>Local · no account</span><span>Public FPL data</span><span>v2.0</span></div>
   </div>
+
   <div class="ent-r">
     <div class="lbl">Load a team</div>
-    <label class="lbl" for="tid" style="display:block;margin:22px 0 8px;letter-spacing:.13em">Entry ID</label>
+    <label class="lbl" for="tid" style="display:block;margin:22px 0 8px;letter-spacing:.13em">Team ID</label>
     <input id="tid" class="field mono" type="text" inputmode="numeric" placeholder="1234567" autocomplete="off">
-    <p class="helper">fantasy.premierleague.com/entry/<b id="hid" style="color:var(--accent)">1234567</b>/history</p>
-    <button class="btn" id="go"><span>Load squad</span><span class="mono">→</span></button>
+    <button class="btn" id="go"><span>Load squad</span><span class="mono">&rarr;</span></button>
     <div id="enterr" class="err" hidden style="margin-top:14px"></div>
+
+    <div id="recents-wrap" hidden>
+      <div class="lbl" style="margin:26px 0 10px;letter-spacing:.13em">Recent</div>
+      <div id="recents" class="tbl"></div>
+    </div>
+
+    <details id="howto" class="howto">
+      <summary>Where do I find my team ID?</summary>
+      <ol>
+        <li>Sign in at <span class="mono">fantasy.premierleague.com</span></li>
+        <li>Open the <b>Points</b> tab</li>
+        <li>Look at the address bar &mdash; it reads
+            <span class="mono urlbit">/entry/<b>1234567</b>/event/3</span></li>
+        <li>The number after <span class="mono">/entry/</span> is your team ID</li>
+      </ol>
+      <p class="foot" style="margin-top:12px"><b style="color:var(--muted)">A friend&rsquo;s team:</b>
+         open any mini-league table you share and click their team name &mdash; the same
+         <span class="mono">/entry/&hellip;</span> number appears in the address bar.</p>
+    </details>
+
     <div class="notes">
       <div class="note"><span class="mono">01</span><span>Public endpoints only. Gaffer never asks for your FPL password and cannot change your team.</span></div>
-      <div class="note"><span class="mono">02</span><span>Squads for an upcoming gameweek aren't public — before a deadline you'll see the last played XI, labelled as such.</span></div>
-      <div class="note"><span class="mono">03</span><span>Everything is cached on this machine. Nothing is sent anywhere else.</span></div>
+      <div class="note"><span class="mono">02</span><span>Squads for an upcoming gameweek aren&rsquo;t public &mdash; before a deadline you&rsquo;ll see the last played XI, labelled as such.</span></div>
+      <div class="note"><span class="mono">03</span><span>Your team ID is remembered on this machine only. Nothing is sent anywhere else.</span></div>
     </div>
   </div>
 </div>
@@ -44,6 +66,10 @@
   <aside id="rail">
     <div class="lock"><span class="tile"><svg viewBox="0 0 96 96" fill="none" aria-hidden="true"><path d="M62.6 32.1A22 22 0 1 0 70 48" stroke="#0E1116" stroke-width="9" stroke-linecap="round"/><path d="M70 48H51.5" stroke="#0E1116" stroke-width="9" stroke-linecap="round"/><path d="M62.2 39.6l8.6 8.6-8.6 8.6" stroke="#0E1116" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Gaffer</b></div>
     <nav id="nav"></nav>
+    <button class="nv" id="switch" type="button" style="margin-top:6px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>
+      <span>Switch team</span>
+    </button>
     <div class="deadline">
       <div class="lbl" style="font-size:10px" id="dl-gw">Gameweek</div>
       <div class="cd" id="dl-cd">—</div>

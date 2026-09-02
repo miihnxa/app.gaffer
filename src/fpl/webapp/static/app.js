@@ -50,24 +50,59 @@ const fail = m => { const e = $('#err'); e.hidden = !m; e.textContent = m || '';
 (async function init() {
   S.toggles = { ...DEFAULT_TOGGLES, ...store.get('toggles', {}) };
   S.bench = store.get('bench', 19);
-  const saved = store.get('teamId', null);
-  $('#tid').addEventListener('input', e => {
-    const v = e.target.value.trim() || '1234567';
-    $('#hid').textContent = v;
-  });
+
   $('#go').addEventListener('click', () => load($('#tid').value.trim()));
   $('#tid').addEventListener('keydown', e => { if (e.key === 'Enter') load(e.target.value.trim()); });
+  paintRecents();
 
   try {
-    const cfg = await api('/api/config');
     S.season = await api('/api/season');
-    const id = saved || cfg.default_team_id;
-    if (id) { $('#tid').value = id; $('#hid').textContent = id; load(id); }
   } catch (e) {
     $('#enterr').hidden = false;
     $('#enterr').textContent = 'Could not reach the FPL API. Check your connection and reopen. (' + e.message + ')';
+    return;
   }
+  // Only this person's own saved team opens automatically. The server never
+  // supplies one, so a fresh install always lands on the welcome screen.
+  const saved = store.get('teamId', null);
+  if (saved) { $('#tid').value = saved; load(saved); }
+  else $('#tid').focus();
 })();
+
+function recents() { return store.get('recents', []); }
+
+function remember(entry) {
+  const rows = recents().filter(r => r.id !== entry.id);
+  rows.unshift({ id: entry.id, name: entry.name, manager: entry.manager });
+  store.set('recents', rows.slice(0, 6));
+  paintRecents();
+}
+
+function paintRecents() {
+  const rows = recents();
+  const wrap = $('#recents-wrap'), box = $('#recents');
+  if (!wrap || !box) return;
+  wrap.hidden = !rows.length;
+  box.textContent = '';
+  rows.forEach(r => {
+    const tr = el('div', 'tr');
+    tr.innerHTML = `<span><b>${r.name}</b><br><span class="who">${r.manager}</span></span>
+                    <span class="mono" style="color:var(--faint)">${r.id}</span>`;
+    tr.addEventListener('click', () => { $('#tid').value = r.id; load(r.id); });
+    box.append(tr);
+  });
+}
+
+function goHome() {
+  if (S.tick) { clearInterval(S.tick); S.tick = null; }
+  store.del('teamId');
+  S.team = null; S.teamId = null; S.league = null; S.leagueId = null; S.rebuild = null;
+  closeDrawer();
+  $('#shell').hidden = true; $('#entry').hidden = false;
+  $('#enterr').hidden = true;
+  $('#tid').value = ''; $('#tid').focus();
+  paintRecents();
+}
 
 async function load(id) {
   if (!id) { $('#enterr').hidden = false; $('#enterr').textContent = 'Enter your team ID first.'; return; }
@@ -78,10 +113,13 @@ async function load(id) {
     S.team = await api('/api/team/' + id);
     S.teamId = Number(id);
     store.set('teamId', S.teamId);
+    remember(S.team.entry);
     S.out = null; S.inIdx = 0; S.rebuild = null; S.league = null; S.leagueId = null;
     S.locked = new Set();
     $('#entry').hidden = true; $('#shell').hidden = false;
     buildNav(); startClock(); render();
+    const sw = $('#switch');
+    if (sw && !sw.dataset.wired) { sw.dataset.wired = '1'; sw.addEventListener('click', goHome); }
   } catch (e) {
     if ($('#shell').hidden) { $('#enterr').hidden = false; $('#enterr').textContent = e.message; }
     else fail(e.message);
@@ -572,8 +610,9 @@ function viewSettings(root) {
   const clear = el('button', 'btn ghost', 'Forget this machine');
   clear.style.marginTop = '12px';
   clear.addEventListener('click', () => {
-    store.del('teamId'); store.del('toggles'); store.del('bench');
-    location.reload();
+    store.del('teamId'); store.del('toggles'); store.del('bench'); store.del('recents');
+    S.toggles = { ...DEFAULT_TOGGLES };
+    goHome();
   });
   c.append(clear);
 

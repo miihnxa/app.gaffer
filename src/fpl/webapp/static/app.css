@@ -187,3 +187,16 @@ input[type=range]{accent-color:var(--accent)}
 .foot{font-size:11.5px;color:var(--ghost);margin-top:9px;line-height:1.5}
 .note-line{font-size:11.5px;color:var(--faint)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------------- welcome extras ---------------- */
+.howto{margin-top:24px;border-top:1px solid var(--line);padding-top:16px}
+.howto summary{cursor:pointer;font-size:13px;font-weight:500;color:var(--text);list-style:none}
+.howto summary::-webkit-details-marker{display:none}
+.howto summary::after{content:"+";float:right;color:var(--accent);font-family:"IBM Plex Mono",monospace}
+.howto[open] summary::after{content:"\2212"}
+.howto ol{margin:14px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.55}
+.howto li::marker{color:var(--faint);font-family:"IBM Plex Mono",monospace;font-size:11px}
+.howto .urlbit{background:var(--panel-2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:11.5px;white-space:nowrap}
+.howto .urlbit b{color:var(--accent)}
+#recents .tr{grid-template-columns:1fr auto;cursor:pointer}
+#recents .tr .who{font-size:11.5px;color:var(--faint)}
