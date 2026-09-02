@@ -1,7 +1,7 @@
 # Gaffer 1.0.0 — macOS
 
-**Gaffer-1.0.0-macOS.zip** · 14.3 MB
-`sha256 92c667a48dfb2d57de018bd7d25ac78c30867f54cc8a7e3f261a5f014d55765c`
+**Gaffer-1.0.0-macOS.zip** · 14.2 MB
+`sha256 a87c3656e6f4e2096e125431cecba77d928396a3aa3f1276049690416894672b`
 
 Self-contained. Python and every dependency are inside the bundle — nothing to
 install first.

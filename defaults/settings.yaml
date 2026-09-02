@@ -1,5 +1,7 @@
-# FPL Active Manager Assistant — settings
-# Team: "Highbury Reserves" — A. Manager
+# Gaffer — default settings.
+# Your own copy lives in ~/Library/Application Support/Gaffer/config/
+# and is created on first run. Editing this file has no effect once that exists.
+
 
 entry:
   # Find this in the URL of your "Gameweek History" page:
