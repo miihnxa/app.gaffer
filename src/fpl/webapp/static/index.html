@@ -27,7 +27,41 @@
     <div class="ent-foot"><span>Local · no account</span><span>Public FPL data</span><span>v2.0</span></div>
   </div>
 
-  <div class="ent-r">
+  <div class="ent-r" id="pane-signin" hidden>
+    <div class="lbl">Sign in</div>
+
+    <div id="step-email">
+      <p class="signin-lede">Your team ID is saved to your account, so Gaffer opens on your
+         squad on any machine you sign in from. No password &mdash; we email you a code.</p>
+      <label class="lbl" for="em" style="display:block;margin:22px 0 8px;letter-spacing:.13em">Email</label>
+      <input id="em" class="field" type="email" placeholder="you@email.com" autocomplete="email" style="font-size:16px">
+      <button class="btn" id="sendcode"><span>Email me a code</span><span class="mono">&rarr;</span></button>
+    </div>
+
+    <div id="step-code" hidden>
+      <p class="signin-lede">We sent a 6-digit code to <b id="sent-to" style="color:var(--text)"></b>.
+         It works once and expires in 15 minutes.</p>
+      <label class="lbl" for="code" style="display:block;margin:22px 0 8px;letter-spacing:.13em">Code</label>
+      <input id="code" class="field mono" type="text" inputmode="numeric" maxlength="6"
+             placeholder="000000" autocomplete="one-time-code"
+             style="font-size:30px;letter-spacing:.34em;text-align:center">
+      <button class="btn" id="verifycode"><span>Sign in</span><span class="mono">&rarr;</span></button>
+      <div class="signin-alt">
+        <button class="linkbtn" id="resend">Send another code</button>
+        <button class="linkbtn" id="backemail">Use a different email</button>
+      </div>
+    </div>
+
+    <div id="signinerr" class="err" hidden style="margin-top:14px"></div>
+
+    <div class="signin-alt" style="margin-top:26px;border-top:1px solid var(--line);padding-top:18px">
+      <button class="linkbtn" id="skipsignin">Continue without an account</button>
+    </div>
+    <p class="foot" style="margin-top:10px">Signed out, Gaffer works the same &mdash; your team
+       ID is just remembered on this machine only.</p>
+  </div>
+
+  <div class="ent-r" id="pane-team">
     <div class="lbl">Load a team</div>
     <label class="lbl" for="tid" style="display:block;margin:22px 0 8px;letter-spacing:.13em">Team ID</label>
     <input id="tid" class="field mono" type="text" inputmode="numeric" placeholder="1234567" autocomplete="off">

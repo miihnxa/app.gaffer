@@ -13,6 +13,7 @@ from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 
 from ..config import DATA_DIR
+from . import account
 from .service import Service, TeamNotFound
 
 log = logging.getLogger(__name__)
@@ -57,12 +58,45 @@ def create_app(service: Service | None = None) -> Flask:
     def season():
         return jsonify(svc.season())
 
+    # --- account (proxied to the hosted service; token never reaches the page) ---
+    @app.post("/api/account/request")
+    def acct_request():
+        status, body = account.request_code((request.json or {}).get("email", ""))
+        return jsonify(body), status
+
+    @app.post("/api/account/verify")
+    def acct_verify():
+        b = request.json or {}
+        status, body = account.verify_code(b.get("email", ""), b.get("code", ""))
+        return jsonify(body), status
+
+    @app.get("/api/account/me")
+    def acct_me():
+        status, body = account.me()
+        return jsonify(body), status
+
+    @app.post("/api/account/team")
+    def acct_team():
+        status, body = account.save_team((request.json or {}).get("team_id"))
+        return jsonify(body), status
+
+    @app.post("/api/account/logout")
+    def acct_logout():
+        status, body = account.logout()
+        return jsonify(body), status
+
+    @app.post("/api/account/delete")
+    def acct_delete():
+        status, body = account.delete_account()
+        return jsonify(body), status
+
     @app.get("/api/config")
     def config():
         # Deliberately no team id. The app must not open on whoever's id
         # happens to be in settings.yaml — each person enters their own, and
         # the client remembers it locally.
-        return jsonify({"timezone": svc.cfg.tz.key})
+        return jsonify({"timezone": svc.cfg.tz.key,
+                        "accounts": account.enabled()})
 
     @app.get("/api/team/<int:team_id>")
     def team(team_id: int):

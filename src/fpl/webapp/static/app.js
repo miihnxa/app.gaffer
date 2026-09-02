@@ -47,12 +47,28 @@ const busy = (on, m) => { $('#loading').hidden = !on; if (m) $('#loadmsg').textC
 const fail = m => { const e = $('#err'); e.hidden = !m; e.textContent = m || ''; };
 
 /* ---------------- boot ---------------- */
+let ACCT = { available: false, signed_in: false, email: null, team_id: null };
+
+async function post(path, body) {
+  const r = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(body || {}) });
+  const b = await r.json().catch(() => ({}));
+  return { ok: r.ok, status: r.status, body: b };
+}
+
+function showPane(which) {
+  $('#pane-signin').hidden = which !== 'signin';
+  $('#pane-team').hidden = which !== 'team';
+}
+function signinErr(m) { const e = $('#signinerr'); e.hidden = !m; e.textContent = m || ''; }
+
 (async function init() {
   S.toggles = { ...DEFAULT_TOGGLES, ...store.get('toggles', {}) };
   S.bench = store.get('bench', 19);
 
   $('#go').addEventListener('click', () => load($('#tid').value.trim()));
   $('#tid').addEventListener('keydown', e => { if (e.key === 'Enter') load(e.target.value.trim()); });
+  wireSignin();
   paintRecents();
 
   try {
@@ -62,12 +78,65 @@ const fail = m => { const e = $('#err'); e.hidden = !m; e.textContent = m || '';
     $('#enterr').textContent = 'Could not reach the FPL API. Check your connection and reopen. (' + e.message + ')';
     return;
   }
-  // Only this person's own saved team opens automatically. The server never
-  // supplies one, so a fresh install always lands on the welcome screen.
+
+  try { ACCT = await api('/api/account/me'); } catch { ACCT = { available: false, signed_in: false }; }
+
+  // Signed in with a saved team: straight to the squad. Signed in without one,
+  // or signed out on a machine that remembers a team: straight to team entry.
+  if (ACCT.signed_in && ACCT.team_id) { showPane('team'); return load(ACCT.team_id); }
   const saved = store.get('teamId', null);
-  if (saved) { $('#tid').value = saved; load(saved); }
-  else $('#tid').focus();
+  if (ACCT.signed_in || !ACCT.available || saved) {
+    showPane('team');
+    if (saved) { $('#tid').value = saved; return load(saved); }
+    $('#tid').focus();
+    return;
+  }
+  showPane('signin');
+  $('#em').focus();
 })();
+
+function wireSignin() {
+  const emailStep = () => { $('#step-email').hidden = false; $('#step-code').hidden = true; signinErr(''); };
+
+  $('#sendcode').addEventListener('click', sendCode);
+  $('#em').addEventListener('keydown', e => { if (e.key === 'Enter') sendCode(); });
+  $('#resend').addEventListener('click', sendCode);
+  $('#backemail').addEventListener('click', emailStep);
+  $('#verifycode').addEventListener('click', verify);
+  $('#code').addEventListener('keydown', e => { if (e.key === 'Enter') verify(); });
+  $('#code').addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    if (e.target.value.length === 6) verify();
+  });
+  $('#skipsignin').addEventListener('click', () => { showPane('team'); $('#tid').focus(); });
+
+  async function sendCode() {
+    const email = $('#em').value.trim();
+    if (!email.includes('@')) return signinErr('Enter a valid email address.');
+    signinErr(''); busy(true, 'Sending your code…');
+    const r = await post('/api/account/request', { email });
+    busy(false);
+    if (!r.ok) return signinErr(r.body.error || 'Could not send that code.');
+    $('#sent-to').textContent = email;
+    $('#step-email').hidden = true; $('#step-code').hidden = false;
+    $('#code').value = ''; $('#code').focus();
+  }
+
+  async function verify() {
+    const code = $('#code').value.trim();
+    if (code.length !== 6) return signinErr('Enter the 6-digit code.');
+    signinErr(''); busy(true, 'Checking…');
+    const r = await post('/api/account/verify', { email: $('#em').value.trim(), code });
+    busy(false);
+    if (!r.ok) { $('#code').value = ''; $('#code').focus();
+                 return signinErr(r.body.error || 'That code did not work.'); }
+    ACCT = { available: true, signed_in: true, email: (r.body.user || {}).email,
+             team_id: (r.body.user || {}).team_id };
+    showPane('team');
+    if (ACCT.team_id) load(ACCT.team_id);
+    else $('#tid').focus();
+  }
+}
 
 function recents() { return store.get('recents', []); }
 
@@ -99,6 +168,7 @@ function goHome() {
   S.team = null; S.teamId = null; S.league = null; S.leagueId = null; S.rebuild = null;
   closeDrawer();
   $('#shell').hidden = true; $('#entry').hidden = false;
+  showPane(ACCT.available && !ACCT.signed_in ? 'signin' : 'team');
   $('#enterr').hidden = true;
   $('#tid').value = ''; $('#tid').focus();
   paintRecents();
@@ -114,6 +184,11 @@ async function load(id) {
     S.teamId = Number(id);
     store.set('teamId', S.teamId);
     remember(S.team.entry);
+    if (ACCT.signed_in) {
+      post('/api/account/team', { team_id: S.teamId })
+        .then(() => { ACCT.team_id = S.teamId; })
+        .catch(() => {});   // a sync failure must not block the squad loading
+    }
     S.out = null; S.inIdx = 0; S.rebuild = null; S.league = null; S.leagueId = null;
     S.locked = new Set();
     $('#entry').hidden = true; $('#shell').hidden = false;
@@ -604,6 +679,36 @@ function viewSettings(root) {
     row.append(txt, sw); t.append(row);
   });
 
+  const a = el('div', 'panel'); a.style.cssText = 'padding:18px 20px;margin-top:18px';
+  a.append(el('div', 'lbl', 'Account'));
+  if (!ACCT.available) {
+    a.append(el('p', 'foot', 'Accounts aren\'t configured for this install. Gaffer works fully signed out — your team ID is remembered on this machine.'));
+  } else if (!ACCT.signed_in) {
+    a.append(el('p', 'foot', 'Signed out. Sign in to have your team follow you to another machine.'));
+    const si = el('button', 'btn ghost', 'Sign in'); si.style.marginTop = '12px';
+    si.addEventListener('click', () => { goHome(); showPane('signin'); $('#em').focus(); });
+    a.append(si);
+  } else {
+    const bar = el('div', 'acctbar'); bar.style.margin = '12px 0';
+    bar.innerHTML = `<span class="dot"></span><span class="em">${ACCT.email}</span>`;
+    a.append(bar);
+    a.append(el('p', 'foot', 'Your team ID is saved to this account. We hold your email address and that ID — nothing else.'));
+    const row = el('div', 'ctl'); row.style.marginTop = '12px';
+    const out = el('button', 'btn ghost', 'Sign out');
+    out.addEventListener('click', async () => { await post('/api/account/logout');
+      ACCT = { ...ACCT, signed_in: false, email: null, team_id: null }; goHome(); });
+    const del = el('button', 'btn ghost', 'Delete account');
+    del.style.borderColor = 'var(--crit)'; del.style.color = 'var(--crit)';
+    del.addEventListener('click', async () => {
+      if (!confirm('Delete your Gaffer account?\n\nYour email address and saved team ID are erased immediately. This cannot be undone.')) return;
+      const r = await post('/api/account/delete');
+      if (!r.ok) return fail(r.body.error || 'Could not delete the account.');
+      ACCT = { ...ACCT, signed_in: false, email: null, team_id: null };
+      store.del('teamId'); store.del('recents'); goHome();
+    });
+    row.append(out, del); a.append(row);
+  }
+
   const c = el('div', 'panel'); c.style.cssText = 'padding:18px 20px;margin-top:18px';
   c.append(el('div', 'lbl', 'Local data'));
   c.append(el('p', 'foot', 'Team ID and preferences are stored in this browser profile only. FPL data is cached for a few minutes to avoid hammering their API.'));
@@ -616,7 +721,7 @@ function viewSettings(root) {
   });
   c.append(clear);
 
-  root.append(p, t, c);
+  root.append(p, t, a, c);
 }
 
 /* ---------------- drawer ---------------- */

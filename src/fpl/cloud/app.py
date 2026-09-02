@@ -21,6 +21,22 @@ log = logging.getLogger(__name__)
 WEB = Path(__file__).parent / "web"
 
 
+# Legal pages must never ship a placeholder contact address, and must never
+# carry a personal one. Set GAFFER_CONTACT_EMAIL; the app refuses to serve them
+# unset rather than publishing something wrong.
+CONTACT_EMAIL = os.environ.get("GAFFER_CONTACT_EMAIL", "").strip()
+LEGAL_PAGES = ("privacy.html", "terms.html", "licence.html")
+
+
+def _render_legal(name: str) -> tuple[str, int]:
+    body = (WEB / name).read_text()
+    if not CONTACT_EMAIL:
+        log.error("GAFFER_CONTACT_EMAIL is not set — refusing to serve %s", name)
+        return ("<h1>Not configured</h1><p>This page needs a contact address before "
+                "it can be published. Set GAFFER_CONTACT_EMAIL.</p>"), 503
+    return body.replace("{{CONTACT_EMAIL}}", CONTACT_EMAIL), 200
+
+
 def base_url() -> str:
     return os.environ.get("GAFFER_BASE_URL", request.host_url.rstrip("/"))
 
@@ -196,10 +212,16 @@ def create_app() -> Flask:
 
     @app.get("/<path:name>")
     def page(name: str):
+        target = f"{name}.html" if not name.endswith(".html") else name
+        if target in LEGAL_PAGES:
+            body, status = _render_legal(target)
+            resp = make_response(body, status)
+            resp.headers["Content-Type"] = "text/html; charset=utf-8"
+            return resp
         if (WEB / name).is_file():
             return send_from_directory(WEB, name)
-        if (WEB / f"{name}.html").is_file():
-            return send_from_directory(WEB, f"{name}.html")
+        if (WEB / target).is_file():
+            return send_from_directory(WEB, target)
         return jsonify({"error": "Not found"}), 404
 
     return app
