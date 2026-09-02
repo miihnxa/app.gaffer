@@ -1,10 +1,10 @@
-"""Gaffer Cloud — the public API.
+"""Gaffer account service.
 
-Everything is free. No accounts required: sign-in exists only so the app can
-remember your team id across devices, and every endpoint works signed out.
+Identity only. The desktop app fetches FPL data itself — this holds an email
+address and the team id you saved, so your setup follows you between machines.
 
-Read-only against the public FPL API. Never signs in to anyone's FPL account
-and never changes a team.
+Free to use. Read-only against the public FPL API; never signs in to anyone's
+FPL account and never changes a team.
 """
 from __future__ import annotations
 
@@ -20,44 +20,30 @@ from . import auth, cache, limits, store
 log = logging.getLogger(__name__)
 WEB = Path(__file__).parent / "web"
 
-# Kept as an abuse ceiling, not a paywall — a normal session is a handful of
-# lookups. Anonymous callers are limited by IP in limits.py instead.
-DAILY_LOOKUP_CEILING = 400
-
 
 def base_url() -> str:
     return os.environ.get("GAFFER_BASE_URL", request.host_url.rstrip("/"))
 
 
-def stateless() -> bool:
-    """Serverless hosts give you an ephemeral filesystem, so SQLite accounts
-    would silently vanish between requests. Everything here is free and an
-    account only ever remembered a team id — the browser does that better.
-    In stateless mode there is no database and no sign-in at all."""
-    return os.environ.get("GAFFER_STATELESS", "").lower() in ("1", "true", "yes")
-
-
 def create_app() -> Flask:
-    flat = stateless()
-    if not flat:
-        store.init()
+    store.init()
     app = Flask(__name__, static_folder=None)
-    app.config["GAFFER_STATELESS"] = flat
     app.config["MAX_CONTENT_LENGTH"] = 64 * 1024
 
-    # --- CORS, so a Lovable/Base44 frontend on another origin can call this ---
     allowed = [o.strip() for o in
                os.environ.get("GAFFER_CORS_ORIGINS", "").split(",") if o.strip()]
 
     @app.after_request
     def edge_cache(resp):
-        # Every response is the same for every caller, so a CDN can absorb the
-        # traffic. 300s matches the FPL API's own max-age.
-        if request.path.startswith("/api/") and resp.status_code == 200 \
-                and request.path not in ("/api/me", "/api/config"):
+        # Public FPL responses are identical for everyone, so a CDN can hold
+        # them. Anything account-shaped must never be cached.
+        private = request.path.startswith(("/api/me", "/api/auth", "/api/config"))
+        if request.path.startswith("/api/") and resp.status_code == 200 and not private:
             resp.headers.setdefault(
-                "Cache-Control", "public, max-age=60, s-maxage=300, "
-                                 "stale-while-revalidate=600")
+                "Cache-Control",
+                "public, max-age=60, s-maxage=300, stale-while-revalidate=600")
+        elif private:
+            resp.headers["Cache-Control"] = "no-store"
         return resp
 
     @app.after_request
@@ -76,8 +62,7 @@ def create_app() -> Flask:
         if request.method == "OPTIONS":
             return make_response("", 204)
         if request.path.startswith("/api/"):
-            user = None if flat else auth.current_user()
-            ok, retry = limits.check(user)
+            ok, retry = limits.check(auth.current_user())
             if not ok:
                 return limits.too_many(retry)
 
@@ -91,96 +76,97 @@ def create_app() -> Flask:
         return jsonify({"error": "Something broke on our side.",
                         "code": "server_error"}), 500
 
-    # ================= accounts =================
-    if flat:
-        @app.get("/api/me")
-        def me_flat():
-            return jsonify({"signed_in": False, "stateless": True})
+    # ===================== auth =====================
+    @app.post("/api/auth/request")
+    def auth_request():
+        email = ((request.json or {}).get("email") or "").strip().lower()
+        if "@" not in email or "." not in email.split("@")[-1] or len(email) > 200:
+            return jsonify({"error": "Enter a valid email address.",
+                            "code": "bad_email"}), 400
+        code, wait = store.issue_code(email)
+        if code is None:
+            return jsonify({"error": f"A code was just sent. Try again in {wait}s.",
+                            "code": "cooldown", "retry_after": wait}), 429
+        try:
+            auth.send_code(email, code)
+        except Exception:  # noqa: BLE001
+            log.exception("could not send sign-in code")
+            return jsonify({"error": "We couldn't send that email. Try again shortly.",
+                            "code": "send_failed"}), 502
+        # Identical whether or not the address has an account, so this can't be
+        # used to find out who does.
+        return jsonify({"ok": True, "message": "Check your email for a 6-digit code."})
 
-        @app.get("/api/config")
-        def config_flat():
-            # No server-side memory: the client keeps the last team in
-            # localStorage and passes it back itself.
-            return jsonify({"default_team_id": None, "default_league_id": None,
-                            "timezone": "Europe/London", "recents": [],
-                            "stateless": True})
-    else:
-        @app.post("/api/auth/request")
-        def auth_request():
-            email = (request.json or {}).get("email", "").strip().lower()
-            if "@" not in email or len(email) > 200:
-                return jsonify({"error": "Enter a valid email address."}), 400
-            store.get_or_create_user(email)
-            token = store.new_login_token(email)
-            auth.send_magic_link(email, f"{base_url()}/api/auth/callback?token={token}")
-            return jsonify({"ok": True,
-                            "message": "Check your email for a sign-in link."})
+    @app.post("/api/auth/verify")
+    def auth_verify():
+        body = request.json or {}
+        email = (body.get("email") or "").strip().lower()
+        code = str(body.get("code") or "").strip()
+        if not email or not code:
+            return jsonify({"error": "Enter the code from your email.",
+                            "code": "bad_request"}), 400
+        user = store.verify_code(email, code)
+        if user is None:
+            return jsonify({"error": "That code is wrong or has expired. "
+                                     "Request a new one.", "code": "bad_code"}), 401
+        return jsonify({"token": auth.issue(user),
+                        "user": {"email": user.email, "team_id": user.team_id,
+                                 "team_name": user.team_name}})
 
-        @app.get("/api/auth/callback")
-        def auth_callback():
-            email = store.consume_login_token(request.args.get("token", ""))
-            if not email:
-                return jsonify({"error": "That link has expired or was already used.",
-                                "code": "bad_token"}), 400
-            user = store.get_or_create_user(email)
-            resp = make_response(jsonify({"ok": True}))
-            resp.headers["Location"] = f"{base_url()}/app"
-            resp.status_code = 302
-            resp.set_cookie("gaffer_session", auth.issue(user),
-                            max_age=auth.SESSION_DAYS * 86400, httponly=True,
-                            samesite="Lax", secure=base_url().startswith("https"))
-            return resp
+    @app.post("/api/auth/logout")
+    def logout():
+        resp = make_response(jsonify({"ok": True}))
+        resp.delete_cookie("gaffer_session")
+        return resp
 
-        @app.post("/api/auth/logout")
-        def logout():
-            resp = make_response(jsonify({"ok": True}))
-            resp.delete_cookie("gaffer_session")
-            return resp
-
-        @app.get("/api/me")
-        @auth.optional_user
-        def me():
-            u = g.user
-            if u is None:
-                return jsonify({"signed_in": False})
-            return jsonify({"signed_in": True, "email": u.email,
-                            "team_id": u.team_id})
-
-        @app.get("/api/config")
-        @auth.optional_user
-        def client_config():
-            u = g.user
-            return jsonify({"default_team_id": u.team_id if u else None,
-                            "default_league_id": None,
-                            "timezone": "Europe/London", "recents": []})
-
-    # ================= free =================
-    @app.get("/api/config")
+    # ===================== account =====================
+    @app.get("/api/me")
     @auth.optional_user
-    def client_config():
+    def me():
         u = g.user
-        return jsonify({"default_team_id": u.team_id if u else None,
-                        "default_league_id": None,
-                        "timezone": "Europe/London", "recents": []})
+        if u is None:
+            return jsonify({"signed_in": False})
+        return jsonify({"signed_in": True, "email": u.email,
+                        "team_id": u.team_id, "team_name": u.team_name})
 
+    @app.post("/api/me/team")
+    @auth.login_required
+    def save_team():
+        tid = (request.json or {}).get("team_id")
+        if tid in (None, ""):
+            store.set_team(g.user.id, None, None)
+            return jsonify({"ok": True, "team_id": None})
+        try:
+            tid = int(tid)
+        except (TypeError, ValueError):
+            return jsonify({"error": "Team ID must be a number.",
+                            "code": "bad_team"}), 400
+        entry = cache.service().entry(tid)      # raises TeamNotFound if unreal
+        store.set_team(g.user.id, tid, entry["name"])
+        return jsonify({"ok": True, "team_id": tid, "team_name": entry["name"]})
+
+    @app.post("/api/me/delete")
+    @auth.login_required
+    def delete_me():
+        store.delete_user(g.user.id)
+        return jsonify({"ok": True})
+
+    # ===================== public FPL =====================
     @app.get("/api/season")
     def season():
         return jsonify(cache.service().season())
 
     @app.get("/api/team/<int:team_id>")
-    @auth.optional_user
     def team(team_id: int):
-        user = None if flat else g.user
-        if user is not None:
-            calls = store.bump_usage(user.id)
-            if calls > DAILY_LOOKUP_CEILING:
-                return jsonify({
-                    "error": "That's a lot of lookups in one day. Try again "
-                             "tomorrow, or get in touch if you need more.",
-                    "code": "rate_limited"}), 429
-            store.set_team(user.id, team_id)
-        payload = cache.service().team_payload(team_id, with_replacements=True)
-        return jsonify(payload)
+        return jsonify(cache.service().team_payload(team_id, with_replacements=True))
+
+    @app.get("/api/team/<int:team_id>/rebuild")
+    def rebuild(team_id: int):
+        locked = [int(x) for x in request.args.getlist("lock") if x.isdigit()]
+        return jsonify(cache.service().rebuild(
+            team_id, locked_ids=locked,
+            bench_budget=float(request.args.get("bench", 19.0)),
+            budget=request.args.get("budget", type=float)))
 
     @app.get("/api/league/<int:league_id>")
     def league(league_id: int):
@@ -199,16 +185,7 @@ def create_app() -> Flask:
     def ticker():
         return jsonify(cache.service().ticker(request.args.get("n", 5, type=int)))
 
-    # ================= pro =================
-    @app.get("/api/team/<int:team_id>/rebuild")
-    def rebuild(team_id: int):
-        locked = [int(x) for x in request.args.getlist("lock") if x.isdigit()]
-        return jsonify(cache.service().rebuild(
-            team_id, locked_ids=locked,
-            bench_budget=float(request.args.get("bench", 19.0)),
-            budget=request.args.get("budget", type=float)))
-
-    # ================= pages =================
+    # ===================== pages =====================
     @app.get("/healthz")
     def healthz():
         return jsonify({"ok": True})
@@ -217,21 +194,12 @@ def create_app() -> Flask:
     def index():
         return send_from_directory(WEB, "index.html")
 
-    @app.get("/app")
-    def application():
-        return send_from_directory(WEB, "app.html")
-
     @app.get("/<path:name>")
     def page(name: str):
-        target = WEB / name
-        if target.is_file():
+        if (WEB / name).is_file():
             return send_from_directory(WEB, name)
-        html = WEB / f"{name}.html"
-        if html.is_file():
+        if (WEB / f"{name}.html").is_file():
             return send_from_directory(WEB, f"{name}.html")
         return jsonify({"error": "Not found"}), 404
 
     return app
-
-
-app = create_app() if os.environ.get("GAFFER_EAGER") else None

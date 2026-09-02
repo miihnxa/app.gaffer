@@ -1,0 +1,64 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/legal.css"><title>Licence — Gaffer</title></head><body><div class="wrap">
+<a class="back" href="/">← Gaffer</a>
+<h1>End User Licence</h1>
+<p class="date">Version 1.0 · Last updated 1 September 2026</p>
+<p class="lede">This covers the Gaffer application you download and run on your own machine.
+The <a href="/terms">Terms of Service</a> cover the account service it talks to.</p>
+
+<h2>1. Licence granted</h2>
+<p>You are granted a personal, non-exclusive, non-transferable, revocable licence to install
+and use Gaffer on machines you own or control, for your own non-commercial use. The
+software is licensed, not sold.</p>
+
+<h2>2. What you may not do</h2>
+<ul>
+<li>Redistribute, sell, rent or sublicense the application.</li>
+<li>Remove or alter any attribution or notices.</li>
+<li>Present it as your own product, or as official Premier League software.</li>
+<li>Use it to build a competing commercial service.</li>
+</ul>
+<p>You <b>may</b> inspect how it works — it is written in readable Python and JavaScript,
+and nothing is obfuscated.</p>
+
+<h2>3. What it does on your machine</h2>
+<p>So there are no surprises about what you are installing:</p>
+<ul>
+<li>Runs a local web server on <code>127.0.0.1</code>, reachable only from your own machine, and shows it in a native window.</li>
+<li>Makes outbound requests to the public Fantasy Premier League API, and to the Gaffer account service if you sign in.</li>
+<li>Writes a cache and your preferences to your user folder.</li>
+<li><b>Does not</b> run at startup, install background services, read files outside its own folder, or send telemetry.</li>
+</ul>
+
+<h2>4. Not notarised by Apple</h2>
+<div class="callout">
+<p>The current build is <b>not signed with an Apple Developer certificate</b>. macOS will
+warn that the developer cannot be verified, and you will need to right-click the app and
+choose <b>Open</b> the first time.</p>
+<p>We are telling you this rather than hiding it. Only download Gaffer from the official
+site — a warning like that is also exactly what malware looks like, and you should treat
+any other source with suspicion.</p>
+</div>
+
+<h2>5. Updates</h2>
+<p>Gaffer does not update itself. New versions are downloaded from the site when you choose
+to. Old versions keep working for as long as the public FPL API keeps its current shape.</p>
+
+<h2>6. Third-party components</h2>
+<p>Gaffer includes open-source components under their own licences, including Python,
+Flask, Requests, PyYAML, PyJWT, pywebview and Pillow. Their licences are included in the
+download and continue to govern those components.</p>
+
+<h2>7. Warranty and liability</h2>
+<p>The software is provided <b>"as is", without warranty of any kind</b>. To the fullest
+extent permitted by law the author is not liable for any damages arising from its use.
+See section 10 of the <a href="/terms">Terms</a> for the full position.</p>
+
+<h2>8. Termination</h2>
+<p>This licence ends if you breach it. You may end it at any time by deleting the
+application.</p>
+<footer><a href="/">Gaffer</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/licence">Licence</a>
+<p style="margin-top:14px">Gaffer is an independent tool. It is not affiliated with, endorsed by, or connected to the Premier League or Fantasy Premier League.</p></footer></div></body></html>

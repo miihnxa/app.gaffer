@@ -1,45 +1,105 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"><title>Privacy — Gaffer</title><style>body{margin:0;background:#140419;color:#F6EFF9;font-family:"IBM Plex Sans",-apple-system,sans-serif;line-height:1.65;font-size:16px}
-.wrap{max-width:760px;margin:0 auto;padding:56px 22px 80px}h1{font-family:"Barlow Condensed",Impact,sans-serif;font-size:44px;text-transform:uppercase;margin:0 0 6px}
-h2{font-family:"Barlow Condensed",sans-serif;font-size:23px;text-transform:uppercase;margin:34px 0 8px;letter-spacing:.03em}
-p,li{color:#C3AECD}a{color:#2CE08C}.date{color:#8E779A;font-size:14px;margin:0 0 30px}
-.back{display:inline-block;margin-bottom:26px;color:#C3AECD;text-decoration:none;font-size:14px}</style>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;600&display=swap"></head>
-<body><div class="wrap"><a class="back" href="/">← Gaffer</a>
-<h1>Privacy Policy</h1><p class="date">Last updated 1 September 2026</p>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/legal.css"><title>Privacy Policy — Gaffer</title></head><body><div class="wrap">
+<a class="back" href="/">← Gaffer</a>
+<h1>Privacy Policy</h1>
+<p class="date">Version 1.0 · Last updated 1 September 2026</p>
+<p class="lede">Gaffer holds an email address and a Fantasy Premier League team ID. That is the
+whole of it. This policy explains why, how long, and what you can make us do about it.</p>
 
-<h2>What we collect</h2>
-<p>Only what the service needs to work:</p>
+<h2>1. Who is responsible</h2>
+<p>Gaffer is operated by <b>A. Manager</b>, Montreal, Quebec, Canada. For anything in
+this policy — including a request to see or delete your data — contact
+<a href="mailto:app.gaffer@gmail.com">app.gaffer@gmail.com</a>.</p>
+<p>Under the UK and EU GDPR we are the <b>data controller</b> for the information described below.</p>
+
+<h2>2. What we collect, and why</h2>
+<table>
+<tr><th>Data</th><th>Why</th><th>Legal basis</th></tr>
+<tr><td><b>Email address</b></td><td>To sign you in and send your 6-digit code. It is your account identifier.</td><td>Performance of a contract</td></tr>
+<tr><td><b>FPL team ID and team name</b></td><td>So the app opens on your squad instead of asking every time, on any machine you sign in from.</td><td>Performance of a contract</td></tr>
+<tr><td><b>Account timestamps</b></td><td>When the account was created and last used, so dormant accounts can be cleared.</td><td>Legitimate interest</td></tr>
+<tr><td><b>Sign-in codes</b></td><td>Stored hashed, never in plain text, and deleted the moment they are used or expire.</td><td>Security</td></tr>
+<tr><td><b>IP address</b></td><td>Held transiently in memory for rate limiting. Not written to a database and not retained.</td><td>Legitimate interest (preventing abuse)</td></tr>
+</table>
+
+<div class="callout">
+<p><b>Your FPL team ID is public information.</b> Anyone can look up any team ID on the
+official Fantasy Premier League website and see that squad, its manager name and its
+leagues. An account does not make your team private, and we would be misleading you if we
+implied otherwise.</p>
+<p>What the account actually protects is your <b>email address</b>, your <b>saved
+preferences</b>, and the fact that nobody else's install of Gaffer opens on your team.</p>
+</div>
+
+<h2>3. What we do not collect</h2>
 <ul>
-<li><strong>Your email address</strong> — to sign you in and to email you a receipt or an alert you asked for.</li>
-<li><strong>Your FPL team ID</strong> — a public number, so the app remembers which team to load.</li>
-<li><strong>Usage counts</strong> — how many lookups you made on a given day, purely to stop abuse.</li>
+<li><b>No password.</b> Not yours for Gaffer, and never your Fantasy Premier League password. We authenticate with emailed codes, so there is no password to leak.</li>
+<li><b>No payment data.</b> Gaffer is free. We hold no card or billing information at all.</li>
+<li><b>No analytics, advertising or tracking.</b> No third-party trackers, no advertising identifiers, no behavioural profiling.</li>
+<li><b>No access to your FPL account.</b> We cannot sign in as you, make transfers, or change your team, and the app is built so that it never could.</li>
+<li><b>No contacts, files, location or device identifiers.</b></li>
 </ul>
 
-<h2>What we do not collect</h2>
-<p>We do not ask for or store your Fantasy Premier League password. There are no payments,
-so we hold no card or billing data at all. We do not use advertising trackers, and we do
-not sell or share your data with anyone.</p>
-
-<h2>Passwords</h2>
-<p>There are none. Sign-in uses a single-use link emailed to you that expires in 20 minutes.
-We never store a password, so one can never leak.</p>
-
-<h2>Cookies</h2>
-<p>One cookie, <code>gaffer_session</code>, which keeps you signed in for 30 days. It is
-strictly necessary for the service to work. No analytics or advertising cookies.</p>
-
-<h2>Third parties</h2>
+<h2>4. Who else sees it</h2>
+<p>We do not sell, rent or share your data. It is handled only by the service providers
+needed to run Gaffer, each acting as a processor on our instructions:</p>
 <ul>
-<li><strong>Fantasy Premier League</strong> — we read public data from their endpoints. We do not send them anything about you.</li>
-<li><strong>Our host</strong> — servers and standard request logs.</li>
+<li><b>Our hosting provider</b> — runs the account service and its database.</li>
+<li><b>Our email provider</b> — delivers your sign-in code. It sees your email address.</li>
+</ul>
+<p>We read public data <i>from</i> the Fantasy Premier League API. We never send them
+anything about you: they cannot tell that you use Gaffer.</p>
+
+<h2>5. Where your data is held</h2>
+<p>Our servers may be located outside your country, including in Canada, the United States
+or the European Union. Where data leaves the UK or EEA, we rely on the UK/EU Standard
+Contractual Clauses or an adequacy decision. If you would like to know the current hosting
+region, ask and we will tell you.</p>
+
+<h2>6. How long we keep it</h2>
+<ul>
+<li><b>Account data</b> — for as long as your account exists.</li>
+<li><b>Sign-in codes</b> — 15 minutes, or until used. Whichever comes first.</li>
+<li><b>Dormant accounts</b> — deleted after 24 months without a sign-in.</li>
+<li><b>Deletion requests</b> — acted on immediately; backups age out within 30 days.</li>
 </ul>
 
-<h2>Retention and your rights</h2>
-<p>We keep your account while it exists. Email us and we will delete your account and all
-associated data, permanently, within 30 days. You may also request a copy of everything we
-hold about you.</p>
+<h2>7. Your rights</h2>
+<p>Under the UK and EU GDPR, and under Canadian federal and Quebec law, you may:</p>
+<ul>
+<li><b>Access</b> — get a copy of everything we hold about you.</li>
+<li><b>Rectify</b> — correct anything wrong.</li>
+<li><b>Erase</b> — delete your account and its data. There is a button for this in the app under Settings, and it takes effect immediately.</li>
+<li><b>Port</b> — receive your data in a machine-readable format.</li>
+<li><b>Object or restrict</b> — tell us to stop processing.</li>
+<li><b>Withdraw consent</b> — at any time, without giving a reason.</li>
+</ul>
+<p>Email <a href="mailto:app.gaffer@gmail.com">app.gaffer@gmail.com</a> and we
+will respond within 30 days. You will never be charged for exercising a right.</p>
+<p>If you are unhappy with our response you may complain to your data protection authority:
+the <b>ICO</b> in the UK (ico.org.uk), your national authority in the EU, the <b>Office of
+the Privacy Commissioner of Canada</b>, or the <b>Commission d'accès à l'information</b> in
+Quebec.</p>
 
-<h2>Contact</h2>
-<p><a href="mailto:app.gaffer@gmail.com">app.gaffer@gmail.com</a></p>
-</div></body></html>
+<h2>8. Security</h2>
+<ul>
+<li>All traffic is encrypted in transit over HTTPS.</li>
+<li>Sign-in codes are stored as salted HMAC-SHA256 hashes, never in plain text.</li>
+<li>Codes expire in 15 minutes, work once, and are destroyed after five wrong attempts.</li>
+<li>Session tokens are signed and expire after 90 days.</li>
+</ul>
+<p>No system is perfectly secure. If a breach ever affects your data we will tell you and
+the relevant regulator without undue delay, and within 72 hours where the GDPR requires it.</p>
+
+<h2>9. Children</h2>
+<p>Gaffer is not directed at children under 13, and we do not knowingly collect their data.
+If you believe a child has created an account, contact us and we will delete it.</p>
+
+<h2>10. Changes</h2>
+<p>If we change this policy materially we will email account holders before it takes effect.
+The version number and date at the top always reflect the current text.</p>
+<footer><a href="/">Gaffer</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/licence">Licence</a>
+<p style="margin-top:14px">Gaffer is an independent tool. It is not affiliated with, endorsed by, or connected to the Premier League or Fantasy Premier League.</p></footer></div></body></html>
