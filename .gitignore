@@ -15,3 +15,7 @@ data/gaffer.sqlite3*
 .env
 .env.*
 data/recent-teams.json
+build/
+dist/
+release/*.zip
+build-assets/*.iconset

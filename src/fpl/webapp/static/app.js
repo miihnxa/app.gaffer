@@ -80,19 +80,17 @@ function signinErr(m) { const e = $('#signinerr'); e.hidden = !m; e.textContent 
   }
 
   try { ACCT = await api('/api/account/me'); } catch { ACCT = { available: false, signed_in: false }; }
+  // Only advertise sign-in when an account service is actually configured.
+  const offer = $('#offer-signin');
+  if (offer) offer.hidden = !(ACCT.available && !ACCT.signed_in);
 
-  // Signed in with a saved team: straight to the squad. Signed in without one,
-  // or signed out on a machine that remembers a team: straight to team entry.
-  if (ACCT.signed_in && ACCT.team_id) { showPane('team'); return load(ACCT.team_id); }
-  const saved = store.get('teamId', null);
-  if (ACCT.signed_in || !ACCT.available || saved) {
-    showPane('team');
-    if (saved) { $('#tid').value = saved; return load(saved); }
-    $('#tid').focus();
-    return;
-  }
-  showPane('signin');
-  $('#em').focus();
+  // Team ID first, always. A new user can be looking at their squad seconds
+  // after opening the app, with no account and no server to depend on.
+  // Signing in is optional and offered from here and from Settings.
+  showPane('team');
+  const saved = ACCT.team_id || store.get('teamId', null);
+  if (saved) { $('#tid').value = saved; return load(saved); }
+  $('#tid').focus();
 })();
 
 function wireSignin() {
@@ -109,6 +107,8 @@ function wireSignin() {
     if (e.target.value.length === 6) verify();
   });
   $('#skipsignin').addEventListener('click', () => { showPane('team'); $('#tid').focus(); });
+  const gs = $('#gosignin');
+  if (gs) gs.addEventListener('click', () => { showPane('signin'); $('#em').focus(); });
 
   async function sendCode() {
     const email = $('#em').value.trim();

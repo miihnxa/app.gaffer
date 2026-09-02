@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import os
+import shutil
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -9,11 +11,55 @@ from zoneinfo import ZoneInfo
 
 import yaml
 
-ROOT = Path(__file__).resolve().parents[2]
-CONFIG_DIR = ROOT / "config"
-DATA_DIR = ROOT / "data"
+def _frozen() -> bool:
+    """True inside a PyInstaller bundle."""
+    return getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
+
+
+def bundled_dir() -> Path:
+    """Read-only resources shipped with the app."""
+    if _frozen():
+        return Path(sys._MEIPASS)
+    return Path(__file__).resolve().parents[2]
+
+
+def user_dir() -> Path:
+    """Everything the app writes.
+
+    An installed .app is read-only (and on a signed build, writing inside it
+    breaks the signature), so config, caches and logs live in the user's own
+    Application Support directory.
+    """
+    if _frozen():
+        return Path.home() / "Library" / "Application Support" / "Gaffer"
+    return Path(__file__).resolve().parents[2]
+
+
+ROOT = bundled_dir()
+CONFIG_DIR = user_dir() / "config"
+DEFAULTS_DIR = bundled_dir() / "defaults"
+DATA_DIR = user_dir() / "data"
 SNAPSHOT_DIR = DATA_DIR / "snapshots"
-LOG_DIR = ROOT / "logs"
+LOG_DIR = user_dir() / "logs"
+
+
+def seed_user_config() -> None:
+    """First run: copy the shipped defaults into the user's directory.
+
+    Only ever copies what is missing, so a user's edits are never overwritten
+    by an app update.
+    """
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    for name in ("settings.yaml", "watchlist.yaml", "season-plan.yaml"):
+        target = CONFIG_DIR / name
+        if target.exists():
+            continue
+        for candidate in (DEFAULTS_DIR / name, DEFAULTS_DIR / f"{name[:-5]}.example.yaml",
+                          DEFAULTS_DIR / "settings.example.yaml"):
+            if candidate.exists() and (candidate.name == name
+                                       or name == "settings.yaml"):
+                shutil.copyfile(candidate, target)
+                break
 
 
 class ConfigError(RuntimeError):
@@ -22,6 +68,8 @@ class ConfigError(RuntimeError):
 
 def _load(name: str) -> dict[str, Any]:
     path = CONFIG_DIR / name
+    if not path.exists():
+        path = DEFAULTS_DIR / name
     if not path.exists():
         raise ConfigError(f"missing config file: {path}")
     with path.open() as fh:
@@ -41,6 +89,7 @@ class Config:
             watchlist=_load("watchlist.yaml"),
             plan=_load("season-plan.yaml"),
         )
+        seed_user_config()
         cfg._apply_env()
         for d in (DATA_DIR, SNAPSHOT_DIR, LOG_DIR):
             d.mkdir(parents=True, exist_ok=True)
@@ -108,6 +157,8 @@ class Config:
     def set_entry(self, key: str, value: Any) -> None:
         """Persist a value under `entry:` back to settings.yaml."""
         path = CONFIG_DIR / "settings.yaml"
+        if not path.exists():
+            seed_user_config()
         text = path.read_text()
         import re
 

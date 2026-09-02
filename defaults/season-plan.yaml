@@ -1,0 +1,29 @@
+# Shipped defaults. Only the game's own rules — nothing personal.
+# Your copy lives in ~/Library/Application Support/Gaffer/config/
+
+chip_deadline_gw: 19
+chips:
+  wildcard:
+    planned_gw: 6
+    note: After the international break. GW6-10 ticker swing.
+  3xc:
+    planned_gw: 7
+    note: Haaland, City home to Ipswich.
+  bboost:
+    planned_gw: 8
+    note: Straight after the Wildcard, bench = 4 real starters.
+  freehit:
+    planned_gw: 16
+    alt_gw: 13
+    note: GW16 aggressive (City v Hull). GW13 defensive.
+rules:
+  no_hits_before_gw: 6
+  block_lower_form_transfer_in: true
+  roll_transfers_until_gw: 6
+  max_players_per_club: 3
+  min_defenders: 3
+abandon_triggers:
+  xi_flagged_count: 2
+  points_behind_leader: 15
+  haaland_flagged: true
+  xi_lost_starting_place: 3
