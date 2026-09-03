@@ -28,7 +28,15 @@ const S = {
   league: null, leagueId: null, rebuild: null,
   out: null, inIdx: 0, bench: 19, locked: new Set(),
   toggles: { ...DEFAULT_TOGGLES }, tick: null,
+  swaps: {},          // { outPlayerId: inPlayerId } — transfers FPL hasn't published
 };
+
+function swapKey() { return `swaps.${S.teamId}.${S.season ? S.season.next_gw : 0}`; }
+function loadSwaps() { S.swaps = store.get(swapKey(), {}) || {}; }
+function saveSwaps() { store.set(swapKey(), S.swaps); }
+function swapQuery() {
+  return Object.entries(S.swaps).map(([o, i]) => `swap=${o}:${i}`).join('&');
+}
 
 /* ---------------- storage ---------------- */
 const store = {
@@ -180,8 +188,10 @@ async function load(id) {
   busy(true, 'Loading squad…'); fail('');
   try {
     if (!S.season) S.season = await api('/api/season');
-    S.team = await api('/api/team/' + id);
     S.teamId = Number(id);
+    loadSwaps();
+    const q = swapQuery();
+    S.team = await api('/api/team/' + id + (q ? '?' + q : ''));
     store.set('teamId', S.teamId);
     remember(S.team.entry);
     if (ACCT.signed_in) {
@@ -200,6 +210,23 @@ async function load(id) {
     else fail(e.message);
   } finally { busy(false); }
 }
+
+async function reloadTeam() {
+  busy(true, 'Recalculating…');
+  try {
+    const q = swapQuery();
+    S.team = await api('/api/team/' + S.teamId + (q ? '?' + q : ''));
+    header(); render();
+  } catch (e) { fail(e.message); } finally { busy(false); }
+}
+
+function recordSwap(outId, inId) {
+  S.swaps[outId] = inId; saveSwaps(); closeDrawer(); reloadTeam();
+}
+function undoSwap(outId) {
+  delete S.swaps[outId]; saveSwaps(); reloadTeam();
+}
+function clearSwaps() { S.swaps = {}; saveSwaps(); reloadTeam(); }
 
 /* ---------------- chrome ---------------- */
 function buildNav() {
@@ -336,6 +363,16 @@ function viewSquad(root) {
   const hd = el('div', 'phd');
   hd.append(el('div', 'lbl', `Gameweek ${S.season.next_gw} · ${sq.formation}`));
   if (sq.stale || sq.source !== 'api') hd.append(el('div', 'note-line', 'Recorded by hand — pre-deadline squads aren\'t public'));
+  const rec = sq.swaps || [];
+  if (rec.length) {
+    const b = el('div', 'swapbar');
+    b.innerHTML = `<span class="micro" style="color:var(--accent)">Recorded</span>` +
+      rec.map(x => `<span class="swapchip">${x.out} <span class="mono">&rarr;</span> <b>${x.in}</b>
+        <button class="undo" data-out="${x.out_id}" title="Undo">&times;</button></span>`).join('');
+    left.append(b);
+    b.querySelectorAll('.undo').forEach(btn =>
+      btn.addEventListener('click', () => undoSwap(btn.dataset.out)));
+  }
   left.append(hd, board(sq.xi, sq.bench));
   cols.append(left);
 
@@ -744,11 +781,18 @@ async function openPlayer(p) {
     ${flagged ? `<div class="newsbox"><b>${p.status}</b>${p.news ? ' — ' + p.news : ''} · ${p.chance}% chance to play</div>` : ''}
     <div class="lbl" style="margin-top:20px;letter-spacing:.13em">Next five</div>
     <div class="fx5">${p.fixtures_next.map(f => `<span>GW${f.gw} ${f.opponent} ${f.home ? 'H' : 'A'} ${fdrTag(f.difficulty)}</span>`).join('') || '<span>No scheduled fixtures</span>'}</div>
+    <div class="lbl" style="margin-top:20px;letter-spacing:.13em">Already transferred this player out?</div>
+    <p class="foot" style="margin-top:6px">FPL doesn't publish your squad before a deadline, so record it here and everything recalculates.</p>
+    <div class="recwrap">
+      <input id="recq" class="srch" type="search" placeholder="Search the ${p.pos} who replaced ${p.name}…" autocomplete="off">
+      <div id="recres"></div>
+    </div>
     <div class="lbl" style="margin-top:20px;letter-spacing:.13em">Last five gameweeks</div>
     <div id="dhist" class="loading" style="margin-top:9px"><span class="spin"></span><span>Loading…</span></div>
     ${repsTable(p)}`;
   $('#drawer').classList.add('open'); $('#scrim').hidden = false;
   $('#dx').addEventListener('click', closeDrawer);
+  wireRecord(p);
 
   try {
     const h = await api('/api/player/' + p.id);
@@ -763,6 +807,37 @@ async function openPlayer(p) {
       return `<div class="b" style="height:${pct}%;background:${col}"><b>${r.points}</b></div>`;
     }).join('');
   } catch { const b = $('#dhist'); if (b) { b.className = 'empty'; b.textContent = 'History unavailable.'; } }
+}
+
+function wireRecord(p) {
+  const box = $('#recq'); if (!box) return;
+  const owned = new Set(S.team.squad.xi.concat(S.team.squad.bench).map(x => x.id));
+  let t;
+  box.addEventListener('input', e => {
+    clearTimeout(t);
+    const q = e.target.value.trim();
+    if (q.length < 2) { $('#recres').textContent = ''; return; }
+    t = setTimeout(async () => {
+      try {
+        const rows = (await api('/api/search?q=' + encodeURIComponent(q)))
+          .filter(r => r.pos === p.pos && !owned.has(r.id));
+        const box2 = $('#recres'); box2.textContent = '';
+        if (!rows.length) {
+          box2.innerHTML = `<p class="foot">No ${p.pos} found by that name who isn't already in your squad.</p>`;
+          return;
+        }
+        rows.slice(0, 6).forEach(r => {
+          const row = el('button', 'recrow',
+            `<span><b>${r.name}</b> <span style="color:var(--faint)">${r.club}</span></span>
+             <span class="mono">${money(r.price)}</span>
+             <span class="mono" style="color:${formFg(r.form)}">${r.form}</span>`);
+          row.type = 'button';
+          row.addEventListener('click', () => recordSwap(p.id, r.id));
+          box2.append(row);
+        });
+      } catch (err) { fail(err.message); }
+    }, 220);
+  });
 }
 
 function repsTable(p) {

@@ -100,7 +100,14 @@ def create_app(service: Service | None = None) -> Flask:
 
     @app.get("/api/team/<int:team_id>")
     def team(team_id: int):
-        return jsonify(svc.team_payload(team_id))
+        # swap=<out_id>:<in_id>, repeatable — transfers made since the last
+        # published gameweek, which the public API cannot see.
+        swaps: dict[int, int] = {}
+        for raw in request.args.getlist("swap"):
+            out, _, inc = raw.partition(":")
+            if out.isdigit() and inc.isdigit():
+                swaps[int(out)] = int(inc)
+        return jsonify(svc.team_payload(team_id, swaps=swaps))
 
     @app.get("/api/team/<int:team_id>/rebuild")
     def rebuild(team_id: int):

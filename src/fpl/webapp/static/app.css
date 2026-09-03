@@ -209,3 +209,15 @@ input[type=range]{accent-color:var(--accent)}
 .acctbar{display:flex;align-items:center;gap:9px;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
 .acctbar .em{font-size:11.5px;color:var(--muted);flex:1;word-break:break-all;line-height:1.35}
 .acctbar .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
+
+/* ---------------- recorded transfers ---------------- */
+.swapbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px;padding:10px 13px;
+  background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:9px}
+.swapchip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--lime-fg)}
+.swapchip b{color:var(--accent)}
+.swapchip .undo{background:none;border:0;color:var(--lime-fg);font-size:15px;line-height:1;padding:0 2px;opacity:.65}
+.swapchip .undo:hover{opacity:1;color:var(--crit)}
+.recwrap{margin-top:9px}
+.recrow{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;width:100%;text-align:left;
+  background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin-top:6px;color:var(--text);font-size:12.5px}
+.recrow:hover{border-color:var(--accent);background:var(--panel-3)}

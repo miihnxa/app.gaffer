@@ -162,7 +162,7 @@ def _from_spec(cfg: Config, bs: Bootstrap, squad: dict, gw: int,
     )
 
 
-def staleness_note(sq: "Squad", next_gw: int | None) -> str:
+def staleness_note(sq: "Squad", next_gw: int | None, amended: bool = False) -> str:
     """The public API exposes picks only for gameweeks that have started.
 
     Transfers made for the upcoming deadline, and any captain change, are
@@ -170,6 +170,10 @@ def staleness_note(sq: "Squad", next_gw: int | None) -> str:
     404s, and `entry/{id}/transfers/` stays empty. Only the auth-gated
     `my-team/{id}` shows a pending squad, and this tool deliberately avoids it.
     """
+    if amended:
+        return (f"Showing your GW{next_gw} squad with the transfers you've recorded "
+                f"applied. FPL doesn't publish a squad before its gameweek starts, so "
+                f"these came from you — everything else below is live.")
     if sq.source == "pending-recorded":
         spec = ""
         return (f"Your GW{sq.event} team as recorded by hand in "

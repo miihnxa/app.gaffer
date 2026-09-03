@@ -126,9 +126,11 @@ class Service:
                 return pending
         return sq
 
-    def team_payload(self, team_id: int, *, with_replacements: bool = True) -> dict:
+    def team_payload(self, team_id: int, *, with_replacements: bool = True,
+                     swaps: dict[int, int] | None = None) -> dict:
         entry = self.entry(team_id)
         sq = self.squad(team_id)
+        applied = self._apply_swaps(sq, swaps or {})
         gw = self.next_gw
         fb, bs = self.fb, self.bs
 
@@ -168,9 +170,10 @@ class Service:
                 "gw": sq.event, "formation": sq.formation(),
                 "value": sq.total_value, "bank": sq.bank,
                 "stale": sq.stale, "chip": sq.chip,
-                "note": staleness_note(sq, gw),
+                "note": staleness_note(sq, gw, bool(applied)),
                 "source": sq.source,
                 "is_owner": self.is_owner(team_id),
+                "swaps": applied,
                 "clubs": clubs,
                 "xi": [self._player(p, gw, reps.get(p.player.id)) for p in sq.xi],
                 "bench": [self._player(p, gw, reps.get(p.player.id)) for p in sq.bench],
@@ -178,6 +181,31 @@ class Service:
             "advice": [a.dict() for a in adv],
             "leagues": leagues,
         }
+
+    def _apply_swaps(self, sq: Squad, swaps: dict[int, int]) -> list[dict]:
+        """Amend the squad with transfers the public API cannot see yet.
+
+        Applied before anything is derived, so advice, legality checks, clash
+        detection and replacement suggestions all reason about the squad the
+        manager actually has — not the one FPL last published.
+        """
+        applied: list[dict] = []
+        by_id = {p.player.id: p for p in sq.picks}
+        for out_id, in_id in swaps.items():
+            pick = by_id.get(int(out_id))
+            incoming = self.bs.player(int(in_id))
+            if pick is None or incoming is None:
+                continue
+            if incoming.id in by_id:
+                continue                      # already in the squad
+            if incoming.pos != pick.player.pos:
+                continue                      # FPL only allows like-for-like
+            applied.append({"out": pick.player.name, "out_id": pick.player.id,
+                            "in": incoming.name, "in_id": incoming.id,
+                            "pos": incoming.pos})
+            pick.player = incoming
+            by_id[incoming.id] = pick
+        return applied
 
     def _player(self, pick: Pick, gw: int, reps: list | None) -> dict:
         p: Player = pick.player
