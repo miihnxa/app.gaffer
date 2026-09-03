@@ -7,6 +7,7 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VERSION="${1:-1.0.0}"
+export GAFFER_VERSION="$VERSION"
 STAGE="$(mktemp -d)"
 
 echo "==> icon"
@@ -33,6 +34,10 @@ mkdir -p "$HERE/release"
 ZIP="$HERE/release/Gaffer-${VERSION}-macOS.zip"
 rm -f "$ZIP"
 ( cd "$STAGE" && ditto -c -k --keepParent --norsrc --noextattr "Gaffer.app" "$ZIP" )
+
+echo "==> verify the version the bundle reports"
+BUILT="$(defaults read "$HERE/dist/Gaffer.app/Contents/Info.plist" CFBundleShortVersionString)"
+[ "$BUILT" = "$VERSION" ] || { echo "    FAIL: bundle says $BUILT, packaging $VERSION" >&2; exit 1; }
 
 echo "==> verify the archive a user would download"
 VERIFY="$(mktemp -d)"

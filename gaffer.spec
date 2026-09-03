@@ -5,9 +5,13 @@ Produces a self-contained bundle: Python, the dependencies and the web assets
 all live inside the .app, so it runs on a Mac that has never seen this project.
 Anything the app writes goes to ~/Library/Application Support/Gaffer.
 """
+import os
 from pathlib import Path
 
 ROOT = Path(SPECPATH)
+# build-release.sh passes the version it is packaging, so the bundle can
+# never disagree with the filename of the archive it ships in.
+VERSION = os.environ.get("GAFFER_VERSION", "1.0.0")
 
 a = Analysis(
     [str(ROOT / "desktop.py")],
@@ -51,12 +55,12 @@ app = BUNDLE(
     name="Gaffer.app",
     icon=str(ROOT / "build-assets" / "gaffer.icns"),
     bundle_identifier="com.gaffer.app",
-    version="1.0.0",
+    version=VERSION,
     info_plist={
         "CFBundleName": "Gaffer",
         "CFBundleDisplayName": "Gaffer",
-        "CFBundleShortVersionString": "1.0.0",
-        "CFBundleVersion": "1.0.0",
+        "CFBundleShortVersionString": VERSION,
+        "CFBundleVersion": VERSION,
         "NSHighResolutionCapable": True,
         "LSMinimumSystemVersion": "11.0",
         "LSApplicationCategoryType": "public.app-category.sports",
