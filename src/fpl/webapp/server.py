@@ -13,7 +13,7 @@ from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 
 from ..config import DATA_DIR
-from . import account
+from . import account, prefs
 from .service import Service, TeamNotFound
 
 log = logging.getLogger(__name__)
@@ -89,6 +89,33 @@ def create_app(service: Service | None = None) -> Flask:
     def acct_delete():
         status, body = account.delete_account()
         return jsonify(body), status
+
+    # --- preferences, persisted on disk (not in the window's storage) ---
+    @app.get("/api/prefs")
+    def get_prefs():
+        return jsonify(prefs.all())
+
+    @app.post("/api/prefs")
+    def set_prefs():
+        return jsonify(prefs.update(request.json or {}))
+
+    @app.get("/api/swaps")
+    def get_swaps():
+        return jsonify(prefs.get_swaps(request.args.get("team", type=int) or 0,
+                                       request.args.get("gw", type=int) or 0))
+
+    @app.post("/api/swaps")
+    def post_swap():
+        b = request.json or {}
+        return jsonify(prefs.set_swap(int(b["team"]), int(b["gw"]),
+                                      int(b["out"]), int(b["in"])))
+
+    @app.post("/api/swaps/clear")
+    def clear_swap():
+        b = request.json or {}
+        out = b.get("out")
+        return jsonify(prefs.clear_swap(int(b["team"]), int(b["gw"]),
+                                        int(out) if out is not None else None))
 
     @app.get("/api/config")
     def config():

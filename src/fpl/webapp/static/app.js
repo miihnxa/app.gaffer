@@ -31,19 +31,33 @@ const S = {
   swaps: {},          // { outPlayerId: inPlayerId } — transfers FPL hasn't published
 };
 
-function swapKey() { return `swaps.${S.teamId}.${S.season ? S.season.next_gw : 0}`; }
-function loadSwaps() { S.swaps = store.get(swapKey(), {}) || {}; }
-function saveSwaps() { store.set(swapKey(), S.swaps); }
+function curGw() { return S.season ? S.season.next_gw : 0; }
+async function loadSwaps() {
+  try { S.swaps = await api(`/api/swaps?team=${S.teamId}&gw=${curGw()}`) || {}; }
+  catch { S.swaps = {}; }
+}
 function swapQuery() {
   return Object.entries(S.swaps).map(([o, i]) => `swap=${o}:${i}`).join('&');
 }
 
 /* ---------------- storage ---------------- */
+// Preferences live on disk, served by the app's own process. The window's
+// localStorage is wiped between launches, so it is only a warm cache here.
+let PREFS = { team_id: null, recents: [], toggles: {}, bench_budget: 19.0, swaps: {} };
+
 const store = {
-  get(k, d) { try { const v = localStorage.getItem('gaffer.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
-  set(k, v) { try { localStorage.setItem('gaffer.' + k, JSON.stringify(v)); } catch {} },
-  del(k) { try { localStorage.removeItem('gaffer.' + k); } catch {} },
+  get(k, d) { const v = PREFS[k]; return v === undefined || v === null ? d : v; },
+  set(k, v) {
+    PREFS[k] = v;
+    fetch('/api/prefs', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ [k]: v }) }).catch(() => {});
+  },
+  del(k) { this.set(k, Array.isArray(PREFS[k]) ? [] : null); },
 };
+
+async function loadPrefs() {
+  try { PREFS = { ...PREFS, ...(await api('/api/prefs')) }; } catch {}
+}
 
 async function api(path) {
   const r = await fetch(path);
@@ -71,8 +85,9 @@ function showPane(which) {
 function signinErr(m) { const e = $('#signinerr'); e.hidden = !m; e.textContent = m || ''; }
 
 (async function init() {
+  await loadPrefs();
   S.toggles = { ...DEFAULT_TOGGLES, ...store.get('toggles', {}) };
-  S.bench = store.get('bench', 19);
+  S.bench = store.get('bench_budget', 19);
 
   $('#go').addEventListener('click', () => load($('#tid').value.trim()));
   $('#tid').addEventListener('keydown', e => { if (e.key === 'Enter') load(e.target.value.trim()); });
@@ -96,7 +111,7 @@ function signinErr(m) { const e = $('#signinerr'); e.hidden = !m; e.textContent 
   // after opening the app, with no account and no server to depend on.
   // Signing in is optional and offered from here and from Settings.
   showPane('team');
-  const saved = ACCT.team_id || store.get('teamId', null);
+  const saved = ACCT.team_id || store.get('team_id', null);
   if (saved) { $('#tid').value = saved; return load(saved); }
   $('#tid').focus();
 })();
@@ -172,7 +187,7 @@ function paintRecents() {
 
 function goHome() {
   if (S.tick) { clearInterval(S.tick); S.tick = null; }
-  store.del('teamId');
+  store.del('team_id');
   S.team = null; S.teamId = null; S.league = null; S.leagueId = null; S.rebuild = null;
   closeDrawer();
   $('#shell').hidden = true; $('#entry').hidden = false;
@@ -189,10 +204,10 @@ async function load(id) {
   try {
     if (!S.season) S.season = await api('/api/season');
     S.teamId = Number(id);
-    loadSwaps();
+    await loadSwaps();
     const q = swapQuery();
     S.team = await api('/api/team/' + id + (q ? '?' + q : ''));
-    store.set('teamId', S.teamId);
+    store.set('team_id', S.teamId);
     remember(S.team.entry);
     if (ACCT.signed_in) {
       post('/api/account/team', { team_id: S.teamId })
@@ -220,13 +235,28 @@ async function reloadTeam() {
   } catch (e) { fail(e.message); } finally { busy(false); }
 }
 
-function recordSwap(outId, inId) {
-  S.swaps[outId] = inId; saveSwaps(); closeDrawer(); reloadTeam();
+async function recordSwap(outId, inId) {
+  closeDrawer();
+  busy(true, 'Saving…');
+  try {
+    S.swaps = await (await fetch('/api/swaps', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team: S.teamId, gw: curGw(), out: Number(outId), in: Number(inId) }),
+    })).json();
+  } catch (e) { fail('Could not save that transfer.'); }
+  finally { busy(false); }
+  reloadTeam();
 }
-function undoSwap(outId) {
-  delete S.swaps[outId]; saveSwaps(); reloadTeam();
+
+async function undoSwap(outId) {
+  try {
+    S.swaps = await (await fetch('/api/swaps/clear', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team: S.teamId, gw: curGw(), out: Number(outId) }),
+    })).json();
+  } catch { fail('Could not undo that.'); }
+  reloadTeam();
 }
-function clearSwaps() { S.swaps = {}; saveSwaps(); reloadTeam(); }
 
 /* ---------------- chrome ---------------- */
 function buildNav() {
@@ -565,7 +595,7 @@ function viewRebuild(root) {
   root.append(wrap);
 
   $('#bslide').addEventListener('input', e => {
-    S.bench = Number(e.target.value); store.set('bench', S.bench);
+    S.bench = Number(e.target.value); store.set('bench_budget', S.bench);
     $('#bout').textContent = money(S.bench) + 'm';
   });
   go.addEventListener('click', doRebuild);
@@ -741,7 +771,7 @@ function viewSettings(root) {
       const r = await post('/api/account/delete');
       if (!r.ok) return fail(r.body.error || 'Could not delete the account.');
       ACCT = { ...ACCT, signed_in: false, email: null, team_id: null };
-      store.del('teamId'); store.del('recents'); goHome();
+      store.del('team_id'); store.del('recents'); goHome();
     });
     row.append(out, del); a.append(row);
   }
@@ -752,7 +782,7 @@ function viewSettings(root) {
   const clear = el('button', 'btn ghost', 'Forget this machine');
   clear.style.marginTop = '12px';
   clear.addEventListener('click', () => {
-    store.del('teamId'); store.del('toggles'); store.del('bench'); store.del('recents');
+    store.del('team_id'); store.del('toggles'); store.del('bench_budget'); store.del('recents');
     S.toggles = { ...DEFAULT_TOGGLES };
     goHome();
   });

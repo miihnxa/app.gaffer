@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 import webview  # noqa: E402
 
 from fpl.jobs.context import setup_logging  # noqa: E402
+from fpl.config import user_dir  # noqa: E402
 from fpl.webapp import create_app, free_port  # noqa: E402
 
 log = logging.getLogger(__name__)
@@ -63,7 +64,13 @@ def main() -> int:
         background_color="#140419",
     )
     # Cocoa/WebKit ships with macOS, so there is no runtime to bundle.
-    webview.start(gui="cocoa", debug="--devtools" in sys.argv)
+    # private_mode defaults to True, which wipes localStorage on every launch.
+    # App state lives on disk (webapp/prefs.py), but persisting the web store
+    # too keeps scroll position and similar niceties across restarts.
+    storage = user_dir() / "webview"
+    storage.mkdir(parents=True, exist_ok=True)
+    webview.start(gui="cocoa", debug="--devtools" in sys.argv,
+                  private_mode=False, storage_path=str(storage))
     return 0
 
 
