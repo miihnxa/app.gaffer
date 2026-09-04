@@ -26,13 +26,22 @@ def bundled_dir() -> Path:
 def user_dir() -> Path:
     """Everything the app writes.
 
-    An installed .app is read-only (and on a signed build, writing inside it
-    breaks the signature), so config, caches and logs live in the user's own
-    Application Support directory.
+    An installed app is read-only (and on macOS, writing inside a signed bundle
+    breaks the signature), so config, caches and logs live wherever the platform
+    keeps per-user application data.
     """
-    if _frozen():
+    if not _frozen():
+        return Path(__file__).resolve().parents[2]
+    if sys.platform == "darwin":
         return Path.home() / "Library" / "Application Support" / "Gaffer"
-    return Path(__file__).resolve().parents[2]
+    if sys.platform == "win32":
+        # %APPDATA% roams with the user profile; fall back if it is unset.
+        appdata = os.environ.get("APPDATA")
+        base = Path(appdata) if appdata else Path.home() / "AppData" / "Roaming"
+        return base / "Gaffer"
+    # Linux and the rest: the XDG default.
+    xdg = os.environ.get("XDG_DATA_HOME")
+    return (Path(xdg) if xdg else Path.home() / ".local" / "share") / "Gaffer"
 
 
 ROOT = bundled_dir()

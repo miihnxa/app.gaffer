@@ -57,9 +57,20 @@ def draw_mark(size: int = U * SS) -> Image.Image:
 
 
 def main() -> int:
-    iconset = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("gaffer.iconset")
-    iconset.mkdir(parents=True, exist_ok=True)
+    target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("gaffer.iconset")
     master = draw_mark()
+
+    # Windows: a single .ico carrying every size the shell asks for.
+    if target.suffix == ".ico":
+        target.parent.mkdir(parents=True, exist_ok=True)
+        sizes = [(s, s) for s in (16, 24, 32, 48, 64, 128, 256)]
+        master.save(target, format="ICO", sizes=sizes)
+        print(f"  wrote {target.name} with {len(sizes)} sizes, "
+              f"corner alpha={master.getpixel((1, 1))[3]}")
+        return 0
+
+    iconset = target
+    iconset.mkdir(parents=True, exist_ok=True)
     for size in (16, 32, 64, 128, 256, 512):
         for scale, suffix in ((1, ""), (2, "@2x")):
             px = size * scale

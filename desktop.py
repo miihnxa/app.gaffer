@@ -69,7 +69,12 @@ def main() -> int:
     # too keeps scroll position and similar niceties across restarts.
     storage = user_dir() / "webview"
     storage.mkdir(parents=True, exist_ok=True)
-    webview.start(gui="cocoa", debug="--devtools" in sys.argv,
+
+    # macOS: WebKit ships with the OS. Windows: WebView2, which ships with
+    # Windows 11 and with Edge on Windows 10. Anything else: let pywebview pick.
+    gui = {"darwin": "cocoa", "win32": "edgechromium"}.get(sys.platform)
+
+    webview.start(gui=gui, debug="--devtools" in sys.argv,
                   private_mode=False, storage_path=str(storage))
     return 0
 
