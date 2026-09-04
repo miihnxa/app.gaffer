@@ -14,6 +14,7 @@ from ..config import Config
 from ..engine import advice as advice_engine
 from ..engine import deadlines, league as league_engine
 from ..engine import fixtures as fx_engine
+from ..engine import subs as subs_engine
 from ..engine import replacements as rep_engine
 from ..engine import wildcard as wc_engine
 from ..engine.squad import Pick, Squad, _pending, staleness_note
@@ -179,6 +180,8 @@ class Service:
                 "bench": [self._player(p, gw, reps.get(p.player.id)) for p in sq.bench],
             },
             "advice": [a.dict() for a in adv],
+            "subs": [x.dict() for x in subs_engine.suggest(sq, fb, gw)],
+            "bench_order": subs_engine.bench_order(sq, fb, gw),
             "leagues": leagues,
         }
 

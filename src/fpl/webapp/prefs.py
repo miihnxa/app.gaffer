@@ -23,6 +23,7 @@ DEFAULTS: dict[str, Any] = {
     "toggles": {},
     "bench_budget": 19.0,
     "swaps": {},            # {"<team_id>:<gw>": {"<out_id>": <in_id>}}
+    "anthropic_key": "",    # the user's own key; never sent to the page
 }
 
 
@@ -54,7 +55,15 @@ def _write(data: dict[str, Any]) -> None:
 
 
 def all() -> dict[str, Any]:
-    return _read()
+    """Safe to hand to the page: the API key is replaced with a presence flag."""
+    data = _read()
+    key = data.pop("anthropic_key", "")
+    data["has_key"] = bool(key)
+    return data
+
+
+def api_key() -> str:
+    return _read().get("anthropic_key", "")
 
 
 def update(patch: dict[str, Any]) -> dict[str, Any]:
@@ -63,7 +72,10 @@ def update(patch: dict[str, Any]) -> dict[str, Any]:
         if k in DEFAULTS:
             data[k] = v
     _write(data)
-    return data
+    if PREFS_FILE.exists():
+        # The key is a credential: no group or other access.
+        PREFS_FILE.chmod(0o600)
+    return all()
 
 
 def _swap_key(team_id: int, gw: int) -> str:

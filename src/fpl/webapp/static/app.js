@@ -29,6 +29,8 @@ const S = {
   out: null, inIdx: 0, bench: 19, locked: new Set(),
   toggles: { ...DEFAULT_TOGGLES }, tick: null,
   swaps: {},          // { outPlayerId: inPlayerId } — transfers FPL hasn't published
+  chat: [],           // [{role, content}]
+  chatBusy: false,
 };
 
 function curGw() { return S.season ? S.season.next_gw : 0; }
@@ -437,6 +439,8 @@ function viewSquad(root) {
   lgBox.append(el('div', 'empty', 'Loading standings…'));
   lgWrap.append(lgBox); right.append(lgWrap);
 
+  right.append(subsPanel());
+  right.append(assistantPanel());
   cols.append(right); root.append(cols);
   ensureLeague().then(() => paintMini(lgBox)).catch(() => { lgBox.textContent = ''; lgBox.append(el('div', 'empty', 'No mini-league found.')); });
 }
@@ -449,6 +453,192 @@ async function ensureLeague() {
   S.league = await api(`/api/league/${pick}?team=${S.teamId}`);
   header();
   return S.league;
+}
+
+function subsPanel() {
+  const subs = S.team.subs || [];
+  const order = S.team.bench_order || [];
+  const misordered = order.filter(b => b.moved);
+
+  const wrap = el('div');
+  const head = el('div', 'phd');
+  head.append(el('div', 'lbl', 'Substitutions'));
+  head.append(el('div', 'mono', '<span style="color:var(--faint);font-size:11px">' + subs.length + '</span>'));
+  wrap.append(head);
+
+  const box = el('div', 'stack'); box.style.gap = '9px';
+
+  if (!subs.length) {
+    box.append(el('div', 'ins info',
+      '<div class="top"><span class="micro kind">Settled</span></div>' +
+      '<h3>Your best eleven is already on the pitch</h3>' +
+      '<p>No bench player improves on a starter on form, fixture or fitness.</p>'));
+  } else {
+    subs.forEach(sub => {
+      const tone = { critical: 'crit', warning: 'warn', info: 'info' }[sub.severity] || 'info';
+      const label = sub.severity === 'critical' ? 'Do this'
+                  : sub.severity === 'warning' ? 'Worth doing' : 'Consider';
+      const d = el('div', 'ins ' + tone);
+      d.innerHTML =
+        '<div class="top"><span class="micro kind">' + label + '</span>' +
+        '<span class="gw mono">' + sub.formation_after + '</span></div>' +
+        '<h3>' + sub.headline + '</h3>' +
+        '<div class="subline">' +
+          '<span class="off">' + sub.out_name +
+            '<span class="mono">' + sub.out_club + ' · form ' + sub.out_form + ' · fdr ' + sub.out_fdr + '</span></span>' +
+          '<span class="mono arrow">&rarr;</span>' +
+          '<span class="on">' + sub.in_name +
+            '<span class="mono">' + sub.in_club + ' · form ' + sub.in_form + ' · fdr ' + sub.in_fdr + '</span></span>' +
+        '</div>' +
+        '<ul class="whys">' + sub.reasons.map(r => '<li>' + r + '</li>').join('') + '</ul>';
+      box.append(d);
+    });
+  }
+
+  if (misordered.length) {
+    const d = el('div', 'ins warn');
+    d.innerHTML =
+      '<div class="top"><span class="micro kind">Bench order</span></div>' +
+      '<h3>Reorder your bench</h3>' +
+      '<p>Bench order only pays out when a starter doesn\'t play, so the likeliest ' +
+      'scorer should be first.</p>' +
+      '<ol class="benchorder">' + order.map(b =>
+        '<li' + (b.moved ? ' class="moved"' : '') + '><b>' + b.name + '</b>' +
+        '<span class="mono">' + b.club + ' · form ' + b.form + ' · fdr ' + b.fdr + '</span>' +
+        (b.moved ? '<span class="mono was">now ' + b.current_slot + '</span>' : '') +
+        '</li>').join('') + '</ol>';
+    box.append(d);
+  }
+
+  wrap.append(box);
+  wrap.append(el('p', 'foot',
+    'Gaffer can\'t change your team — make these on the FPL site before the deadline.'));
+  return wrap;
+}
+
+const SUGGESTIONS = [
+  'Who should I captain?',
+  'Is my bench order right?',
+  'Any transfer worth making?',
+  'Which of my players is the biggest risk?',
+];
+
+function assistantPanel() {
+  const wrap = el('div');
+  const head = el('div', 'phd');
+  head.append(el('div', 'lbl', 'Assistant manager'));
+  if (S.chat.length) {
+    const clr = el('button', 'linkbtn', 'Clear');
+    clr.addEventListener('click', () => { S.chat = []; render(); });
+    head.append(clr);
+  }
+  wrap.append(head);
+
+  const panel = el('div', 'chat');
+  const log = el('div', 'chatlog'); log.id = 'chatlog';
+
+  if (!PREFS.has_key) {
+    log.append(el('div', 'chatempty',
+      '<p>Add your Anthropic API key in <b>Settings</b> and the assistant can talk through ' +
+      'your squad — captaincy, bench order, whether a transfer is worth it.</p>' +
+      '<p style="margin-top:9px;color:var(--faint)">It uses your own key, so the cost is yours ' +
+      'and nothing about your team is sent anywhere else.</p>'));
+  } else if (!S.chat.length) {
+    log.append(el('div', 'chatempty',
+      '<p>Ask about your squad. It can see your XI, form, fixtures, flags and the findings above.</p>'));
+    const sg = el('div', 'suggest');
+    SUGGESTIONS.forEach(q => {
+      const b = el('button', 'sgbtn', q);
+      b.addEventListener('click', () => sendChat(q));
+      sg.append(b);
+    });
+    log.append(sg);
+  } else {
+    S.chat.forEach(m => log.append(bubble(m.role, m.content)));
+  }
+  panel.append(log);
+
+  const bar = el('div', 'chatbar');
+  bar.innerHTML =
+    '<input id="chatq" type="text" placeholder="' +
+    (PREFS.has_key ? 'Ask your assistant manager…' : 'Add an API key in Settings first') + '" ' +
+    (PREFS.has_key ? '' : 'disabled') + ' autocomplete="off">' +
+    '<button id="chatsend"' + (PREFS.has_key ? '' : ' disabled') + '>Ask</button>';
+  panel.append(bar);
+  wrap.append(panel);
+
+  setTimeout(() => {
+    const q = $('#chatq'); if (!q) return;
+    q.addEventListener('keydown', e => { if (e.key === 'Enter' && !S.chatBusy) sendChat(q.value); });
+    $('#chatsend').addEventListener('click', () => { if (!S.chatBusy) sendChat(q.value); });
+    const l = $('#chatlog'); if (l) l.scrollTop = l.scrollHeight;
+  }, 0);
+  return wrap;
+}
+
+function bubble(role, text) {
+  const d = el('div', 'msg ' + role);
+  d.textContent = text;
+  return d;
+}
+
+async function sendChat(text) {
+  text = (text || '').trim();
+  if (!text || S.chatBusy) return;
+  const box = $('#chatq'); if (box) box.value = '';
+  S.chat.push({ role: 'user', content: text });
+  S.chatBusy = true;
+  render();
+
+  const log = $('#chatlog');
+  const reply = bubble('assistant', '');
+  const think = el('span', 'thinking', 'Thinking…');
+  reply.append(think);
+  if (log) { log.append(reply); log.scrollTop = log.scrollHeight; }
+
+  let acc = '';
+  try {
+    const r = await fetch('/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ team: S.teamId, gw: curGw(), history: S.chat }),
+    });
+    if (!r.ok) {
+      const j = await r.json().catch(() => ({}));
+      throw new Error(j.error || ('HTTP ' + r.status));
+    }
+    const reader = r.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+    for (;;) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      buf += dec.decode(chunk.value, { stream: true });
+      const parts = buf.split('\n\n');
+      buf = parts.pop();
+      for (const c of parts) {
+        const ev = (c.match(/^event: (.+)$/m) || [])[1];
+        const dl = (c.match(/^data: (.+)$/m) || [])[1];
+        if (!ev || !dl) continue;
+        const data = JSON.parse(dl);
+        if (ev === 'delta') {
+          think.remove();
+          acc += data.text;
+          reply.textContent = acc;
+          if (log) log.scrollTop = log.scrollHeight;
+        } else if (ev === 'error') {
+          throw new Error(data.message);
+        }
+      }
+    }
+    S.chat.push({ role: 'assistant', content: acc });
+  } catch (e) {
+    think.remove();
+    S.chat.pop();   // drop the unanswered question so a retry doesn't stack
+    fail(e.message);
+  } finally {
+    S.chatBusy = false;
+    render();
+  }
 }
 
 function paintMini(box) {
@@ -746,6 +936,33 @@ function viewSettings(root) {
     row.append(txt, sw); t.append(row);
   });
 
+  const k = el('div', 'panel'); k.style.cssText = 'padding:18px 20px;margin-top:18px';
+  k.append(el('div', 'lbl', 'Assistant manager'));
+  k.append(el('p', 'foot', PREFS.has_key
+    ? 'A key is saved on this machine. The assistant can see your squad and answer questions about it.'
+    : 'The assistant runs on Claude and needs your own Anthropic API key. Get one at console.anthropic.com — you pay Anthropic directly, roughly a penny a question. The key is stored on this machine only and is never sent anywhere except Anthropic.'));
+  const krow = el('div', 'ctl'); krow.style.marginTop = '12px';
+  krow.innerHTML = `<input id="akey" class="field mono" type="password"
+    style="font-size:13px;padding:9px 12px;max-width:340px;letter-spacing:0"
+    placeholder="${PREFS.has_key ? '••••••••••••  (saved)' : 'sk-ant-...'}" autocomplete="off">`;
+  const ksave = el('button', 'btn ghost', 'Save key');
+  ksave.addEventListener('click', async () => {
+    const v = $('#akey').value.trim();
+    if (!v) return fail('Paste your key first.');
+    await post('/api/prefs', { anthropic_key: v });
+    await loadPrefs(); fail(''); render();
+  });
+  krow.append(ksave);
+  if (PREFS.has_key) {
+    const kdel = el('button', 'btn ghost', 'Remove');
+    kdel.addEventListener('click', async () => {
+      await post('/api/prefs', { anthropic_key: '' });
+      await loadPrefs(); S.chat = []; render();
+    });
+    krow.append(kdel);
+  }
+  k.append(krow);
+
   const a = el('div', 'panel'); a.style.cssText = 'padding:18px 20px;margin-top:18px';
   a.append(el('div', 'lbl', 'Account'));
   if (!ACCT.available) {
@@ -788,7 +1005,7 @@ function viewSettings(root) {
   });
   c.append(clear);
 
-  root.append(p, t, a, c);
+  root.append(p, t, k, a, c);
 }
 
 /* ---------------- drawer ---------------- */

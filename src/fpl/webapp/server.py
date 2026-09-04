@@ -10,10 +10,10 @@ import logging
 import socket
 from pathlib import Path
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, request, send_from_directory
 
 from ..config import DATA_DIR
-from . import account, prefs
+from . import account, assistant, prefs
 from .service import Service, TeamNotFound
 
 log = logging.getLogger(__name__)
@@ -116,6 +116,23 @@ def create_app(service: Service | None = None) -> Flask:
         out = b.get("out")
         return jsonify(prefs.clear_swap(int(b["team"]), int(b["gw"]),
                                         int(out) if out is not None else None))
+
+    @app.post("/api/chat")
+    def chat():
+        body = request.json or {}
+        key = prefs.api_key()
+        if not key:
+            return jsonify({"error": "Add your Anthropic API key in Settings to use "
+                                     "the assistant.", "code": "no_key"}), 400
+        team_id = int(body.get("team") or 0)
+        if not team_id:
+            return jsonify({"error": "Load a team first."}), 400
+        gw = int(body.get("gw") or 0)
+        swaps = prefs.get_swaps(team_id, gw) if gw else {}
+        stream = assistant.stream_reply(svc, key, team_id,
+                                        body.get("history") or [], swaps)
+        return Response(stream, mimetype="text/event-stream",
+                        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
     @app.get("/api/config")
     def config():

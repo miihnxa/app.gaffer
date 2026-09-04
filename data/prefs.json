@@ -1,11 +1,29 @@
 {
  "team_id": 6445742,
- "recents": [],
- "toggles": {},
+ "recents": [
+  {
+   "id": 6445742,
+   "name": "Mourinho to the PL",
+   "manager": "Mihnea Cirstica"
+  },
+  {
+   "id": 3096790,
+   "manager": "Taniel Migdesyan",
+   "name": "Beef Cherki"
+  }
+ ],
+ "toggles": {
+  "fdr": true,
+  "flagsFirst": true,
+  "hideBlanks": true,
+  "monoNumbers": true,
+  "confirmLeave": true
+ },
  "bench_budget": 19.0,
  "swaps": {
   "6445742:3": {
    "278": 277
   }
- }
+ },
+ "anthropic_key": ""
 }
