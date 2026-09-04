@@ -545,6 +545,20 @@ function viewSquad(root) {
     b.querySelectorAll('.undo').forEach(btn =>
       btn.addEventListener('click', () => undoSwap(btn.dataset.out)));
   }
+  // A stale squad with no saved lineup is the single most misleading state the
+  // app can be in: every number is live, but the eleven is last week's. Say so
+  // loudly rather than in a caption nobody reads.
+  if (!S.editing && sq.stale && !sq.lineup_saved) {
+    const warn = el('div', 'setupbanner');
+    warn.innerHTML =
+      '<div class="sb-txt"><b>This is your GW' + sq.gw + ' team, not your GW' + S.season.next_gw + ' one.</b>' +
+      '<p>FPL doesn\'t publish a squad before its deadline, so Gaffer can\'t read the eleven, ' +
+      'bench order or captain you\'ve set for GW' + S.season.next_gw + '. Set them once and it remembers.</p></div>';
+    const go = el('button', 'btn sm primary', 'Set my team');
+    go.addEventListener('click', startEdit);
+    warn.append(go);
+    left.append(warn);
+  }
   if (S.editing) {
     const hint = el('div', 'edithint');
     hint.innerHTML = S.picked

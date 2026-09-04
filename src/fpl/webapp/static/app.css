@@ -255,3 +255,8 @@ input[type=range]{accent-color:var(--accent)}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:80;
   background:var(--lime-bg);border:1px solid var(--lime-bd);color:var(--lime-fg);
   border-radius:9px;padding:11px 18px;font-size:13px}
+.setupbanner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:12px;
+  padding:14px 16px;background:var(--warn-bg);border:1px solid var(--warn-bd);border-radius:10px}
+.setupbanner .sb-txt{flex:1;min-width:240px}
+.setupbanner b{color:var(--warn-fg);font-size:13.5px}
+.setupbanner p{margin:5px 0 0;font-size:12.5px;line-height:1.5;color:var(--warn-fg);opacity:.85}
