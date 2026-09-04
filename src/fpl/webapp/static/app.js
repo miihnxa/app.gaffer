@@ -29,8 +29,10 @@ const S = {
   out: null, inIdx: 0, bench: 19, locked: new Set(),
   toggles: { ...DEFAULT_TOGGLES }, tick: null,
   swaps: {},          // { outPlayerId: inPlayerId } — transfers FPL hasn't published
-  chat: [],           // [{role, content}]
-  chatBusy: false,
+  editing: false,     // team-edit mode
+  draft: null,        // { xi:[ids], bench:[ids], captain, vice } while editing
+  picked: null,       // player selected for a swap
+  dirty: false,
 };
 
 function curGw() { return S.season ? S.season.next_gw : 0; }
@@ -208,7 +210,7 @@ async function load(id) {
     S.teamId = Number(id);
     await loadSwaps();
     const q = swapQuery();
-    S.team = await api('/api/team/' + id + (q ? '?' + q : ''));
+    S.team = await api('/api/team/' + id + '?gw=' + curGw() + (q ? '&' + q : ''));
     store.set('team_id', S.teamId);
     remember(S.team.entry);
     if (ACCT.signed_in) {
@@ -232,7 +234,7 @@ async function reloadTeam() {
   busy(true, 'Recalculating…');
   try {
     const q = swapQuery();
-    S.team = await api('/api/team/' + S.teamId + (q ? '?' + q : ''));
+    S.team = await api('/api/team/' + S.teamId + '?gw=' + curGw() + (q ? '&' + q : ''));
     header(); render();
   } catch (e) { fail(e.message); } finally { busy(false); }
 }
@@ -347,6 +349,105 @@ function render() {
 }
 
 /* ---------------- player card ---------------- */
+function startEdit() {
+  const sq = S.team.squad;
+  S.draft = {
+    xi: sq.xi.map(p => p.id),
+    bench: sq.bench.map(p => p.id),
+    captain: (sq.xi.find(p => p.is_captain) || {}).id || null,
+    vice: (sq.xi.find(p => p.is_vice) || {}).id || null,
+  };
+  S.editing = true; S.picked = null; S.dirty = false;
+  render();
+}
+
+function cancelEdit() {
+  S.editing = false; S.draft = null; S.picked = null; S.dirty = false;
+  render();
+}
+
+function draftPlayer(id) {
+  const all = S.team.squad.xi.concat(S.team.squad.bench);
+  return all.find(p => p.id === id);
+}
+
+/* Formation must stay legal: 1 GK, 3-5 DEF, 2-5 MID, 1-3 FWD. */
+function legalXi(ids) {
+  const pos = ids.map(id => (draftPlayer(id) || {}).pos);
+  const n = p => pos.filter(x => x === p).length;
+  return n('GKP') === 1 && n('DEF') >= 3 && n('DEF') <= 5
+      && n('MID') >= 2 && n('MID') <= 5 && n('FWD') >= 1 && n('FWD') <= 3;
+}
+
+function tapPlayer(id) {
+  if (!S.editing) return;
+  if (S.picked === null) { S.picked = id; render(); return; }
+  if (S.picked === id) { S.picked = null; render(); return; }
+
+  const d = S.draft;
+  const a = S.picked, b = id;
+  const inXi = x => d.xi.includes(x);
+  const swapIn = arr => arr.map(x => x === a ? b : x === b ? a : x);
+
+  if (inXi(a) !== inXi(b)) {
+    // one is starting, one is benched — try the substitution
+    const nextXi = swapIn(d.xi);
+    if (!legalXi(nextXi)) {
+      fail('That would leave an illegal formation. FPL needs 1 keeper, 3-5 defenders, 2-5 midfielders and 1-3 forwards.');
+      S.picked = null; render(); return;
+    }
+    d.xi = nextXi; d.bench = swapIn(d.bench);
+    // a benched captain isn't allowed
+    if (!d.xi.includes(d.captain)) d.captain = null;
+    if (!d.xi.includes(d.vice)) d.vice = null;
+  } else {
+    // both in the same group — reorder (bench order, or cosmetic in the XI)
+    d.xi = swapIn(d.xi); d.bench = swapIn(d.bench);
+  }
+  fail('');
+  S.picked = null; S.dirty = true; render();
+}
+
+function setArmband(id, which) {
+  const d = S.draft;
+  if (!d.xi.includes(id)) return;
+  if (which === 'captain') {
+    if (d.vice === id) d.vice = d.captain;
+    d.captain = id;
+  } else {
+    if (d.captain === id) d.captain = d.vice;
+    d.vice = id;
+  }
+  S.dirty = true; render();
+}
+
+async function saveLineup() {
+  busy(true, 'Saving your team…');
+  try {
+    await post('/api/lineup', { team: S.teamId, gw: curGw(), lineup: S.draft });
+    S.editing = false; S.draft = null; S.picked = null; S.dirty = false;
+    await reloadTeam();
+    toast('Team saved. Gaffer will open on this until you change it.');
+  } catch (e) { fail(e.message); }
+  finally { busy(false); }
+}
+
+async function resetLineup() {
+  busy(true, 'Reverting…');
+  try {
+    await post('/api/lineup/clear', { team: S.teamId, gw: curGw() });
+    S.editing = false; S.draft = null; S.picked = null; S.dirty = false;
+    await reloadTeam();
+  } catch (e) { fail(e.message); }
+  finally { busy(false); }
+}
+
+function toast(msg) {
+  const t = el('div', 'toast', msg);
+  document.body.append(t);
+  setTimeout(() => t.remove(), 4200);
+}
+
 function playerCard(p, opts = {}) {
   const b = el('button', 'pc');
   b.type = 'button'; b.dataset.id = p.id;
@@ -362,7 +463,24 @@ function playerCard(p, opts = {}) {
     `<div class="r1"><span class="nm">${p.name}</span>${badge ? `<span class="bdg" style="background:${bg};color:${fg}">${badge}</span>` : ''}</div>
      <div class="r2"><span>${oppText(p)}</span>${fx && S.toggles.fdr ? fdrTag(fx.difficulty) : ''}</div>
      <div class="r3"><span class="pr">${money(p.price)}</span><span style="color:${formFg(p.form)}">${p.form.toFixed(1)}</span></div>`;
-  b.addEventListener('click', () => openPlayer(p));
+  if (S.editing) {
+    b.classList.add('editable');
+    if (S.picked === p.id) b.classList.add('picked');
+    b.addEventListener('click', () => tapPlayer(p.id));
+    if ((S.draft.xi || []).includes(p.id)) {
+      const arm = el('div', 'armband');
+      const c = el('button', 'arm' + (S.draft.captain === p.id ? ' on' : ''), 'C');
+      c.title = 'Captain';
+      c.addEventListener('click', ev => { ev.stopPropagation(); setArmband(p.id, 'captain'); });
+      const v = el('button', 'arm' + (S.draft.vice === p.id ? ' on' : ''), 'V');
+      v.title = 'Vice-captain';
+      v.addEventListener('click', ev => { ev.stopPropagation(); setArmband(p.id, 'vice'); });
+      arm.append(c, v);
+      b.append(arm);
+    }
+  } else {
+    b.addEventListener('click', () => openPlayer(p));
+  }
   return b;
 }
 
@@ -389,12 +507,34 @@ function board(xi, bench, opts = {}) {
 /* ---------------- squad ---------------- */
 function viewSquad(root) {
   const sq = S.team.squad;
+  const squadAll = sq.xi.concat(sq.bench);
+  const byId = id => squadAll.find(p => p.id === id);
+  const shownXi = S.editing ? S.draft.xi.map(byId) : sq.xi;
+  const shownBench = S.editing ? S.draft.bench.map(byId) : sq.bench;
   const cols = el('div', 'cols');
 
   const left = el('div');
   const hd = el('div', 'phd');
   hd.append(el('div', 'lbl', `Gameweek ${S.season.next_gw} · ${sq.formation}`));
   if (sq.stale || sq.source !== 'api') hd.append(el('div', 'note-line', 'Recorded by hand — pre-deadline squads aren\'t public'));
+  const ctrls = el('div', 'editctl');
+  if (!S.editing) {
+    const b = el('button', 'btn ghost sm', 'Edit team');
+    b.addEventListener('click', startEdit);
+    ctrls.append(b);
+    if (sq.lineup_saved) {
+      const r = el('button', 'linkbtn', 'Revert to FPL');
+      r.addEventListener('click', resetLineup);
+      ctrls.append(r);
+    }
+  } else {
+    const save = el('button', 'btn sm primary', S.dirty ? 'Save team' : 'Save team');
+    save.addEventListener('click', saveLineup);
+    const cancel = el('button', 'linkbtn', 'Cancel');
+    cancel.addEventListener('click', cancelEdit);
+    ctrls.append(save, cancel);
+  }
+  hd.append(ctrls);
   const rec = sq.swaps || [];
   if (rec.length) {
     const b = el('div', 'swapbar');
@@ -405,7 +545,15 @@ function viewSquad(root) {
     b.querySelectorAll('.undo').forEach(btn =>
       btn.addEventListener('click', () => undoSwap(btn.dataset.out)));
   }
-  left.append(hd, board(sq.xi, sq.bench));
+  if (S.editing) {
+    const hint = el('div', 'edithint');
+    hint.innerHTML = S.picked
+      ? 'Now tap the player to swap with <b>' + (draftPlayer(S.picked) || {}).name + '</b>.'
+      : 'Tap two players to swap them — bench for starter, or to reorder the bench. '
+        + 'Use <b>C</b> and <b>V</b> for the armbands, then Save.';
+    left.append(hint);
+  }
+  left.append(hd, board(shownXi, shownBench));
   cols.append(left);
 
   const right = el('div', 'stack');
@@ -440,7 +588,6 @@ function viewSquad(root) {
   lgWrap.append(lgBox); right.append(lgWrap);
 
   right.append(subsPanel());
-  right.append(assistantPanel());
   cols.append(right); root.append(cols);
   ensureLeague().then(() => paintMini(lgBox)).catch(() => { lgBox.textContent = ''; lgBox.append(el('div', 'empty', 'No mini-league found.')); });
 }
@@ -514,131 +661,6 @@ function subsPanel() {
   wrap.append(el('p', 'foot',
     'Gaffer can\'t change your team — make these on the FPL site before the deadline.'));
   return wrap;
-}
-
-const SUGGESTIONS = [
-  'Who should I captain?',
-  'Is my bench order right?',
-  'Any transfer worth making?',
-  'Which of my players is the biggest risk?',
-];
-
-function assistantPanel() {
-  const wrap = el('div');
-  const head = el('div', 'phd');
-  head.append(el('div', 'lbl', 'Assistant manager'));
-  if (S.chat.length) {
-    const clr = el('button', 'linkbtn', 'Clear');
-    clr.addEventListener('click', () => { S.chat = []; render(); });
-    head.append(clr);
-  }
-  wrap.append(head);
-
-  const panel = el('div', 'chat');
-  const log = el('div', 'chatlog'); log.id = 'chatlog';
-
-  if (!PREFS.has_key) {
-    log.append(el('div', 'chatempty',
-      '<p>Add your Anthropic API key in <b>Settings</b> and the assistant can talk through ' +
-      'your squad — captaincy, bench order, whether a transfer is worth it.</p>' +
-      '<p style="margin-top:9px;color:var(--faint)">It uses your own key, so the cost is yours ' +
-      'and nothing about your team is sent anywhere else.</p>'));
-  } else if (!S.chat.length) {
-    log.append(el('div', 'chatempty',
-      '<p>Ask about your squad. It can see your XI, form, fixtures, flags and the findings above.</p>'));
-    const sg = el('div', 'suggest');
-    SUGGESTIONS.forEach(q => {
-      const b = el('button', 'sgbtn', q);
-      b.addEventListener('click', () => sendChat(q));
-      sg.append(b);
-    });
-    log.append(sg);
-  } else {
-    S.chat.forEach(m => log.append(bubble(m.role, m.content)));
-  }
-  panel.append(log);
-
-  const bar = el('div', 'chatbar');
-  bar.innerHTML =
-    '<input id="chatq" type="text" placeholder="' +
-    (PREFS.has_key ? 'Ask your assistant manager…' : 'Add an API key in Settings first') + '" ' +
-    (PREFS.has_key ? '' : 'disabled') + ' autocomplete="off">' +
-    '<button id="chatsend"' + (PREFS.has_key ? '' : ' disabled') + '>Ask</button>';
-  panel.append(bar);
-  wrap.append(panel);
-
-  setTimeout(() => {
-    const q = $('#chatq'); if (!q) return;
-    q.addEventListener('keydown', e => { if (e.key === 'Enter' && !S.chatBusy) sendChat(q.value); });
-    $('#chatsend').addEventListener('click', () => { if (!S.chatBusy) sendChat(q.value); });
-    const l = $('#chatlog'); if (l) l.scrollTop = l.scrollHeight;
-  }, 0);
-  return wrap;
-}
-
-function bubble(role, text) {
-  const d = el('div', 'msg ' + role);
-  d.textContent = text;
-  return d;
-}
-
-async function sendChat(text) {
-  text = (text || '').trim();
-  if (!text || S.chatBusy) return;
-  const box = $('#chatq'); if (box) box.value = '';
-  S.chat.push({ role: 'user', content: text });
-  S.chatBusy = true;
-  render();
-
-  const log = $('#chatlog');
-  const reply = bubble('assistant', '');
-  const think = el('span', 'thinking', 'Thinking…');
-  reply.append(think);
-  if (log) { log.append(reply); log.scrollTop = log.scrollHeight; }
-
-  let acc = '';
-  try {
-    const r = await fetch('/api/chat', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ team: S.teamId, gw: curGw(), history: S.chat }),
-    });
-    if (!r.ok) {
-      const j = await r.json().catch(() => ({}));
-      throw new Error(j.error || ('HTTP ' + r.status));
-    }
-    const reader = r.body.getReader();
-    const dec = new TextDecoder();
-    let buf = '';
-    for (;;) {
-      const chunk = await reader.read();
-      if (chunk.done) break;
-      buf += dec.decode(chunk.value, { stream: true });
-      const parts = buf.split('\n\n');
-      buf = parts.pop();
-      for (const c of parts) {
-        const ev = (c.match(/^event: (.+)$/m) || [])[1];
-        const dl = (c.match(/^data: (.+)$/m) || [])[1];
-        if (!ev || !dl) continue;
-        const data = JSON.parse(dl);
-        if (ev === 'delta') {
-          think.remove();
-          acc += data.text;
-          reply.textContent = acc;
-          if (log) log.scrollTop = log.scrollHeight;
-        } else if (ev === 'error') {
-          throw new Error(data.message);
-        }
-      }
-    }
-    S.chat.push({ role: 'assistant', content: acc });
-  } catch (e) {
-    think.remove();
-    S.chat.pop();   // drop the unanswered question so a retry doesn't stack
-    fail(e.message);
-  } finally {
-    S.chatBusy = false;
-    render();
-  }
 }
 
 function paintMini(box) {
@@ -936,33 +958,6 @@ function viewSettings(root) {
     row.append(txt, sw); t.append(row);
   });
 
-  const k = el('div', 'panel'); k.style.cssText = 'padding:18px 20px;margin-top:18px';
-  k.append(el('div', 'lbl', 'Assistant manager'));
-  k.append(el('p', 'foot', PREFS.has_key
-    ? 'A key is saved on this machine. The assistant can see your squad and answer questions about it.'
-    : 'The assistant runs on Claude and needs your own Anthropic API key. Get one at console.anthropic.com — you pay Anthropic directly, roughly a penny a question. The key is stored on this machine only and is never sent anywhere except Anthropic.'));
-  const krow = el('div', 'ctl'); krow.style.marginTop = '12px';
-  krow.innerHTML = `<input id="akey" class="field mono" type="password"
-    style="font-size:13px;padding:9px 12px;max-width:340px;letter-spacing:0"
-    placeholder="${PREFS.has_key ? '••••••••••••  (saved)' : 'sk-ant-...'}" autocomplete="off">`;
-  const ksave = el('button', 'btn ghost', 'Save key');
-  ksave.addEventListener('click', async () => {
-    const v = $('#akey').value.trim();
-    if (!v) return fail('Paste your key first.');
-    await post('/api/prefs', { anthropic_key: v });
-    await loadPrefs(); fail(''); render();
-  });
-  krow.append(ksave);
-  if (PREFS.has_key) {
-    const kdel = el('button', 'btn ghost', 'Remove');
-    kdel.addEventListener('click', async () => {
-      await post('/api/prefs', { anthropic_key: '' });
-      await loadPrefs(); S.chat = []; render();
-    });
-    krow.append(kdel);
-  }
-  k.append(krow);
-
   const a = el('div', 'panel'); a.style.cssText = 'padding:18px 20px;margin-top:18px';
   a.append(el('div', 'lbl', 'Account'));
   if (!ACCT.available) {
@@ -1005,7 +1000,7 @@ function viewSettings(root) {
   });
   c.append(clear);
 
-  root.append(p, t, k, a, c);
+  root.append(p, t, a, c);
 }
 
 /* ---------------- drawer ---------------- */

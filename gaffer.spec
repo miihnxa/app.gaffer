@@ -28,7 +28,7 @@ a = Analysis(
         "fpl.engine.fixtures", "fpl.engine.form", "fpl.engine.league",
         "fpl.engine.live", "fpl.engine.prices", "fpl.engine.replacements",
         "fpl.engine.squad", "fpl.engine.status", "fpl.engine.wildcard",
-        "webview.platforms.cocoa", "anthropic", "fpl.webapp.assistant",
+        "webview.platforms.cocoa",
     ],
     excludes=[
         # Build-time only, or unused — keeps the bundle small.

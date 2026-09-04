@@ -128,10 +128,12 @@ class Service:
         return sq
 
     def team_payload(self, team_id: int, *, with_replacements: bool = True,
-                     swaps: dict[int, int] | None = None) -> dict:
+                     swaps: dict[int, int] | None = None,
+                     lineup: dict | None = None) -> dict:
         entry = self.entry(team_id)
         sq = self.squad(team_id)
         applied = self._apply_swaps(sq, swaps or {})
+        lineup_applied = self._apply_lineup(sq, lineup or {})
         gw = self.next_gw
         fb, bs = self.fb, self.bs
 
@@ -175,6 +177,7 @@ class Service:
                 "source": sq.source,
                 "is_owner": self.is_owner(team_id),
                 "swaps": applied,
+                "lineup_saved": lineup_applied,
                 "clubs": clubs,
                 "xi": [self._player(p, gw, reps.get(p.player.id)) for p in sq.xi],
                 "bench": [self._player(p, gw, reps.get(p.player.id)) for p in sq.bench],
@@ -209,6 +212,33 @@ class Service:
             pick.player = incoming
             by_id[incoming.id] = pick
         return applied
+
+    def _apply_lineup(self, sq: Squad, lineup: dict) -> bool:
+        """Put the manager's own XI, bench order and captain onto the squad.
+
+        FPL does not publish any of this before a gameweek starts, so the app
+        cannot read it — the manager tells us instead. A lineup naming players
+        the squad no longer contains is stale (a transfer happened after it was
+        saved) and is ignored rather than half-applied.
+        """
+        xi = [int(x) for x in lineup.get("xi", [])]
+        bench = [int(x) for x in lineup.get("bench", [])]
+        if len(xi) != 11 or len(bench) != 4:
+            return False
+        owned = {p.player.id for p in sq.picks}
+        if set(xi) | set(bench) != owned:
+            return False
+
+        by_id = {p.player.id: p for p in sq.picks}
+        for slot, pid in enumerate(xi + bench, start=1):
+            by_id[pid].position = slot
+
+        cap, vice = lineup.get("captain"), lineup.get("vice")
+        for pick in sq.picks:
+            pick.is_captain = pick.player.id == cap
+            pick.is_vice_captain = pick.player.id == vice
+            pick.multiplier = 2 if pick.is_captain else 1
+        return True
 
     def _player(self, pick: Pick, gw: int, reps: list | None) -> dict:
         p: Player = pick.player

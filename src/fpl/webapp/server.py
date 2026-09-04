@@ -10,10 +10,10 @@ import logging
 import socket
 from pathlib import Path
 
-from flask import Flask, Response, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory
 
 from ..config import DATA_DIR
-from . import account, assistant, prefs
+from . import account, prefs
 from .service import Service, TeamNotFound
 
 log = logging.getLogger(__name__)
@@ -117,22 +117,20 @@ def create_app(service: Service | None = None) -> Flask:
         return jsonify(prefs.clear_swap(int(b["team"]), int(b["gw"]),
                                         int(out) if out is not None else None))
 
-    @app.post("/api/chat")
-    def chat():
-        body = request.json or {}
-        key = prefs.api_key()
-        if not key:
-            return jsonify({"error": "Add your Anthropic API key in Settings to use "
-                                     "the assistant.", "code": "no_key"}), 400
-        team_id = int(body.get("team") or 0)
-        if not team_id:
-            return jsonify({"error": "Load a team first."}), 400
-        gw = int(body.get("gw") or 0)
-        swaps = prefs.get_swaps(team_id, gw) if gw else {}
-        stream = assistant.stream_reply(svc, key, team_id,
-                                        body.get("history") or [], swaps)
-        return Response(stream, mimetype="text/event-stream",
-                        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+    @app.get("/api/lineup")
+    def get_lineup():
+        return jsonify(prefs.get_lineup(request.args.get("team", type=int) or 0,
+                                        request.args.get("gw", type=int) or 0))
+
+    @app.post("/api/lineup")
+    def save_lineup():
+        b = request.json or {}
+        return jsonify(prefs.set_lineup(int(b["team"]), int(b["gw"]), b.get("lineup") or {}))
+
+    @app.post("/api/lineup/clear")
+    def reset_lineup():
+        b = request.json or {}
+        return jsonify(prefs.clear_lineup(int(b["team"]), int(b["gw"])))
 
     @app.get("/api/config")
     def config():
@@ -151,7 +149,9 @@ def create_app(service: Service | None = None) -> Flask:
             out, _, inc = raw.partition(":")
             if out.isdigit() and inc.isdigit():
                 swaps[int(out)] = int(inc)
-        return jsonify(svc.team_payload(team_id, swaps=swaps))
+        gw = request.args.get("gw", type=int)
+        lineup = prefs.get_lineup(team_id, gw) if gw else {}
+        return jsonify(svc.team_payload(team_id, swaps=swaps, lineup=lineup))
 
     @app.get("/api/team/<int:team_id>/rebuild")
     def rebuild(team_id: int):

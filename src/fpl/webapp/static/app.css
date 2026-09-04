@@ -222,24 +222,6 @@ input[type=range]{accent-color:var(--accent)}
   background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin-top:6px;color:var(--text);font-size:12.5px}
 .recrow:hover{border-color:var(--accent);background:var(--panel-3)}
 
-/* ---------------- assistant ---------------- */
-.chat{background:var(--panel);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;overflow:hidden}
-.chatlog{padding:14px;display:flex;flex-direction:column;gap:11px;max-height:330px;overflow-y:auto;min-height:120px}
-.chatempty{font-size:12.5px;color:var(--muted);line-height:1.55}
-.chatempty p{margin:0}
-.suggest{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.sgbtn{background:var(--panel-2);border:1px solid var(--line-strong);color:var(--muted);border-radius:99px;padding:6px 12px;font-size:12px;text-align:left}
-.sgbtn:hover{border-color:var(--accent);color:var(--accent)}
-.msg{font-size:13px;line-height:1.6;white-space:pre-wrap;border-radius:10px;padding:10px 13px;max-width:92%}
-.msg.user{align-self:flex-end;background:var(--panel-3);color:var(--text);border:1px solid var(--line-strong)}
-.msg.assistant{align-self:flex-start;background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-left:2px solid var(--accent)}
-.thinking{color:var(--faint);font-style:italic}
-.chatbar{display:flex;gap:8px;padding:11px 12px;border-top:1px solid var(--line);background:var(--panel-2)}
-.chatbar input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line-strong);color:var(--text);border-radius:7px;padding:9px 12px;font-size:13px;font-family:inherit}
-.chatbar input:disabled{color:var(--faint)}
-.chatbar button{background:var(--accent);color:var(--accent-ink);border:0;border-radius:7px;padding:0 16px;font-weight:600;font-size:13px}
-.chatbar button:disabled{background:var(--panel-3);color:var(--faint)}
-
 /* ---------------- substitutions ---------------- */
 .subline{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:9px;font-size:12.5px}
 .subline .off{color:var(--muted)}
@@ -254,3 +236,22 @@ input[type=range]{accent-color:var(--accent)}
 .benchorder li .mono{font-size:10.5px;color:var(--faint);margin-left:6px}
 .benchorder li.moved b{color:var(--warn)}
 .benchorder .was{color:var(--warn)}
+
+/* ---------------- team editing ---------------- */
+.editctl{display:flex;align-items:center;gap:12px;margin-left:auto}
+.btn.sm{padding:6px 14px;font-size:12.5px;width:auto;margin:0;border-radius:7px}
+.btn.sm.primary{background:var(--accent);color:var(--accent-ink);border:0;font-weight:600}
+.edithint{background:var(--panel-2);border:1px solid var(--line-strong);border-radius:9px;
+  padding:10px 13px;font-size:12.5px;color:var(--muted);margin-bottom:11px;line-height:1.5}
+.edithint b{color:var(--accent)}
+.pc.editable{cursor:pointer}
+.pc.editable:hover{border-color:var(--accent)}
+.pc.picked{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.armband{display:flex;gap:4px;margin-top:7px;padding-top:6px;border-top:1px solid var(--line)}
+.arm{flex:1;background:var(--panel-3);border:1px solid var(--line-strong);color:var(--faint);
+  border-radius:5px;padding:2px 0;font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600}
+.arm:hover{color:var(--text);border-color:var(--muted)}
+.arm.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:80;
+  background:var(--lime-bg);border:1px solid var(--lime-bd);color:var(--lime-fg);
+  border-radius:9px;padding:11px 18px;font-size:13px}

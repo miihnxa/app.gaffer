@@ -23,7 +23,7 @@ DEFAULTS: dict[str, Any] = {
     "toggles": {},
     "bench_budget": 19.0,
     "swaps": {},            # {"<team_id>:<gw>": {"<out_id>": <in_id>}}
-    "anthropic_key": "",    # the user's own key; never sent to the page
+    "lineups": {},          # {"<team_id>:<gw>": {xi:[ids], bench:[ids], captain, vice}}
 }
 
 
@@ -55,15 +55,7 @@ def _write(data: dict[str, Any]) -> None:
 
 
 def all() -> dict[str, Any]:
-    """Safe to hand to the page: the API key is replaced with a presence flag."""
-    data = _read()
-    key = data.pop("anthropic_key", "")
-    data["has_key"] = bool(key)
-    return data
-
-
-def api_key() -> str:
-    return _read().get("anthropic_key", "")
+    return _read()
 
 
 def update(patch: dict[str, Any]) -> dict[str, Any]:
@@ -103,3 +95,21 @@ def clear_swap(team_id: int, gw: int, out_id: int | None = None) -> dict[str, in
         data["swaps"].get(key, {}).pop(str(int(out_id)), None)
     _write(data)
     return data["swaps"].get(key, {})
+
+
+def get_lineup(team_id: int, gw: int) -> dict:
+    return _read()["lineups"].get(_swap_key(team_id, gw), {})
+
+
+def set_lineup(team_id: int, gw: int, lineup: dict) -> dict:
+    data = _read()
+    data["lineups"][_swap_key(team_id, gw)] = lineup
+    _write(data)
+    return lineup
+
+
+def clear_lineup(team_id: int, gw: int) -> dict:
+    data = _read()
+    data["lineups"].pop(_swap_key(team_id, gw), None)
+    _write(data)
+    return {}
