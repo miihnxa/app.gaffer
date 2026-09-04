@@ -266,3 +266,5 @@ input[type=range]{accent-color:var(--accent)}
 .pc.cap{border-color:var(--accent);box-shadow:0 0 0 2px rgba(200,255,61,.32)}
 .pc.vice{border-color:#5D6875;box-shadow:0 0 0 2px rgba(139,151,166,.22)}
 .pc.cap:hover,.pc.vice:hover{border-color:var(--accent)}
+/* An unsaved edit should look unsaved. */
+.btn.sm.primary.pulse{box-shadow:0 0 0 3px rgba(200,255,61,.25)}

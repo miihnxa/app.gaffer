@@ -223,7 +223,7 @@ async function load(id) {
     $('#entry').hidden = true; $('#shell').hidden = false;
     buildNav(); startClock(); render();
     const sw = $('#switch');
-    if (sw && !sw.dataset.wired) { sw.dataset.wired = '1'; sw.addEventListener('click', goHome); }
+    if (sw && !sw.dataset.wired) { sw.dataset.wired = '1'; sw.addEventListener('click', () => { if (confirmDiscard()) goHome(); }); }
   } catch (e) {
     if ($('#shell').hidden) { $('#enterr').hidden = false; $('#enterr').textContent = e.message; }
     else fail(e.message);
@@ -270,7 +270,11 @@ function buildNav() {
       `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${path}</svg><span>${label}</span>`);
     b.type = 'button'; b.dataset.k = key;
     b.setAttribute('aria-pressed', String(S.view === key));
-    b.addEventListener('click', () => { S.view = key; render(); });
+    b.addEventListener('click', () => {
+      if (!confirmDiscard()) return;
+      if (S.editing) cancelEdit();
+      S.view = key; render();
+    });
     nav.append(b);
   });
 }
@@ -349,6 +353,11 @@ function render() {
 }
 
 /* ---------------- player card ---------------- */
+function confirmDiscard() {
+  if (!S.editing || !S.dirty) return true;
+  return confirm('You have unsaved changes to your team.\n\nLeave without saving?');
+}
+
 function startEdit() {
   const sq = S.team.squad;
   S.draft = {
@@ -442,6 +451,12 @@ async function resetLineup() {
   finally { busy(false); }
 }
 
+// A desktop app closes without ceremony; without this, unsaved edits vanish
+// and it reads as "the app didn't save my changes".
+window.addEventListener('beforeunload', e => {
+  if (S.editing && S.dirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
 function toast(msg) {
   const t = el('div', 'toast', msg);
   document.body.append(t);
@@ -532,7 +547,7 @@ function viewSquad(root) {
     const save = el('button', 'btn sm primary', S.dirty ? 'Save team' : 'Save team');
     save.addEventListener('click', saveLineup);
     const cancel = el('button', 'linkbtn', 'Cancel');
-    cancel.addEventListener('click', cancelEdit);
+    cancel.addEventListener('click', () => { if (confirmDiscard()) cancelEdit(); });
     ctrls.append(save, cancel);
   }
   hd.append(ctrls);
