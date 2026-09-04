@@ -260,3 +260,9 @@ input[type=range]{accent-color:var(--accent)}
 .setupbanner .sb-txt{flex:1;min-width:240px}
 .setupbanner b{color:var(--warn-fg);font-size:13.5px}
 .setupbanner p{margin:5px 0 0;font-size:12.5px;line-height:1.5;color:var(--warn-fg);opacity:.85}
+
+/* Captain and vice get a ring so the armbands read at a glance on the board,
+   not just from the small C/V badge. */
+.pc.cap{border-color:var(--accent);box-shadow:0 0 0 2px rgba(200,255,61,.32)}
+.pc.vice{border-color:#5D6875;box-shadow:0 0 0 2px rgba(139,151,166,.22)}
+.pc.cap:hover,.pc.vice:hover{border-color:var(--accent)}

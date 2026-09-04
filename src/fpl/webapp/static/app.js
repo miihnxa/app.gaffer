@@ -455,8 +455,9 @@ function playerCard(p, opts = {}) {
   const badge = p.is_captain ? 'C' : p.is_vice ? 'V' : flagged ? '!' : '';
   const bg = flagged ? 'var(--crit-bg)' : p.is_captain ? 'var(--accent)' : p.is_vice ? '#2A323C' : 'transparent';
   const fg = flagged ? 'var(--crit)' : p.is_captain ? 'var(--accent-ink)' : '#B7C2CE';
+  if (p.is_captain) b.classList.add('cap');
+  else if (p.is_vice) b.classList.add('vice');
   if (flagged) b.style.borderColor = 'var(--crit-bd)';
-  else if (p.is_captain) b.style.borderColor = 'var(--lime-bd)';
   if (opts.locked) b.style.borderColor = 'var(--lime-bd)';
   const fx = p.fixtures_gw[0];
   b.innerHTML =
