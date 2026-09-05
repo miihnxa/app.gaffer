@@ -12,6 +12,7 @@ from ..api.client import FPLClient, FPLError
 from ..api.model import Bootstrap, Player
 from ..config import Config
 from ..engine import advice as advice_engine
+from ..engine import chips as chips_engine
 from ..engine import deadlines, league as league_engine
 from ..engine import fixtures as fx_engine
 from ..engine import subs as subs_engine
@@ -156,7 +157,27 @@ class Service:
             for l in entry.get("leagues", {}).get("classic", [])
         ]
 
+        # Chips: recomputed from live fixtures, with anything already played
+        # read from the manager's own history so it drops off the plan.
+        try:
+            hist = self.client.history(int(team_id))
+            used = {c["name"]: c["event"] for c in (hist.get("chips") or [])}
+        except Exception:  # noqa: BLE001
+            used = {}
+        expiry = self.bs.chip_stop_event("wildcard") or 19
+        chip_picks = chips_engine.plan(
+            self.bs, fb, [p.player for p in sq.picks],
+            [p.player for p in sq.bench], gw, expiry, used)
+
         return {
+            "chips": {
+                "expiry": expiry,
+                "gws_left": max(0, expiry - gw),
+                "picks": [c.dict() for c in chip_picks],
+                "due": [c.dict() for c in chips_engine.due_now(chip_picks, gw)],
+                "expiring": [c.dict() for c in
+                             chips_engine.expiring(chip_picks, gw, expiry)],
+            },
             "entry": {
                 "id": entry["id"], "name": entry["name"],
                 "manager": f"{entry['player_first_name']} {entry['player_last_name']}",

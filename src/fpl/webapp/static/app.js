@@ -520,6 +520,44 @@ function board(xi, bench, opts = {}) {
   return wrap;
 }
 
+/* ---------------- chips ---------------- */
+function chipGlyph(chip) {
+  const paths = {
+    wildcard: '<path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/>',
+    '3xc': '<path d="M12 3l2.6 5.6L21 9.4l-4.5 4.3 1.1 6.3L12 17l-5.6 3 1.1-6.3L3 9.4l6.4-.8z"/>',
+    bboost: '<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>',
+    freehit: '<path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/>',
+  };
+  return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+     stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${paths[chip] || ''}</svg>`;
+}
+
+function chipPanel() {
+  const ch = S.team.chips || {};
+  const wrap = el('div');
+  const head = el('div', 'phd');
+  head.append(el('div', 'lbl', 'Chips'), el('div', 'note-line', `expire GW${ch.expiry}`));
+  wrap.append(head);
+
+  const box = el('div', 'tbl');
+  (ch.picks || []).forEach(c => {
+    const due = (ch.due || []).some(d => d.chip === c.chip);
+    const row = el('div', 'chiprow' + (c.used ? ' used' : due ? ' due' : ''));
+    const when = c.used ? `played GW${c.used_gw}` : c.gw ? `GW${c.gw}` : 'hold';
+    row.innerHTML = `<span class="cg">${chipGlyph(c.chip)}</span>
+      <span class="cl">${c.label}</span>
+      <span class="cw mono">${when}</span>
+      <span class="cc">${c.used ? '' : c.confidence === 'firm' ? 'firm' : 'provisional'}</span>`;
+    row.title = c.reason;
+    box.append(row);
+  });
+  wrap.append(box);
+  wrap.append(el('p', 'foot',
+    'Recomputed from live fixtures every time you open the app. Cup rounds move the '
+    + 'fixture list, so these can change \u2014 the app will tell you when they do.'));
+  return wrap;
+}
+
 /* ---------------- squad ---------------- */
 function viewSquad(root) {
   const sq = S.team.squad;
@@ -551,6 +589,30 @@ function viewSquad(root) {
     ctrls.append(save, cancel);
   }
   hd.append(ctrls);
+  const ch = S.team.chips || {};
+  (ch.due || []).forEach(c => {
+    const n = el('div', 'chipnotice');
+    n.innerHTML = `<div class="cn-mark">${chipGlyph(c.chip)}</div>
+      <div>
+        <div class="cn-kicker">Play this chip now &middot; Gameweek ${c.gw}</div>
+        <div class="cn-title">${c.label}</div>
+        <p>${c.reason}</p>
+        ${c.detail.length ? '<ul>' + c.detail.map(d => `<li>${d}</li>`).join('') + '</ul>' : ''}
+        <p class="cn-foot">Gaffer can&rsquo;t play it for you &mdash; activate it on the FPL site before the deadline.</p>
+      </div>`;
+    left.append(n);
+  });
+  (ch.expiring || []).forEach(c => {
+    if ((ch.due || []).some(d => d.chip === c.chip)) return;
+    const n = el('div', 'chipnotice warn');
+    n.innerHTML = `<div class="cn-mark">${chipGlyph(c.chip)}</div>
+      <div><div class="cn-kicker">Expiring</div>
+        <div class="cn-title">${c.label} still unused</div>
+        <p>Chip set one expires at the GW${ch.expiry} deadline &mdash; ${ch.gws_left}
+           gameweek${ch.gws_left === 1 ? '' : 's'} left. There is no rollover.</p></div>`;
+    left.append(n);
+  });
+
   const rec = sq.swaps || [];
   if (rec.length) {
     const b = el('div', 'swapbar');
@@ -618,6 +680,7 @@ function viewSquad(root) {
   lgWrap.append(lgBox); right.append(lgWrap);
 
   right.append(subsPanel());
+  right.append(chipPanel());
   cols.append(right); root.append(cols);
   ensureLeague().then(() => paintMini(lgBox)).catch(() => { lgBox.textContent = ''; lgBox.append(el('div', 'empty', 'No mini-league found.')); });
 }

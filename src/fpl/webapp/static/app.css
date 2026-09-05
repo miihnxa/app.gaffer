@@ -268,3 +268,30 @@ input[type=range]{accent-color:var(--accent)}
 .pc.cap:hover,.pc.vice:hover{border-color:var(--accent)}
 /* An unsaved edit should look unsaved. */
 .btn.sm.primary.pulse{box-shadow:0 0 0 3px rgba(200,255,61,.25)}
+
+/* ---------------- chip notices ---------------- */
+.chipnotice{display:grid;grid-template-columns:34px 1fr;gap:13px;padding:15px 17px;margin-bottom:14px;
+  background:var(--lime-bg);border:1px solid var(--lime-bd);border-radius:11px}
+.chipnotice.warn{background:var(--warn-bg);border-color:var(--warn-bd)}
+.cn-mark{width:34px;height:34px;border-radius:9px;background:var(--accent);color:var(--accent-ink);
+  display:grid;place-items:center}
+.chipnotice.warn .cn-mark{background:var(--warn);color:#231A08}
+.cn-kicker{font-size:9.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.chipnotice.warn .cn-kicker{color:var(--warn)}
+.cn-title{font-family:"Sora",sans-serif;font-size:19px;font-weight:600;letter-spacing:-.02em;margin-top:3px}
+.chipnotice p{margin:6px 0 0;font-size:13px;line-height:1.55;color:var(--lime-fg)}
+.chipnotice.warn p{color:var(--warn-fg)}
+.chipnotice ul{margin:8px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px;
+  font-size:12.5px;color:var(--lime-fg);line-height:1.5}
+.chipnotice.warn ul{color:var(--warn-fg)}
+.chipnotice .cn-foot{font-size:11.5px;opacity:.75;margin-top:9px}
+.chiprow{display:grid;grid-template-columns:24px 1fr auto auto;gap:10px;align-items:center;
+  padding:11px 14px;border-top:1px solid #1A212A;font-size:13px}
+.chiprow:first-child{border-top:0}
+.chiprow .cg{color:var(--faint);display:grid;place-items:center}
+.chiprow .cw{color:var(--muted);font-size:12px}
+.chiprow .cc{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ghost)}
+.chiprow.due{background:var(--lime-bg)}
+.chiprow.due .cg,.chiprow.due .cl,.chiprow.due .cw{color:var(--accent);font-weight:600}
+.chiprow.used{opacity:.45}
+.chiprow.used .cw{text-decoration:line-through}
