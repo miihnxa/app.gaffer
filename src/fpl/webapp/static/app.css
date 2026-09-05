@@ -295,3 +295,11 @@ input[type=range]{accent-color:var(--accent)}
 .chiprow.due .cg,.chiprow.due .cl,.chiprow.due .cw{color:var(--accent);font-weight:600}
 .chiprow.used{opacity:.45}
 .chiprow.used .cw{text-decoration:line-through}
+.chiphalf{margin-bottom:14px}
+.chiphalf:last-of-type{margin-bottom:0}
+.ch-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:7px}
+.ch-name{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.chiphalf.now .ch-name{color:var(--accent)}
+.ch-when{font-size:11px;color:var(--ghost)}
+.chiphalf.now .ch-when{color:var(--muted)}
+.chiphalf:not(.now) .tbl{opacity:.62}

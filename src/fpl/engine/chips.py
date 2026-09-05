@@ -1,9 +1,13 @@
 """When to play your chips.
 
+There are two full sets: one usable in the first half of the season, one in the
+second. Eight chips, not four. The windows are read from the API rather than
+assumed, because they are a game rule that can change between seasons.
+
 Recomputed from live fixtures every time, not read from a plan written weeks
 ago. Fixture lists move — cup rounds and postponements create blanks and
 doubles that weren't there in September — so a chip plan fixed in advance goes
-stale silently. This one re-derives and says when its own advice has changed.
+stale silently. Second-half fixtures exist but are provisional; the plan says so.
 """
 from __future__ import annotations
 
@@ -21,6 +25,18 @@ CHIP_NAMES = {
 
 
 @dataclass
+class Window:
+    """One half of the season, and the chips usable inside it."""
+    half: int
+    start: int
+    end: int
+
+    @property
+    def label(self) -> str:
+        return "First half" if self.half == 1 else "Second half"
+
+
+@dataclass
 class ChipPick:
     chip: str
     label: str
@@ -31,9 +47,32 @@ class ChipPick:
     confidence: str = "provisional"   # firm | provisional
     used: bool = False
     used_gw: int | None = None
+    half: int = 1
 
     def dict(self) -> dict:
         return asdict(self)
+
+
+def windows(bs: Bootstrap) -> list[Window]:
+    """The two chip windows, straight from the API.
+
+    Every chip carries its own start/stop event; they group into two halves.
+    Reading them beats hardcoding GW19, which is a rule, not a constant.
+    """
+    spans = sorted({(c["start_event"], c["stop_event"])
+                    for c in bs.data.get("chips", [])})
+    if not spans:
+        return [Window(1, 1, 19), Window(2, 20, 38)]
+    merged: list[Window] = []
+    for start, stop in spans:
+        if merged and start <= merged[-1].end:
+            merged[-1].start = min(merged[-1].start, start)
+            merged[-1].end = max(merged[-1].end, stop)
+        else:
+            merged.append(Window(len(merged) + 1, start, stop))
+    for i, w in enumerate(merged, start=1):
+        w.half = i
+    return merged
 
 
 def _diff(fb: FixtureBook, p: Player, gw: int) -> int | None:
@@ -64,14 +103,24 @@ def _premium(players: list[Player]) -> Player | None:
 
 
 def plan(bs: Bootstrap, fb: FixtureBook, players: list[Player], bench: list[Player],
-         from_gw: int, expiry: int, used: dict[str, int] | None = None) -> list[ChipPick]:
+         from_gw: int, expiry: int, used: dict[str, int] | None = None,
+         window_start: int | None = None, half: int = 1,
+         now_gw: int | None = None) -> list[ChipPick]:
+    """Plan one window. `from_gw` is where the search starts — today for the
+    window we are inside, the window's own start for one still ahead."""
     used = used or {}
-    horizon = list(range(from_gw, expiry + 1))
+    start = max(from_gw, window_start or from_gw)
+    horizon = list(range(start, expiry + 1))
+    if not horizon:
+        return []
     picks: list[ChipPick] = []
 
-    # Anything past roughly ten gameweeks out is a provisional fixture list.
+    # Confidence is distance from TODAY, not from the window's start — a pick
+    # twenty gameweeks away is provisional however close it sits to its window.
+    today = now_gw if now_gw is not None else from_gw
+
     def confidence(gw: int | None) -> str:
-        return "firm" if gw is not None and gw - from_gw <= 6 else "provisional"
+        return "firm" if gw is not None and gw - today <= 6 else "provisional"
 
     # ---- Triple Captain: the premium's kindest home game ------------
     star = _premium(players)
@@ -98,7 +147,7 @@ def plan(bs: Bootstrap, fb: FixtureBook, players: list[Player], bench: list[Play
         (f"{star.name}'s easiest home fixture in the window." if star and best_tc
          else "No home fixture stands out for your premium."),
         tc_detail, confidence(best_tc),
-        "3xc" in used, used.get("3xc")))
+        "3xc" in used, used.get("3xc"), half))
 
     # ---- Bench Boost: the whole fifteen's easiest week ---------------
     bb_rows = []
@@ -141,7 +190,7 @@ def plan(bs: Bootstrap, fb: FixtureBook, players: list[Player], bench: list[Play
         f"Wildcard in GW{wc_gw}" if wc_gw else "No clear week",
         "The best five-gameweek run you can rebuild into." if wc_gw else "",
         [f"Average difficulty {wc_rows[0][0]:.2f} across GW{wc_gw}-{wc_gw + 4}"] if wc_gw else [],
-        confidence(wc_gw), "wildcard" in used, used.get("wildcard")))
+        confidence(wc_gw), "wildcard" in used, used.get("wildcard"), half))
 
     # ---- Free Hit: only worth it against a blank or a bad week -------
     fh_gw, fh_reason, fh_detail = None, "", []
@@ -182,3 +231,30 @@ def expiring(picks: list[ChipPick], gw: int, expiry: int,
     if expiry - gw > warn_within:
         return []
     return [p for p in picks if not p.used]
+
+
+def season_plan(bs: Bootstrap, fb: FixtureBook, players: list[Player],
+                bench: list[Player], now_gw: int,
+                used_by_gw: dict[str, list[int]] | None = None) -> list[dict]:
+    """Both halves, each with its own set of four chips.
+
+    A chip already played counts only against the half it was played in — the
+    second set is untouched by what you did before the break.
+    """
+    used_by_gw = used_by_gw or {}
+    out = []
+    for w in windows(bs):
+        if now_gw > w.end:
+            continue                      # that window has closed
+        used = {name: next((g for g in gws if w.start <= g <= w.end), None)
+                for name, gws in used_by_gw.items()}
+        used = {k: v for k, v in used.items() if v is not None}
+        picks = plan(bs, fb, players, bench, max(now_gw, w.start), w.end,
+                     used, window_start=w.start, half=w.half, now_gw=now_gw)
+        out.append({
+            "half": w.half, "label": w.label, "start": w.start, "end": w.end,
+            "current": w.start <= now_gw <= w.end,
+            "gws_left": max(0, w.end - now_gw) if w.start <= now_gw <= w.end else None,
+            "picks": [p.dict() for p in picks],
+        })
+    return out

@@ -157,26 +157,37 @@ class Service:
             for l in entry.get("leagues", {}).get("classic", [])
         ]
 
-        # Chips: recomputed from live fixtures, with anything already played
-        # read from the manager's own history so it drops off the plan.
+        # Chips: two full sets, one per half of the season, recomputed from
+        # live fixtures. Anything already played is read from the manager's own
+        # history and counts only against the half it was played in.
         try:
             hist = self.client.history(int(team_id))
-            used = {c["name"]: c["event"] for c in (hist.get("chips") or [])}
+            used_by_gw: dict[str, list[int]] = {}
+            for ch in (hist.get("chips") or []):
+                used_by_gw.setdefault(ch["name"], []).append(ch["event"])
         except Exception:  # noqa: BLE001
-            used = {}
-        expiry = self.bs.chip_stop_event("wildcard") or 19
-        chip_picks = chips_engine.plan(
+            used_by_gw = {}
+
+        halves = chips_engine.season_plan(
             self.bs, fb, [p.player for p in sq.picks],
-            [p.player for p in sq.bench], gw, expiry, used)
+            [p.player for p in sq.bench], gw, used_by_gw)
+
+        current = next((h for h in halves if h["current"]), None)
+        due, expiring = [], []
+        if current:
+            live = [chips_engine.ChipPick(**p) for p in current["picks"]]
+            due = [c.dict() for c in chips_engine.due_now(live, gw)]
+            expiring = [c.dict() for c in
+                        chips_engine.expiring(live, gw, current["end"])]
 
         return {
             "chips": {
-                "expiry": expiry,
-                "gws_left": max(0, expiry - gw),
-                "picks": [c.dict() for c in chip_picks],
-                "due": [c.dict() for c in chips_engine.due_now(chip_picks, gw)],
-                "expiring": [c.dict() for c in
-                             chips_engine.expiring(chip_picks, gw, expiry)],
+                "halves": halves,
+                "expiry": current["end"] if current else None,
+                "gws_left": current["gws_left"] if current else None,
+                "picks": current["picks"] if current else [],
+                "due": due,
+                "expiring": expiring,
             },
             "entry": {
                 "id": entry["id"], "name": entry["name"],

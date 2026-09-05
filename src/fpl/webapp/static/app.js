@@ -536,25 +536,38 @@ function chipPanel() {
   const ch = S.team.chips || {};
   const wrap = el('div');
   const head = el('div', 'phd');
-  head.append(el('div', 'lbl', 'Chips'), el('div', 'note-line', `expire GW${ch.expiry}`));
+  head.append(el('div', 'lbl', 'Chips'),
+              el('div', 'note-line', 'two sets, one per half'));
   wrap.append(head);
 
-  const box = el('div', 'tbl');
-  (ch.picks || []).forEach(c => {
-    const due = (ch.due || []).some(d => d.chip === c.chip);
-    const row = el('div', 'chiprow' + (c.used ? ' used' : due ? ' due' : ''));
-    const when = c.used ? `played GW${c.used_gw}` : c.gw ? `GW${c.gw}` : 'hold';
-    row.innerHTML = `<span class="cg">${chipGlyph(c.chip)}</span>
-      <span class="cl">${c.label}</span>
-      <span class="cw mono">${when}</span>
-      <span class="cc">${c.used ? '' : c.confidence === 'firm' ? 'firm' : 'provisional'}</span>`;
-    row.title = c.reason;
-    box.append(row);
+  (ch.halves || []).forEach(h => {
+    const sec = el('div', 'chiphalf' + (h.current ? ' now' : ''));
+    const left = h.current && h.gws_left != null
+      ? `${h.gws_left} gameweek${h.gws_left === 1 ? '' : 's'} left`
+      : `GW${h.start}\u2013${h.end}`;
+    sec.innerHTML = `<div class="ch-head"><span class="ch-name">${h.label}</span>
+      <span class="ch-when mono">${left}</span></div>`;
+
+    const box = el('div', 'tbl');
+    h.picks.forEach(c => {
+      const due = (ch.due || []).some(d => d.chip === c.chip);
+      const row = el('div', 'chiprow' + (c.used ? ' used' : due ? ' due' : ''));
+      const when = c.used ? `played GW${c.used_gw}` : c.gw ? `GW${c.gw}` : 'hold';
+      row.innerHTML = `<span class="cg">${chipGlyph(c.chip)}</span>
+        <span class="cl">${c.label}</span>
+        <span class="cw mono">${when}</span>
+        <span class="cc">${c.used ? 'used' : c.confidence === 'firm' ? 'firm' : 'provisional'}</span>`;
+      row.title = c.reason;
+      box.append(row);
+    });
+    sec.append(box);
+    wrap.append(sec);
   });
-  wrap.append(box);
+
   wrap.append(el('p', 'foot',
-    'Recomputed from live fixtures every time you open the app. Cup rounds move the '
-    + 'fixture list, so these can change \u2014 the app will tell you when they do.'));
+    'Eight chips: a full set for each half of the season, and the second set is '
+    + 'untouched by what you play before the break. Recomputed from live fixtures '
+    + 'each time \u2014 second-half weeks will move once cup rounds are drawn.'));
   return wrap;
 }
 
