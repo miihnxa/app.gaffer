@@ -7,10 +7,10 @@
 chip_deadline_gw: 19
 
 chips:
-  wildcard:    {planned_gw: 6,  note: "After the international break. GW6-10 ticker swing."}
-  "3xc":       {planned_gw: 7,  note: "Haaland, City home to Ipswich."}
-  bboost:      {planned_gw: 8,  note: "Straight after the Wildcard, bench = 4 real starters."}
-  freehit:     {planned_gw: 16, alt_gw: 13, note: "GW16 aggressive (City v Hull). GW13 defensive."}
+  wildcard:    {planned_gw: 13, note: "Widest gap between your squad's fixtures and the best clubs'."}
+  "3xc":       {planned_gw: 16, note: "Haaland at home to Hull."}
+  bboost:      {planned_gw: 18, note: "Your easiest full-squad week, bench fresh off the Wildcard."}
+  freehit:     {planned_gw: null, note: "Hold. No blank gameweek in the first half."}
 
 # Section 4 — the three competing Wildcard shapes.
 wildcard_shapes:
