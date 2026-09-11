@@ -172,7 +172,12 @@ def plan(bs: Bootstrap, fb: FixtureBook, players: list[Player], bench: list[Play
         if not -doubled else "A double gameweek — the best a Bench Boost ever gets.",
         bb_detail, confidence(bb_gw), "bboost" in used, used.get("bboost")))
 
-    # ---- Wildcard: the best five-week run you can buy into -----------
+    # ---- Wildcard: when the squad you have lags furthest behind the one
+    # you could buy. A Wildcard replaces the squad, so the week your CURRENT
+    # players have their easiest run is the worst time to play it — you'd be
+    # selling them just as their fixtures turn. Measure the gap instead:
+    # your squad's next five against the best clubs' next five.
+    WC_POOL = 8        # a rebuild can realistically draw on the best ~8 clubs
     wc_rows = []
     for gw in horizon[:-4]:
         ds = []
@@ -181,15 +186,24 @@ def plan(bs: Bootstrap, fb: FixtureBook, players: list[Player], bench: list[Play
                 d = _diff(fb, p, g)
                 if d is not None:
                     ds.append(d)
-        if ds:
-            wc_rows.append((sum(ds) / len(ds), gw))
-    wc_rows.sort()
+        if not ds:
+            continue
+        yours = sum(ds) / len(ds)
+        league = sorted(fb.difficulty_score(t, gw, 5) for t in bs.teams)
+        best = sum(league[:WC_POOL]) / min(WC_POOL, len(league))
+        wc_rows.append((yours - best, gw, yours, best))
+    wc_rows.sort(reverse=True)
+    # FPL allows one chip per gameweek. Take the best week no other chip has.
+    taken = {p.gw for p in picks if p.gw is not None and not p.used}
+    wc_rows = [r for r in wc_rows if r[1] not in taken] or wc_rows
     wc_gw = wc_rows[0][1] if wc_rows else None
     picks.append(ChipPick(
         "wildcard", CHIP_NAMES["wildcard"], wc_gw,
         f"Wildcard in GW{wc_gw}" if wc_gw else "No clear week",
-        "The best five-gameweek run you can rebuild into." if wc_gw else "",
-        [f"Average difficulty {wc_rows[0][0]:.2f} across GW{wc_gw}-{wc_gw + 4}"] if wc_gw else [],
+        ("The week your squad's fixtures lag furthest behind the best you "
+         "could rebuild into.") if wc_gw else "",
+        [f"Your squad averages {wc_rows[0][2]:.2f} over GW{wc_gw}-{wc_gw + 4}; "
+         f"the best {WC_POOL} clubs average {wc_rows[0][3]:.2f}"] if wc_gw else [],
         confidence(wc_gw), "wildcard" in used, used.get("wildcard"), half))
 
     # ---- Free Hit: only worth it against a blank or a bad week -------

@@ -151,6 +151,55 @@ class Schema(unittest.TestCase):
                  "is_captain": False, "is_vice_captain": False}]})
 
 
+class WildcardTiming(unittest.TestCase):
+    """A Wildcard replaces the squad, so it belongs where the squad lags the
+    league — not where the squad's own fixtures are easiest."""
+
+    def test_picks_the_widest_gap_not_the_easiest_squad_week(self):
+        from fpl.engine import chips
+        from fpl.api.model import Bootstrap
+
+        # Two clubs. The squad plays for club 1; club 2 is the one to buy into.
+        # GW1-5: club 1 has easy fixtures (2), club 2 easy too -> small gap.
+        # GW6-10: club 1 turns hard (5), club 2 stays easy (2) -> big gap.
+        teams = [{"id": 1, "name": "One", "short_name": "ONE"},
+                 {"id": 2, "name": "Two", "short_name": "TWO"}]
+        events = [{"id": g, "name": f"GW{g}", "deadline_time": "2026-08-14T17:30:00Z",
+                   "finished": False, "is_current": g == 1, "is_next": g == 2}
+                  for g in range(1, 15)]
+        fixtures = []
+        for g in range(1, 15):
+            hard = g >= 6
+            fixtures.append({"event": g, "team_h": 1, "team_a": 2,
+                             "team_h_difficulty": 5 if hard else 2,
+                             "team_a_difficulty": 2, "kickoff_time": None,
+                             "finished": False})
+        bs = Bootstrap({"events": events, "teams": teams, "elements": [mk(team=1).raw],
+                        "element_types": [], "chips": []})
+        from fpl.engine.fixtures import FixtureBook
+        fb = FixtureBook(bs, fixtures)
+        picks = chips.plan(bs, fb, [mk(team=1)], [], 1, 14)
+        wc = next(p for p in picks if p.chip == "wildcard")
+        self.assertGreaterEqual(wc.gw, 6,
+            "should wildcard as the squad's fixtures turn, not while they're easy")
+
+    def test_no_two_chips_share_a_gameweek(self):
+        """FPL allows one chip per gameweek."""
+        import sys
+        from fpl.webapp.service import Service
+        from fpl.engine import chips
+        try:
+            svc = Service(); bs = svc.bs; fb = svc.fb
+        except Exception:
+            self.skipTest("needs the live FPL API")
+        squad = [bs.player(p) for p in (109, 4, 426, 368, 165, 411, 496, 290, 173, 204)
+                 if bs.player(p)]
+        for half in chips.season_plan(bs, fb, squad, squad[-4:], 5):
+            gws = [p["gw"] for p in half["picks"] if p["gw"] is not None]
+            self.assertEqual(len(gws), len(set(gws)),
+                             f"{half['label']} plays two chips in one week: {gws}")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
 
