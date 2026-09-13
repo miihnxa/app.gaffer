@@ -662,6 +662,7 @@ function viewSquad(root) {
   cols.append(left);
 
   const right = el('div', 'stack');
+  right.append(recommendPanel());
 
   const insHd = el('div', 'phd');
   insHd.append(el('div', 'lbl', 'What to look at'),
@@ -692,7 +693,6 @@ function viewSquad(root) {
   lgBox.append(el('div', 'empty', 'Loading standings…'));
   lgWrap.append(lgBox); right.append(lgWrap);
 
-  right.append(subsPanel());
   right.append(chipPanel());
   cols.append(right); root.append(cols);
   ensureLeague().then(() => paintMini(lgBox)).catch(() => { lgBox.textContent = ''; lgBox.append(el('div', 'empty', 'No mini-league found.')); });
@@ -708,65 +708,94 @@ async function ensureLeague() {
   return S.league;
 }
 
-function subsPanel() {
-  const subs = S.team.subs || [];
-  const order = S.team.bench_order || [];
-  const misordered = order.filter(b => b.moved);
-
+function recommendPanel() {
+  const r = S.team.recommended;
   const wrap = el('div');
+  if (!r) return wrap;
+  const P = id => r.players[String(id)] || {};
+
   const head = el('div', 'phd');
-  head.append(el('div', 'lbl', 'Substitutions'));
-  head.append(el('div', 'mono', '<span style="color:var(--faint);font-size:11px">' + subs.length + '</span>'));
+  head.append(el('div', 'lbl', 'Recommended team'),
+              el('div', 'mono', `<span style="color:var(--faint);font-size:11px">${r.formation}</span>`));
   wrap.append(head);
 
-  const box = el('div', 'stack'); box.style.gap = '9px';
+  const box = el('div', 'rec');
 
-  if (!subs.length) {
-    box.append(el('div', 'ins info',
-      '<div class="top"><span class="micro kind">Settled</span></div>' +
-      '<h3>Your best eleven is already on the pitch</h3>' +
-      '<p>No bench player improves on a starter on form, fixture or fitness.</p>'));
+  const top = el('div', 'rec-top');
+  if (r.matches_current) {
+    top.innerHTML = `<div><div class="rec-verdict ok">Your team is already right</div>
+      <p>This is the eleven, bench order and armbands Gaffer would pick.</p></div>`;
   } else {
-    subs.forEach(sub => {
-      const tone = { critical: 'crit', warning: 'warn', info: 'info' }[sub.severity] || 'info';
-      const label = sub.severity === 'critical' ? 'Do this'
-                  : sub.severity === 'warning' ? 'Worth doing' : 'Consider';
-      const d = el('div', 'ins ' + tone);
-      d.innerHTML =
-        '<div class="top"><span class="micro kind">' + label + '</span>' +
-        '<span class="gw mono">' + sub.formation_after + '</span></div>' +
-        '<h3>' + sub.headline + '</h3>' +
-        '<div class="subline">' +
-          '<span class="off">' + sub.out_name +
-            '<span class="mono">' + sub.out_club + ' · form ' + sub.out_form + ' · fdr ' + sub.out_fdr + '</span></span>' +
-          '<span class="mono arrow">&rarr;</span>' +
-          '<span class="on">' + sub.in_name +
-            '<span class="mono">' + sub.in_club + ' · form ' + sub.in_form + ' · fdr ' + sub.in_fdr + '</span></span>' +
-        '</div>' +
-        '<ul class="whys">' + sub.reasons.map(r => '<li>' + r + '</li>').join('') + '</ul>';
-      box.append(d);
+    const bits = [];
+    if (r.changes.length) bits.push(`${r.changes.length} sub${r.changes.length === 1 ? '' : 's'}`);
+    if (r.armband_changed) bits.push('armbands');
+    if (r.bench_reordered) bits.push('bench order');
+    top.innerHTML = `<div><div class="rec-verdict">Change: ${bits.join(' · ')}</div>
+      <p>Load it onto the board to check it, then Save — and make the same changes on the FPL site.</p></div>`;
+    const use = el('button', 'btn sm primary', 'Use this team');
+    use.addEventListener('click', applyRecommended);
+    top.append(use);
+  }
+  box.append(top);
+
+  const cap = P(r.captain), vice = P(r.vice);
+  const third = r.captain_options[2];
+  const armSec = el('div', 'rec-sec');
+  armSec.innerHTML = `<div class="micro rec-k">Captain</div>
+    <div class="rec-arm"><span class="arm-badge c">C</span><b>${cap.name}</b>
+      <span class="mono">${cap.fixture} · form ${cap.form} · rating ${cap.rating}</span></div>
+    <div class="rec-arm"><span class="arm-badge v">V</span><b>${vice.name}</b>
+      <span class="mono">${vice.fixture} · form ${vice.form} · rating ${vice.rating}</span></div>
+    ${r.captain_close_call ? '<p class="rec-note">Close call — these two are within 10% of each other.</p>' : ''}
+    ${third ? `<p class="rec-note">Next best: ${third.name} (rating ${third.rating}).</p>` : ''}`;
+  box.append(armSec);
+
+  if (r.changes.length) {
+    const subSec = el('div', 'rec-sec');
+    subSec.append(el('div', 'micro rec-k', 'Substitutions'));
+    r.changes.forEach(c => {
+      const d = el('div', 'rec-change');
+      d.innerHTML = `<div class="subline">
+          <span class="off">${c.off}<span class="mono">${c.off_club} · rating ${c.off_rating}</span></span>
+          <span class="mono arrow">&rarr;</span>
+          <span class="on">${c.on}<span class="mono">${c.on_club} · rating ${c.on_rating}</span></span>
+        </div>
+        <ul class="whys">${c.why.map(w => '<li>' + w + '</li>').join('')}</ul>`;
+      subSec.append(d);
     });
+    box.append(subSec);
   }
 
-  if (misordered.length) {
-    const d = el('div', 'ins warn');
-    d.innerHTML =
-      '<div class="top"><span class="micro kind">Bench order</span></div>' +
-      '<h3>Reorder your bench</h3>' +
-      '<p>Bench order only pays out when a starter doesn\'t play, so the likeliest ' +
-      'scorer should be first.</p>' +
-      '<ol class="benchorder">' + order.map(b =>
-        '<li' + (b.moved ? ' class="moved"' : '') + '><b>' + b.name + '</b>' +
-        '<span class="mono">' + b.club + ' · form ' + b.form + ' · fdr ' + b.fdr + '</span>' +
-        (b.moved ? '<span class="mono was">now ' + b.current_slot + '</span>' : '') +
-        '</li>').join('') + '</ol>';
-    box.append(d);
-  }
+  const lines = el('div', 'rec-sec');
+  lines.append(el('div', 'micro rec-k', 'Starting eleven'));
+  [['GK', 'GKP'], ['DEF', 'DEF'], ['MID', 'MID'], ['FWD', 'FWD']].forEach(([label, pos]) => {
+    const names = r.xi.map(P).filter(p => p.pos === pos).map(p => {
+      const arm = p.id === r.captain ? ' <span class="arm-badge c">C</span>'
+                : p.id === r.vice ? ' <span class="arm-badge v">V</span>' : '';
+      return `<span class="rec-name${p.flagged ? ' flag' : ''}">${p.name}${arm}</span>`;
+    }).join('');
+    lines.append(el('div', 'rec-line', `<span class="mono rl">${label}</span><span class="rec-names">${names}</span>`));
+  });
+  lines.append(el('div', 'rec-line',
+    `<span class="mono rl">BEN</span><span class="rec-names">${r.bench.map((id, i) =>
+      `<span class="rec-name dim">${i === 0 ? '' : i + '. '}${P(id).name}</span>`).join('')}</span>`));
+  box.append(lines);
 
   wrap.append(box);
   wrap.append(el('p', 'foot',
-    'Gaffer can\'t change your team — make these on the FPL site before the deadline.'));
+    'Ratings combine form, points per game, minutes played, fixture difficulty, home advantage '
+    + 'and fitness. They rank your own players against each other &mdash; they aren&rsquo;t point '
+    + 'predictions. Gaffer can&rsquo;t change your team: make the same changes on the FPL site.'));
   return wrap;
+}
+
+function applyRecommended() {
+  if (!confirmDiscard()) return;
+  const r = S.team.recommended;
+  S.draft = { xi: r.xi.slice(), bench: r.bench.slice(), captain: r.captain, vice: r.vice };
+  S.editing = true; S.picked = null; S.dirty = true;
+  render();
+  toast('Recommended team loaded — check it on the board, then Save.');
 }
 
 function paintMini(box) {

@@ -16,6 +16,7 @@ from ..engine import chips as chips_engine
 from ..engine import deadlines, league as league_engine
 from ..engine import fixtures as fx_engine
 from ..engine import subs as subs_engine
+from ..engine import lineup as lineup_engine
 from ..engine import replacements as rep_engine
 from ..engine import wildcard as wc_engine
 from ..engine.squad import Pick, Squad, _pending, staleness_note
@@ -215,6 +216,7 @@ class Service:
                 "bench": [self._player(p, gw, reps.get(p.player.id)) for p in sq.bench],
             },
             "advice": [a.dict() for a in adv],
+            "recommended": lineup_engine.recommend(sq, fb, gw, self.games_played),
             "subs": [x.dict() for x in subs_engine.suggest(sq, fb, gw)],
             "bench_order": subs_engine.bench_order(sq, fb, gw),
             "leagues": leagues,

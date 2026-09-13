@@ -303,3 +303,27 @@ input[type=range]{accent-color:var(--accent)}
 .ch-when{font-size:11px;color:var(--ghost)}
 .chiphalf.now .ch-when{color:var(--muted)}
 .chiphalf:not(.now) .tbl{opacity:.62}
+
+/* ---------------- recommended team ---------------- */
+.rec{background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--accent);
+  border-radius:0 9px 9px 0;padding:13px 14px;display:flex;flex-direction:column;gap:13px}
+.rec-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.rec-top p{font-size:12px;line-height:1.5;color:var(--muted);margin:4px 0 0}
+.rec-verdict{font-size:13.5px;font-weight:600}
+.rec-verdict.ok{color:var(--accent)}
+.rec-sec{border-top:1px solid var(--line);padding-top:12px}
+.rec-k{color:var(--faint);margin-bottom:8px}
+.rec-arm{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:13px;margin-top:6px}
+.rec-arm .mono{font-size:10.5px;color:var(--faint)}
+.arm-badge{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:4px;
+  font-family:"IBM Plex Mono",monospace;font-size:9px;font-weight:600;vertical-align:1px}
+.arm-badge.c{background:var(--accent);color:var(--accent-ink)}
+.arm-badge.v{background:#2A323C;color:#B7C2CE}
+.rec-note{font-size:11.5px;color:var(--muted);margin:8px 0 0}
+.rec-change + .rec-change{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.rec-change .subline{margin-top:0}
+.rec-line{display:grid;grid-template-columns:32px 1fr;gap:8px;align-items:baseline;padding:3px 0}
+.rec-line .rl{font-size:10px;color:#3E4855}
+.rec-names{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12.5px}
+.rec-name.flag{color:var(--warn)}
+.rec-name.dim{color:var(--muted)}
