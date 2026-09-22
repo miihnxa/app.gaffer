@@ -200,9 +200,6 @@ class WildcardTiming(unittest.TestCase):
                              f"{half['label']} plays two chips in one week: {gws}")
 
 
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
-
 
 class BudgetShapes(unittest.TestCase):
     """Wildcard budget arithmetic — the Isak vs Bench Boost tension."""
@@ -238,3 +235,61 @@ class BenchReadiness(unittest.TestCase):
     def test_zero_minutes_is_not_a_starter(self):
         share = 0 / (90.0 * 2)
         self.assertLess(share, 0.4)
+
+
+class ChipSequencing(unittest.TestCase):
+    """A Bench Boost is only worth playing on a bench the Wildcard has fixed."""
+
+    def _world(self):
+        from fpl.api.model import Bootstrap
+        from fpl.engine.fixtures import FixtureBook
+        teams = [{"id": 1, "name": "One", "short_name": "ONE"},
+                 {"id": 2, "name": "Two", "short_name": "TWO"}]
+        events = [{"id": g, "name": f"GW{g}", "deadline_time": "2026-08-14T17:30:00Z",
+                   "finished": False, "is_current": g == 1, "is_next": g == 2}
+                  for g in range(1, 15)]
+        # Club 1 (the squad's club) gets its easiest week early at GW2, then
+        # turns hard from GW6 — so the Bench Boost wants GW2 and the Wildcard
+        # wants GW6 or later.
+        fixtures = [{"event": g, "team_h": 1, "team_a": 2,
+                     "team_h_difficulty": 1 if g == 2 else (5 if g >= 6 else 3),
+                     "team_a_difficulty": 2, "kickoff_time": None, "finished": False}
+                    for g in range(1, 15)]
+        bs = Bootstrap({"events": events, "teams": teams, "elements": [mk(team=1).raw],
+                        "element_types": [], "chips": []})
+        return bs, FixtureBook(bs, fixtures)
+
+    def test_bench_boost_is_never_planned_before_the_wildcard(self):
+        from fpl.engine import chips
+        bs, fb = self._world()
+        picks = chips.plan(bs, fb, [mk(team=1)], [mk(team=1)], 1, 14)
+        wc = next(p for p in picks if p.chip == "wildcard")
+        bb = next(p for p in picks if p.chip == "bboost")
+        self.assertIsNotNone(wc.gw)
+        self.assertGreater(bb.gw, wc.gw,
+                           "the Wildcard builds the bench the Boost cashes in")
+
+    def test_a_wildcard_already_played_stops_constraining_the_boost(self):
+        from fpl.engine import chips
+        bs, fb = self._world()
+        picks = chips.plan(bs, fb, [mk(team=1)], [mk(team=1)], 1, 14,
+                           used={"wildcard": 1})
+        bb = next(p for p in picks if p.chip == "bboost")
+        self.assertEqual(bb.gw, 2, "with the rebuild done, take the easiest week")
+
+    def test_every_chip_carries_its_half(self):
+        from fpl.engine import chips
+        bs, fb = self._world()
+        picks = chips.plan(bs, fb, [mk(team=1)], [mk(team=1)], 1, 14, half=2)
+        self.assertEqual({p.half for p in picks}, {2})
+
+    def test_one_chip_per_gameweek(self):
+        from fpl.engine import chips
+        bs, fb = self._world()
+        picks = chips.plan(bs, fb, [mk(team=1)], [mk(team=1)], 1, 14)
+        gws = [p.gw for p in picks if p.gw is not None]
+        self.assertEqual(len(gws), len(set(gws)))
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

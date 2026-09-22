@@ -122,55 +122,16 @@ def plan(bs: Bootstrap, fb: FixtureBook, players: list[Player], bench: list[Play
     def confidence(gw: int | None) -> str:
         return "firm" if gw is not None and gw - today <= 6 else "provisional"
 
-    # ---- Triple Captain: the premium's kindest home game ------------
-    star = _premium(players)
-    best_tc, tc_detail = None, []
-    if star:
-        cands = []
-        for gw in horizon:
-            for f in fb.for_team(star.raw["team"], gw):
-                if not f.home:
-                    continue
-                opp = next((t for t in bs.teams.values()
-                            if t["short_name"] == f.opponent), None)
-                away_strength = (opp or {}).get("strength_overall_away", 3)
-                cands.append((f.difficulty, away_strength, -gw, gw, f.opponent))
-        cands.sort()
-        if cands:
-            d, strength, _, gw, opp = cands[0]
-            best_tc = gw
-            tc_detail = [f"{star.name} at home to {opp}, difficulty {d}",
-                         "The weakest visitor he gets before the deadline"]
-    picks.append(ChipPick(
-        "3xc", CHIP_NAMES["3xc"], best_tc,
-        f"Triple Captain in GW{best_tc}" if best_tc else "No standout week",
-        (f"{star.name}'s easiest home fixture in the window." if star and best_tc
-         else "No home fixture stands out for your premium."),
-        tc_detail, confidence(best_tc),
-        "3xc" in used, used.get("3xc"), half))
+    # Order matters. The Wildcard rebuilds the squad, and a Bench Boost is only
+    # worth playing on a bench the Wildcard has already fixed — so the Wildcard
+    # is planned first and the Boost is searched in the weeks after it. FPL also
+    # allows one chip per gameweek, so every pick claims its week.
+    taken: set[int] = set()
 
-    # ---- Bench Boost: the whole fifteen's easiest week ---------------
-    bb_rows = []
-    for gw in horizon:
-        blanks, doubles = blanks_and_doubles(bs, fb, gw)
-        playing = sum(1 for p in players if fb.for_team(p.raw["team"], gw))
-        bench_home = sum(1 for p in bench
-                         if any(f.home for f in fb.for_team(p.raw["team"], gw)))
-        # A double gameweek beats any single-week difficulty edge.
-        doubled = sum(1 for p in players if len(fb.for_team(p.raw["team"], gw)) > 1)
-        bb_rows.append((-doubled, -playing, _squad_mean(fb, players, gw), -bench_home, gw))
-    bb_rows.sort()
-    doubled, negplaying, mean, neg_home, bb_gw = bb_rows[0]
-    bb_detail = [f"Your squad's mean fixture difficulty is {mean:.2f}, the lowest in the window",
-                 f"{-neg_home} of your four bench players are at home"]
-    if -doubled:
-        bb_detail.insert(0, f"{-doubled} of your players have two fixtures that week")
-    picks.append(ChipPick(
-        "bboost", CHIP_NAMES["bboost"], bb_gw,
-        f"Bench Boost in GW{bb_gw}",
-        "Every one of your fifteen plays, on the kindest set of fixtures available."
-        if not -doubled else "A double gameweek — the best a Bench Boost ever gets.",
-        bb_detail, confidence(bb_gw), "bboost" in used, used.get("bboost")))
+    def claim(gw: int | None) -> int | None:
+        if gw is not None:
+            taken.add(gw)
+        return gw
 
     # ---- Wildcard: when the squad you have lags furthest behind the one
     # you could buy. A Wildcard replaces the squad, so the week your CURRENT
@@ -193,10 +154,7 @@ def plan(bs: Bootstrap, fb: FixtureBook, players: list[Player], bench: list[Play
         best = sum(league[:WC_POOL]) / min(WC_POOL, len(league))
         wc_rows.append((yours - best, gw, yours, best))
     wc_rows.sort(reverse=True)
-    # FPL allows one chip per gameweek. Take the best week no other chip has.
-    taken = {p.gw for p in picks if p.gw is not None and not p.used}
-    wc_rows = [r for r in wc_rows if r[1] not in taken] or wc_rows
-    wc_gw = wc_rows[0][1] if wc_rows else None
+    wc_gw = claim(wc_rows[0][1] if wc_rows else None)
     picks.append(ChipPick(
         "wildcard", CHIP_NAMES["wildcard"], wc_gw,
         f"Wildcard in GW{wc_gw}" if wc_gw else "No clear week",
@@ -206,6 +164,77 @@ def plan(bs: Bootstrap, fb: FixtureBook, players: list[Player], bench: list[Play
          f"the best {WC_POOL} clubs average {wc_rows[0][3]:.2f}"] if wc_gw else [],
         confidence(wc_gw), "wildcard" in used, used.get("wildcard"), half))
 
+    # ---- Bench Boost: the fifteen's easiest week, after the rebuild -----
+    # If the Wildcard is still to come, boosting before it would be boosting a
+    # bench you are about to replace.
+    awaiting_wc = wc_gw is not None and "wildcard" not in used
+    bb_horizon = [g for g in horizon if g not in taken]
+    constrained = False
+    if awaiting_wc:
+        later = [g for g in bb_horizon if g > wc_gw]
+        if later:
+            bb_horizon, constrained = later, True
+    bb_rows = []
+    for gw in bb_horizon:
+        blanks, doubles = blanks_and_doubles(bs, fb, gw)
+        playing = sum(1 for p in players if fb.for_team(p.raw["team"], gw))
+        bench_home = sum(1 for p in bench
+                         if any(f.home for f in fb.for_team(p.raw["team"], gw)))
+        # A double gameweek beats any single-week difficulty edge.
+        doubled = sum(1 for p in players if len(fb.for_team(p.raw["team"], gw)) > 1)
+        bb_rows.append((-doubled, -playing, _squad_mean(fb, players, gw), -bench_home, gw))
+    bb_rows.sort()
+    bb_gw, bb_detail = None, []
+    if bb_rows:
+        doubled, negplaying, mean, neg_home, bb_gw = bb_rows[0]
+        bb_gw = claim(bb_gw)
+        bb_detail = [f"Your squad's mean fixture difficulty is {mean:.2f}, the lowest "
+                     f"{'week after the Wildcard' if constrained else 'in the window'}",
+                     f"{-neg_home} of your four bench players are at home"]
+        if -doubled:
+            bb_detail.insert(0, f"{-doubled} of your players have two fixtures that week")
+        if constrained:
+            bb_detail.append(f"Held until after the Wildcard in GW{wc_gw} — the Wildcard "
+                             f"is what makes a bench worth boosting")
+        elif awaiting_wc:
+            bb_detail.append(f"No week left after the Wildcard in GW{wc_gw}, so this "
+                             f"falls before it — play the Wildcard earlier if you want both")
+    picks.append(ChipPick(
+        "bboost", CHIP_NAMES["bboost"], bb_gw,
+        f"Bench Boost in GW{bb_gw}" if bb_gw else "No clear week",
+        ("Every one of your fifteen plays, on the kindest set of fixtures available."
+         if bb_gw and not bb_rows[0][0] else
+         "A double gameweek — the best a Bench Boost ever gets." if bb_gw else ""),
+        bb_detail, confidence(bb_gw), "bboost" in used, used.get("bboost"), half))
+
+    # ---- Triple Captain: the premium's kindest home game ------------
+    star = _premium(players)
+    best_tc, tc_detail = None, []
+    if star:
+        cands = []
+        for gw in horizon:
+            for f in fb.for_team(star.raw["team"], gw):
+                if not f.home:
+                    continue
+                opp = next((t for t in bs.teams.values()
+                            if t["short_name"] == f.opponent), None)
+                away_strength = (opp or {}).get("strength_overall_away", 3)
+                cands.append((f.difficulty, away_strength, -gw, gw, f.opponent))
+        cands.sort()
+        free = [c for c in cands if c[3] not in taken] or cands
+        if free:
+            d, strength, _, gw, opp = free[0]
+            best_tc = claim(gw)
+            tc_detail = [f"{star.name} at home to {opp}, difficulty {d}",
+                         "The weakest visitor he gets before the deadline"]
+    picks.append(ChipPick(
+        "3xc", CHIP_NAMES["3xc"], best_tc,
+        f"Triple Captain in GW{best_tc}" if best_tc else "No standout week",
+        (f"{star.name}'s easiest home fixture in the window." if star and best_tc
+         else "No home fixture stands out for your premium."),
+        tc_detail, confidence(best_tc),
+        "3xc" in used, used.get("3xc"), half))
+
     # ---- Free Hit: only worth it against a blank or a bad week -------
     fh_gw, fh_reason, fh_detail = None, "", []
     worst = None
@@ -213,8 +242,8 @@ def plan(bs: Bootstrap, fb: FixtureBook, players: list[Player], bench: list[Play
         blanks, _ = blanks_and_doubles(bs, fb, gw)
         missing = sum(1 for p in players if not fb.for_team(p.raw["team"], gw))
         m = _squad_mean(fb, players, gw)
-        if missing >= 4:
-            fh_gw, fh_reason = gw, f"{missing} of your players have no fixture"
+        if missing >= 4 and gw not in taken:
+            fh_gw, fh_reason = claim(gw), f"{missing} of your players have no fixture"
             fh_detail = [f"Blank gameweek — {', '.join(blanks[:8])}"]
             break
         if worst is None or m > worst[0]:
@@ -229,7 +258,7 @@ def plan(bs: Bootstrap, fb: FixtureBook, players: list[Player], bench: list[Play
         "freehit", CHIP_NAMES["freehit"], fh_gw,
         f"Free Hit in GW{fh_gw}" if fh_gw else "Hold the Free Hit",
         fh_reason, fh_detail, confidence(fh_gw),
-        "freehit" in used, used.get("freehit")))
+        "freehit" in used, used.get("freehit"), half))
 
     return picks
 
